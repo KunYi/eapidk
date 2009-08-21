@@ -31,6 +31,7 @@
 #I
 #+=========================================================================
 #</KHeader>
+TARGETNAME=EApi
 TARGETPATH=obj
 TARGETTYPE=DYNLINK
 

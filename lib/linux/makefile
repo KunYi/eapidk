@@ -31,6 +31,7 @@
 #I
 #+=========================================================================
 #</KHeader>
+ARCH = $(shell uname -s)
 ifndef MACH
 MACH = $(shell uname -m)
 endif
