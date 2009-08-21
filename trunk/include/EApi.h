@@ -918,7 +918,7 @@ uint32_t
 EAPI_CALLTYPE
 EApiI2CProbeDevice(
     __IN  uint32_t  Id      , /* I2C Bus Id */
-    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C Device Address */
+    __IN  uint32_t  Addr      /* Encoded 7/10Bit I2C Device Address */
     );
 
 /*
