@@ -1,0 +1,90 @@
+#<KHeader>
+#+=========================================================================
+#I               EApiDK Embedded Application Development Kit
+#+=========================================================================
+#I  $HeadURL$
+#+=========================================================================
+#I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+#I      Author: John Kearney,                  John.Kearney@kontron.com
+#I
+#I     License: All rights reserved. This program and the accompanying 
+#I              materials are licensed and made available under the 
+#I              terms and conditions of the BSD License which 
+#I              accompanies this distribution. The full text of the 
+#I              license may be found at 
+#I              http://opensource.org/licenses/bsd-license.php
+#I              
+#I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+#I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+#I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+#I
+#I Description: Auto Created for SOURCES
+#I
+#+------------------------------------------------------------------------=
+#I
+#I  File Name            : SOURCES
+#I  File Location        : lib\WINNT
+#I  Last committed       : $Revision$
+#I  Last changed by      : $Author$
+#I  Last changed date    : $Date$
+#I  ID                   : $Id$
+#I
+#+=========================================================================
+#</KHeader>
+TARGETPATH=obj
+TARGETTYPE=DYNLINK
+
+UMTYPE=console
+#DLLENTRY=_DllMainCRTStartup 
+DLLENTRY=DllMain
+USE_MSVCRT=1
+USE_STL=1
+STL_VER=70
+USE_NATIVE_EH=1
+
+# Exception handling on stack
+USER_C_FLAGS=$(USER_C_FLAGS) /FAs
+#
+# Select Platform 
+# Emulation Type
+#
+# CXP = 1
+# ETX = 2
+# Q7  = 3
+# TCA = 4
+C_DEFINES=$(C_DEFINES) /D"EAPI_PLATFORM"=1
+
+LINKER_FLAGS=/VERBOSE
+
+MSC_WARNING_LEVEL=/W4 /WX /Wp64
+#_NT_TARGET_VERSION=0x500
+
+NOT_LEAN_AND_MEAN=0
+USE_MAPSYM=0
+
+# Use additional include file
+#NTTARGETFILES=makefile.inc
+
+# Create browse info
+#BROWSER_INFO=1
+#BROWSERFILE=<some path>
+
+INCLUDES=..\..\include\winnt;..\;..\include;..\..\include
+
+
+TARGETLIBS=$(TARGETLIBS)\
+$(SDK_LIB_PATH)\kernel32.lib
+
+
+SOURCES=EApi.rc \
+	EApiAPI.cpp \
+	EApiOsNT.cpp \
+	EApiOsNTC.c \
+	EApiEmulGPIO.c \
+	EApiEmulI2C.c \
+	EApiInitLib.c \
+	EApiEmulBacklight.c \
+	EApiEmulBoardInfo.c \
+	EApiEmulStorage.c \
+	EApiEmulWDT.c
+

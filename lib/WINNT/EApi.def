@@ -1,0 +1,37 @@
+; EApi.def : Declares the module parameters for the DLL.
+
+LIBRARY      "EApi"
+
+
+EXPORTS
+
+            EApiLibInitialize	@2
+            EApiLibUnInitialize	@3
+   
+            EApiBoardGetStringA	@4
+            EApiBoardGetValue	@5
+
+            EApiVgaGetBacklightEnable	@6
+            EApiVgaSetBacklightEnable	@7
+            EApiVgaGetBacklightBrightness	@8
+            EApiVgaSetBacklightBrightness	@9
+
+            EApiStorageCap	@10
+            EApiStorageAreaRead	@11
+            EApiStorageAreaWrite	@12
+
+            EApiI2CGetBusCap	@13
+            EApiI2CWriteReadRaw	@14
+            EApiI2CReadTransfer	@15
+            EApiI2CWriteTransfer	@16
+
+            EApiWDogTrigger	@17
+            EApiWDogStart	@18
+            EApiWDogStop	@19
+
+            EApiGPIOGetLevel	@20
+            EApiGPIOSetLevel	@21
+            EApiGPIOGetDirection	@22
+            EApiGPIOSetDirection	@23 
+            EApiGPIOGetDirectionCaps	@24
+
