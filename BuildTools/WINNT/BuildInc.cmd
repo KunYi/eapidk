@@ -47,7 +47,7 @@ REM ########################################################################
 :Main_Program
   IF NOT EXIST "%~1" GOTO Error_Exit
   IF EXIST "%~1.tmp" erase /q "%~1.tmp"
-  for /f "tokens=1-3* " %%a in ('TYPE "%~1"') do call :BuildIcrement "%%a" "%%b" "%%c" "%%d" "%~1.tmp" "%~2"
+  for /f "tokens=1-3* " %%a in ('TYPE "%~1"') do call :BuildIcrement "%%a" "%%b" "%%c" "%%d " "%~1.tmp" "%~2"
   IF ERRORLEVEL 1 GOTO Error_Exit
   move  /y "%~1.tmp" %1
   GOTO Exit
@@ -63,11 +63,17 @@ REM ########################################################################
   ECHO #
   ECHO # in %~dpn5
 
-  ECHO %~1 %~2 %VALUE% %~4 1>> %5
-  GOTO :EOF
+  SET TMP_VAL="%~1 %~2 %VALUE% %~4"
+  GOTO :PrintLine
   
   :NormalLine
-  ECHO %~1 %~2 %~3 %~4 1>> %5
+  SET TMP_VAL="%~1 %~2 %~3 %~4"
+
+  :PrintLine
+  SET TMP_VAL=%TMP_VAL:>=^>%
+  SET TMP_VAL=%TMP_VAL:<=^<%
+  SET TMP_VAL=%TMP_VAL:|=^|%
+  ECHO %TMP_VAL:"=% 1>> %5
   GOTO :EOF
 
 
