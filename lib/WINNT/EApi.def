@@ -24,14 +24,15 @@ EXPORTS
             EApiI2CWriteReadRaw	@14
             EApiI2CReadTransfer	@15
             EApiI2CWriteTransfer	@16
+            EApiI2CProbeDevice	@17
 
-            EApiWDogTrigger	@17
-            EApiWDogStart	@18
-            EApiWDogStop	@19
+            EApiWDogTrigger	@18
+            EApiWDogStart	@19
+            EApiWDogStop	@20
 
-            EApiGPIOGetLevel	@20
-            EApiGPIOSetLevel	@21
-            EApiGPIOGetDirection	@22
-            EApiGPIOSetDirection	@23 
-            EApiGPIOGetDirectionCaps	@24
+            EApiGPIOGetLevel	@21
+            EApiGPIOSetLevel	@22
+            EApiGPIOGetDirection	@23
+            EApiGPIOSetDirection	@24 
+            EApiGPIOGetDirectionCaps	@25
 

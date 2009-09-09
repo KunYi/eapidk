@@ -104,9 +104,9 @@ extern "C" {
 /************************************************************************
  * All version numbers are bits 31..24: major, 23..16: minor, 15..0 build#
  */
-#define EAPI_VER_MASK_VER     0xFF000000
-#define EAPI_VER_MASK_REV     0x00FF0000
-#define EAPI_VER_MASK_BUILD   0x0000FFFF
+#define EAPI_VER_MASK_VER     EAPI_UINT32_C(0xFF000000)
+#define EAPI_VER_MASK_REV     EAPI_UINT32_C(0x00FF0000)
+#define EAPI_VER_MASK_BUILD   EAPI_UINT32_C(0x0000FFFF)
 #define EAPI_VER_GET_VER(x)   EAPI_UINT8_C (((x)>>24)&UINT8_MAX )
 #define EAPI_VER_GET_REV(x)   EAPI_UINT8_C (((x)>>16)&UINT8_MAX )
 #define EAPI_VER_GET_BUILD(x) EAPI_UINT16_C(((x)>> 0)&UINT16_MAX)
@@ -313,8 +313,9 @@ extern "C" {
  */
 uint32_t 
 EAPI_CALLTYPE 
-EApiLibInitialize(void)   ; /* Should be called before calling any other 
-                             * API function is called
+EApiLibInitialize(void)   ; /* Should be called before 
+                             * calling any otherAPI 
+                             * function is called
                              */
 /* 
  * EApiLibUnInitialize
@@ -327,7 +328,9 @@ EApiLibInitialize(void)   ; /* Should be called before calling any other
  */
 uint32_t
 EAPI_CALLTYPE 
-EApiLibUnInitialize(void) ; /* Should be called before program exit */ 
+EApiLibUnInitialize(void) ; /* Should be called before 
+                             * program exit 
+                             */ 
 
 
 /* 
@@ -460,9 +463,9 @@ EApiBoardGetValue(
  *
  */
 /* IDS */
-#define EAPI_ID_BACKLIGHT_1              0
-#define EAPI_ID_BACKLIGHT_2              1
-#define EAPI_ID_BACKLIGHT_3              3
+#define EAPI_ID_BACKLIGHT_1           EAPI_UINT32_C(0)
+#define EAPI_ID_BACKLIGHT_2           EAPI_UINT32_C(1)
+#define EAPI_ID_BACKLIGHT_3           EAPI_UINT32_C(2)
 
 /* Backlight Values */
 #define EAPI_BACKLIGHT_SET_ON         EAPI_UINT32_C(0)
@@ -556,7 +559,7 @@ EApiVgaSetBacklightBrightness(
  * Library Uninitialized                        | EAPI_STATUS_NOT_INITIALIZED
  * ((pStorageSize==NULL)&&(pBlockLength==NULL)) | EAPI_STATUS_INVALID_PARAMETER
  * Unsupported Id                               | EAPI_STATUS_UNSUPPORTED
- * Common Error                           | Common Error Code
+ * Common Error                                 | Common Error Code
  * Else                                         | EAPI_STATUS_SUCCESS
  */
 uint32_t 
@@ -564,7 +567,9 @@ EAPI_CALLTYPE
 EApiStorageCap(
     __IN  uint32_t  Id            , /* Storage Area Id */
     __OUT uint32_t  *pStorageSize , /* Total */
-    __OUT uint32_t  *pBlockLength   /* Write Block Length & Alignment */
+    __OUT uint32_t  *pBlockLength   /* Write Block Length
+                                     * & Alignment 
+                                     */
     );
 /* 
  * EApiStorageAreaRead
@@ -587,8 +592,10 @@ EAPI_CALLTYPE
 EApiStorageAreaRead(
     __IN  uint32_t  Id      , /* Storage Area Id */
     __IN  uint32_t  Offset  , /* Byte Offset */
-    __OUT     void *pBuffer , /* Pointer to Date pBuffer */
-    __IN  uint32_t  BufLen  , /* Data pBuffer Size in bytes */
+    __OUT     void *pBuffer , /* Pointer to Data pBuffer */
+    __IN  uint32_t  BufLen  , /* Data pBuffer Size in 
+                               * bytes 
+                               */
     __IN  uint32_t  ByteCnt   /* Number of bytes to read */
     );
 /* 
@@ -612,7 +619,7 @@ EAPI_CALLTYPE
 EApiStorageAreaWrite(
     __IN  uint32_t  Id      , /* Storage Area Id */
     __IN  uint32_t  Offset  , /* Byte Offset */
-    __IN      void *pBuffer , /* Pointer to Date pBuffer */
+    __IN      void *pBuffer , /* Pointer to Data pBuffer */
     __IN  uint32_t  ByteCnt   /* Number of bytes to write */
     );
 
@@ -639,7 +646,7 @@ EApiStorageAreaWrite(
  *
  *  Bit Offset       F E D C B A 9 8 7 6 5 4 3 2 1 0
  *  7  Bit Address   L L L L L L L L 6 5 4 3 2 1 0 X
- *  10 Bit Address   H H H H Z 9 8 X 7 6 5 4 3 2 1 0
+ *  10 Bit Address   H H H H L 9 8 X 7 6 5 4 3 2 1 0
  *
  *  Examples where Don't Care bits set to 0
  *             Encoded Encoded
@@ -651,8 +658,8 @@ EApiStorageAreaWrite(
  *    0x3FF            0xF6FF
  *
  */
-#define EAPI_I2C_ENC_7BIT_ADDR(x)  (((x)&0x07F)<<1)
-#define EAPI_I2C_DEC_7BIT_ADDR(x)  (((x)>>1)&0x07F)
+#define EAPI_I2C_ENC_7BIT_ADDR(x)  EAPI_UINT8_C(((x)&0x07F)<<1)
+#define EAPI_I2C_DEC_7BIT_ADDR(x)  EAPI_UINT8_C(((x)>>1)&0x07F)
 /* 
  * EApiI2CGetBusCap
  * 
@@ -668,7 +675,10 @@ uint32_t
 EAPI_CALLTYPE
 EApiI2CGetBusCap(
     __IN  uint32_t  Id         , /* I2C Bus Id */
-    __OUT uint32_t *pMaxBlkLen   /* Max Block Length Supported on this interface */
+    __OUT uint32_t *pMaxBlkLen   /* Max Block Length 
+                                  * Supported on this
+                                  * interface 
+                                  */
     );
 
 /* 
@@ -700,12 +710,18 @@ uint32_t
 EAPI_CALLTYPE 
 EApiI2CWriteReadRaw(
     __IN     uint32_t  Id       , /* I2C Bus Id */
-    __IN     uint8_t   Addr     , /* Encoded 7Bit I2C Device Address */
+    __IN     uint8_t   Addr     , /* Encoded 7Bit I2C
+                                   * Device Address 
+                                   */
     __INOPT  void     *pWBuffer , /* Write Data pBuffer */
-    __IN     uint32_t  WriteBCnt, /* Number of Bytes to write */
+    __IN     uint32_t  WriteBCnt, /* Number of Bytes to 
+                                   * write plus 1
+                                   */
     __OUTOPT void     *pRBuffer , /* Read Data pBuffer */
     __IN     uint32_t  RBufLen  , /* Data pBuffer Length */
-    __IN     uint32_t  ReadBCnt   /* Number of Bytes to Read */
+    __IN     uint32_t  ReadBCnt   /* Number of Bytes to 
+                                   * Read plus 1
+                                   */
     );
 
 #define EApiI2CWriteRaw(Id, Addr, pBuffer, ByteCnt)         \
@@ -714,8 +730,8 @@ EApiI2CWriteReadRaw(
           EApiI2CWriteReadRaw(Id, Addr, NULL, 0, pBuffer, BufLen, ByteCnt)
 
 
-#define EAPI_I2C_ENC_10BIT_ADDR(x) (((x)&0xFF)|(((x)&0x0300)<<1)|0xF000)
-#define EAPI_I2C_DEC_10BIT_ADDR(x) (((x)&0xFF)|(((x)>>1)&0x300))
+#define EAPI_I2C_ENC_10BIT_ADDR(x) EAPI_UINT32_C(((x)&0xFF)|(((x)&0x0300)<<1)|0xF000)
+#define EAPI_I2C_DEC_10BIT_ADDR(x) EAPI_UINT32_C(((x)&0xFF)|(((x)>>1)&0x300))
 #define EAPI_I2C_IS_10BIT_ADDR(x)  (((x)&0xF800)==0xF000)
 #define EAPI_I2C_IS_7BIT_ADDR(x)   (!Is10BitAddress(x))
 
@@ -806,8 +822,8 @@ EApiI2CWriteReadRaw(
 #define EAPI_I2C_NO_CMD           EAPI_UINT32_C(1<<30)    
 #define EAPI_I2C_CMD_TYPE_MASK    EAPI_UINT32_C(3<<30)    
 
-#define EAPI_I2C_ENC_STD_CMD(x)  (((x)&0xFF)|EAPI_I2C_STD_CMD)
-#define EAPI_I2C_ENC_EXT_CMD(x) (((x)&0xFFFF)|EAPI_I2C_EXT_CMD)
+#define EAPI_I2C_ENC_STD_CMD(x)  EAPI_UINT32_C(((x)&0xFF)|EAPI_I2C_STD_CMD)
+#define EAPI_I2C_ENC_EXT_CMD(x)  EAPI_UINT32_C(((x)&0xFFFF)|EAPI_I2C_EXT_CMD)
 #define EAPI_I2C_IS_EXT_CMD(x)   (EAPI_UINT32_C((x)&(EAPI_I2C_CMD_TYPE_MASK))==EAPI_I2C_EXT_CMD)
 #define EAPI_I2C_IS_STD_CMD(x)   (EAPI_UINT32_C((x)&(EAPI_I2C_CMD_TYPE_MASK))==EAPI_I2C_STD_CMD)
 #define EAPI_I2C_IS_NO_CMD(x)    (EAPI_UINT32_C((x)&(EAPI_I2C_CMD_TYPE_MASK))==EAPI_I2C_NO_CMD)
@@ -840,7 +856,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiI2CReadTransfer(
     __IN  uint32_t  Id      , /* I2C Bus Id */
-    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C Device Address */
+    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C
+                               * Device Address
+                               */
     __IN  uint32_t  Cmd     , /* I2C Command/Offset */
     __OUT     void *pBuffer , /* Transfer Data pBuffer */
     __IN  uint32_t  BufLen  , /* Data pBuffer Length */
@@ -873,7 +891,9 @@ uint32_t
 EAPI_CALLTYPE
 EApiI2CWriteTransfer(
     __IN  uint32_t  Id      , /* I2C Bus Id */
-    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C Device Address */
+    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C 
+                               * Device Address 
+                               */
     __IN  uint32_t  Cmd     , /* I2C Command/Offset */
     __IN      void *pBuffer , /* Transfer Data pBuffer */
     __IN  uint32_t  ByteCnt   /* Byte Count to write */
@@ -917,8 +937,10 @@ EApiI2CWriteTransfer(
 uint32_t 
 EAPI_CALLTYPE
 EApiI2CProbeDevice(
-    __IN  uint32_t  Id      , /* I2C Bus Id */
-    __IN  uint32_t  Addr      /* Encoded 7/10Bit I2C Device Address */
+    __IN  uint32_t  Id   , /* I2C Bus Id */
+    __IN  uint32_t  Addr   /* Encoded 7/10Bit 
+                            * I2C Device Address 
+                            */
     );
 
 /*
@@ -941,8 +963,8 @@ EApiI2CProbeDevice(
 uint32_t 
 EAPI_CALLTYPE 
 EApiWDogStart(
-    __IN  uint32_t   timeout , /* Timeout in milliseconds */
-    __IN  uint32_t   delay     /* Delay in milliseconds */
+    __IN  uint32_t delay   , /* Delay in milliseconds */
+    __IN  uint32_t timeout   /* Timeout in milliseconds */
     );
 /* 
  * EApiWDogTrigger
@@ -982,7 +1004,7 @@ EApiWDogStop(void);
 /*
  * Individual ID Per GPIO Mapping
  */
-#define EAPI_GPIO_GPIO_ID(x)    EAPI_UINT32_C(x)
+#define EAPI_GPIO_GPIO_ID(GPIO_NUM)    EAPI_UINT32_C(GPIO_NUM)
 #define EAPI_GPIO_GPIO_BITMASK  EAPI_UINT32_C(1)
 #define EAPI_ID_GPIO_GPIO00     EAPI_GPIO_GPIO_ID(0) /* (Optional) */
 #define EAPI_ID_GPIO_GPIO01     EAPI_GPIO_GPIO_ID(1) /* (Optional) */
@@ -992,8 +1014,10 @@ EApiWDogStop(void);
 /*
  * Multiple GPIOs Per ID Mapping
  */
-#define EAPI_GPIO_BITMASK_ID(x)   EAPI_UINT32_C(0x10000|((x)>>5))
-#define EAPI_GPIO_BITMASK_MASK(x) EAPI_UINT32_C((1<<((x)&0x1F))
+#define EAPI_GPIO_BITMASK_ID(GPIO_NUM)   EAPI_UINT32_C(0x10000|((GPIO_NUM)>>5))
+#define EAPI_GPIO_BITMASK_MASK(GPIO_NUM) EAPI_UINT32_C((1<<((GPIO_NUM)&0x1F))
+#define EAPI_GPIO_BITMASK_TEST_STATE(GPIO_NUM, TState, TValue) \
+                        (((TValue>>((GPIO_NUM)&0x1F))&1)==(TState))
 #define EAPI_ID_GPIO_BITMASK00    EAPI_GPIO_BITMASK_ID( 0) /* GPIOs  0 - 31 (Optional) */
 #define EAPI_ID_GPIO_BITMASK01    EAPI_GPIO_BITMASK_ID(32) /* GPIOs 32 - 63 (Optional) */
 #define EAPI_ID_GPIO_BITMASK02    EAPI_GPIO_BITMASK_ID(64) /* GPIOs 64 - 95 (Optional) */
@@ -1026,8 +1050,12 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOGetDirectionCaps(
     __IN     uint32_t Id        , /* GPIO Id */
-    __OUTOPT uint32_t *pInputs  , /* Supported GPIO Input Bit Mask */
-    __OUTOPT uint32_t *pOutputs   /* Supported GPIO Output Bit Mask */
+    __OUTOPT uint32_t *pInputs  , /* Supported GPIO Input
+                                   * Bit Mask 
+                                   */
+    __OUTOPT uint32_t *pOutputs   /* Supported GPIO Output
+                                   * Bit Mask 
+                                   */
     );
 /* 
  * EApiGPIOGetDirection
@@ -1045,7 +1073,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOGetDirection(
     __IN  uint32_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected Bits */
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected
+                                  * Bits 
+                                  */
     __OUT uint32_t *pDirection   /* Current Direction */
     );
 /* 
@@ -1066,7 +1096,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOSetDirection(
     __IN  uint32_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected Bits */
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected 
+                                  * Bits 
+                                  */
     __IN  uint32_t Direction     /* Direction */
     );
 /* 
@@ -1085,7 +1117,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOGetLevel(
     __IN  uint32_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected Bits */
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected
+                                  * Bits 
+                                  */
     __OUT uint32_t *pLevel       /* Current Level */
     );
 /* 
@@ -1103,7 +1137,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOSetLevel(
     __IN  uint32_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected Bits */
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected 
+                                  * Bits 
+                                  */
     __IN  uint32_t Level         /* Level */  
     );
 
@@ -1123,4 +1159,3 @@ EApiGPIOSetLevel(
 #endif
 
 #endif /* _EAPI_H_ */
-

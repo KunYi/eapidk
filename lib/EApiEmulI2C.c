@@ -536,9 +536,9 @@ EApiI2CWriteReadEmul(
             return EmulatedInterfaces[i].DevicesList[i2].Emulator(
                 EmulatedInterfaces[i].DevicesList[i2].Arg1, 
                 pWBuffer, 
-                WriteBCnt, 
+                (WriteBCnt?WriteBCnt-1:0), 
                 pRBuffer, 
-                ReadBCnt
+                (ReadBCnt?ReadBCnt-1:0)
                 );
           }
         }

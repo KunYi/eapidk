@@ -196,9 +196,9 @@ REM ########################################################################
   goto LoopFiles
   :Continue
   call :CopyFiles "%APPSBASE%\%~1"    "%APPSBASE%\%~1\WINNT" %LCLFILES%
-  SET ERRORM= ERROR: Build Lib First missing "lib\winnt\%TARGETARCH%\EApi.lib"
-  IF NOT EXIST "%EAPILIBBASE%\lib\winnt\%TARGETARCH%\EApi.lib" GOTO ERRORM
-  call :CopyFiles "%EAPILIBBASE%\lib\winnt\%TARGETARCH%"  "%APPSBASE%\%~1\WINNT" "EApi.lib"
+  SET ERRORM= ERROR: Build Lib First missing "lib\winnt\%TARGETARCHENV%\EApi.lib"
+  IF NOT EXIST "%EAPILIBBASE%\lib\winnt\%TARGETARCHENV%\EApi.lib" GOTO ERRORM
+  call :CopyFiles "%EAPILIBBASE%\lib\winnt\%TARGETARCHENV%"  "%APPSBASE%\%~1\WINNT" "EApi.lib"
 
   call :BuildProject checked  "%APPSBASE%\%~1\WINNT"
   IF ERRORLEVEL 1 GOTO Error_Exit

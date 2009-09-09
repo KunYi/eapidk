@@ -47,7 +47,7 @@ REM ########################################################################
 :Main_Program
   IF NOT EXIST "%~1" GOTO Error_Exit
   IF EXIST "%~1.tmp" erase /q "%~1.tmp"
-  for /f "tokens=1-3* " %%a in ('TYPE "%~1"') do call :BuildIcrement "%%a" "%%b" "%%c" "%%d " "%~1.tmp" "%~2"
+  for /f "tokens=1-3* " %%a in ('TYPE "%~1"') do call :BuildIcrement "%%a" "%%b" "%%c" "%%d" "%~1.tmp" "%~2"
   IF ERRORLEVEL 1 GOTO Error_Exit
   move  /y "%~1.tmp" %1
   GOTO Exit
