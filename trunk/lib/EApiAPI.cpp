@@ -63,11 +63,12 @@ int Initialized=0;
  *
  */
 uint32_t 
-EAPI_CALLTYPE 
+EAPI_CALLTYPE
 EApiI2CGetBusCap(
     __IN  uint32_t  Id         , /* I2C Bus Id */
-    __OUT uint32_t *pMaxBlkLen   /* Max Block Length Supported 
-                                  * on this interface 
+    __OUT uint32_t *pMaxBlkLen   /* Max Block Length 
+                                  * Supported on this
+                                  * interface 
                                   */
     )
 {
@@ -81,12 +82,18 @@ uint32_t
 EAPI_CALLTYPE 
 EApiI2CWriteReadRaw(
     __IN     uint32_t  Id       , /* I2C Bus Id */
-    __IN     uint8_t   Addr     , /* Encoded 7Bit I2C Device Address */
+    __IN     uint8_t   Addr     , /* Encoded 7Bit I2C
+                                   * Device Address 
+                                   */
     __INOPT  void     *pWBuffer , /* Write Data pBuffer */
-    __IN     uint32_t  WriteBCnt, /* Number of Bytes to write */
+    __IN     uint32_t  WriteBCnt, /* Number of Bytes to 
+                                   * write 
+                                   */
     __OUTOPT void     *pRBuffer , /* Read Data pBuffer */
     __IN     uint32_t  RBufLen  , /* Data pBuffer Length */
-    __IN     uint32_t  ReadBCnt   /* Number of Bytes to Read */
+    __IN     uint32_t  ReadBCnt   /* Number of Bytes to 
+                                   * Read 
+                                   */
     )
 {
   uint32_t ErrorCode=EAPI_STATUS_SUCCESS;
@@ -94,7 +101,7 @@ EApiI2CWriteReadRaw(
   EAPI_CHECK_INITIALIZED(EApiI2CWriteReadRaw);
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
       EApiI2CWriteReadRaw, 
-      WriteBCnt&&(pWBuffer==NULL), 
+      (WriteBCnt>1)&&(pWBuffer==NULL), 
       "pWBuffer is NULL"          
       );
 #if (STRICT_VALIDATION>1)
@@ -108,12 +115,12 @@ EApiI2CWriteReadRaw(
 #endif
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
       EApiI2CWriteReadRaw, 
-      ReadBCnt&&(pRBuffer==NULL) , 
+      (ReadBCnt>1)&&(pRBuffer==NULL) , 
       "pRBuffer is NULL"          
       );
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
       EApiI2CWriteReadRaw, 
-      ReadBCnt&&(RBufLen==0) , 
+      (ReadBCnt>1)&&(RBufLen==0) , 
       "RBufLen is ZERO"          
       );
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
@@ -125,7 +132,7 @@ EApiI2CWriteReadRaw(
   EAPI_LIB_PREVENT_BUF_OVERFLOW(
       EApiI2CWriteReadRaw, 
       ReadBCnt, 
-      RBufLen
+      RBufLen+1
       );
 
   ErrorCode2=EApiI2CWriteReadEmul(
@@ -147,7 +154,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiI2CReadTransfer(
     __IN  uint32_t  Id      , /* I2C Bus Id */
-    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C Device Address */
+    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C
+                               * Device Address
+                               */
     __IN  uint32_t  Cmd     , /* I2C Command/Offset */
     __OUT     void *pBuffer , /* Transfer Data pBuffer */
     __IN  uint32_t  BufLen  , /* Data pBuffer Length */
@@ -198,10 +207,10 @@ EApiI2CReadTransfer(
       Id, 
       (uint8_t)Addr, 
       &LclpBuffer, 
-      LclByteCnt, 
+      LclByteCnt+1, 
       pBuffer, 
       BufLen, 
-      ByteCnt
+      ByteCnt+1
       );
 }
 
@@ -211,7 +220,9 @@ uint32_t
 EAPI_CALLTYPE
 EApiI2CWriteTransfer(
     __IN  uint32_t  Id      , /* I2C Bus Id */
-    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C Device Address */
+    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C 
+                               * Device Address 
+                               */
     __IN  uint32_t  Cmd     , /* I2C Command/Offset */
     __IN      void *pBuffer , /* Transfer Data pBuffer */
     __IN  uint32_t  ByteCnt   /* Byte Count to write */
@@ -283,7 +294,7 @@ EApiI2CWriteTransfer(
       Id, 
       (uint8_t)Addr, 
       pLclBuffer, 
-      LclByteCnt+ByteCnt, 
+      LclByteCnt+ByteCnt+1, 
       NULL, 
       0, 
       0
@@ -293,7 +304,37 @@ EApiI2CWriteTransfer(
   return ReturnValue;
 }
 
-
+uint32_t 
+EAPI_CALLTYPE
+EApiI2CProbeDevice(
+    __IN  uint32_t  Id   , /* I2C Bus Id */
+    __IN  uint32_t  Addr   /* Encoded 7/10Bit 
+                            * I2C Device Address 
+                            */
+    )
+{
+  uint32_t ReturnValue;
+  uint8_t LclpBuffer[8]={0};
+  int LclByteCnt=0;
+  EAPI_CHECK_INITIALIZED(EApiI2CWriteTransfer);
+  if(EAPI_I2C_IS_10BIT_ADDR(Addr))
+  {
+    LclpBuffer[LclByteCnt++]=(uint8_t)(Addr&0xFF);
+    Addr>>=8;
+  }
+  ReturnValue=EApiI2CWriteReadRaw(
+      Id, 
+      (uint8_t)Addr, 
+      LclpBuffer, 
+      LclByteCnt+1, 
+      NULL, 
+      0, 
+      0
+      );
+  if(ReturnValue==EAPI_STATUS_WRITE_ERROR)
+    ReturnValue=EAPI_STATUS_NOT_FOUND;
+  return ReturnValue;
+}
 /*
  *
  *  
@@ -435,7 +476,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOGetLevel(
     __IN  uint32_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected Bits */
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected
+                                  * Bits 
+                                  */
     __OUT uint32_t *pLevel       /* Current Level */
     )
 {
@@ -450,7 +493,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOSetLevel(
     __IN  uint32_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected Bits */
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected 
+                                  * Bits 
+                                  */
     __IN  uint32_t Level         /* Level */  
     )
 {
@@ -464,7 +509,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOGetDirection(
     __IN  uint32_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected Bits */
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected
+                                  * Bits 
+                                  */
     __OUT uint32_t *pDirection   /* Current Direction */
     )
 {
@@ -479,7 +526,9 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOSetDirection(
     __IN  uint32_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected Bits */
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected 
+                                  * Bits 
+                                  */
     __IN  uint32_t Direction     /* Direction */
     )
 {
@@ -493,8 +542,12 @@ uint32_t
 EAPI_CALLTYPE 
 EApiGPIOGetDirectionCaps(
     __IN     uint32_t Id        , /* GPIO Id */
-    __OUTOPT uint32_t *pInputs  , /* Supported GPIO Input Bit Mask */
-    __OUTOPT uint32_t *pOutputs   /* Supported GPIO Output Bit Mask */
+    __OUTOPT uint32_t *pInputs  , /* Supported GPIO Input
+                                   * Bit Mask 
+                                   */
+    __OUTOPT uint32_t *pOutputs   /* Supported GPIO Output
+                                   * Bit Mask 
+                                   */
     )
 {
   uint32_t DpBuffer;
@@ -557,8 +610,8 @@ EApiLibUnInitialize(void)
 uint32_t 
 EAPI_CALLTYPE 
 EApiWDogStart(
-    __IN  uint32_t   timeout , /* Timeout in milliseconds */
-    __IN  uint32_t   delay     /* Delay in milliseconds */
+    __IN  uint32_t delay   , /* Delay in milliseconds */
+    __IN  uint32_t timeout   /* Timeout in milliseconds */
     )
 {
   EAPI_CHECK_INITIALIZED(EApiWDogStart);
