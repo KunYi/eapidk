@@ -50,7 +50,7 @@ INCLUDES=..\;..\..\include;..\..\..\include\winnt;..\..\..\include
 
 TARGETLIBS=$(TARGETLIBS)\
 $(SDK_LIB_PATH)\kernel32.lib \
-  eapi.lib
+  EApi_1.lib
 
 SOURCES=EApiValidateAPI.rc EApiValidateAPI.c EApiAHI2C.c EApiAHStorage.c \
 	EApiAHStr.c 

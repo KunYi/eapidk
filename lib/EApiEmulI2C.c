@@ -513,6 +513,18 @@ EApiI2CWriteReadEmul(
   {
       if(EmulatedInterfaces[i].Id==Id)
       {
+	EAPI_LIB_RETURN_ERROR_IF(
+	    EApiI2CWriteReadEmul, 
+	    (WriteBCnt>EmulatedInterfaces[i].MaxBlockLen+1), 
+	    EAPI_STATUS_INVALID_BLOCK_LENGTH,
+	    "WriteBCnt>(pMaxBlkLen+1)"
+	    );
+	EAPI_LIB_RETURN_ERROR_IF(
+	    EApiI2CWriteReadEmul, 
+	    (ReadBCnt>(EmulatedInterfaces[i].MaxBlockLen+1)), 
+	    EAPI_STATUS_INVALID_BLOCK_LENGTH,
+	    "ReadBCnt>(pMaxBlkLen+1)"
+	    );
         if(EAPI_I2C_IS_10BIT_ADDR(Addr<<8)){
           LclAddr=Addr<<8;
           LclAddr|=*((uint8_t *)pWBuffer);

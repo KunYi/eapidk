@@ -31,18 +31,9 @@
 #I
 #+=========================================================================
 #</KHeader>
-/*              Embedded API Development Kit 
- *
- * The library is free for all purposes without any express
- * guarantee it works.
- *
- * John Kearney,                      John.Kearney@kontron.com
- *
- * $Date$$Rev$
- */
 
 Build Instruction WINNT
-Currently building with 2003 DDK, 
+Currently building with 2003 SP1 DDK, 
 You can download it from here.
 http://www.microsoft.com/whdc/devtools/ddk/default.mspx
 

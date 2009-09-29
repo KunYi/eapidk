@@ -51,10 +51,41 @@
 static unsigned WatchdogState=WATCHDOG_DISABLED;
 
 
+#define MIN_IN_millisec(x) ((x)*60*1000)
+#define MaxDelay        MIN_IN_millisec(10)
+#define MaxEventTimeout MIN_IN_millisec(10)
+#define MaxResetTimeout MIN_IN_millisec(10)
+uint32_t 
+EAPI_CALLTYPE
+EApiWDogGetCapEmul(
+    __OUTOPT uint32_t *pMaxDelay       ,/* Maximum Supported 
+                                         * Delay in milliseconds
+                                         */
+    __OUTOPT uint32_t *pMaxEventTimeout,/* Maximum Supported 
+                                         * Event Timeout in 
+                                         * milliseconds
+                                         * 0 == Unsupported
+                                         */
+    __OUTOPT uint32_t *pMaxResetTimeout /* Maximum Supported 
+                                         * Reset Timeout in 
+                                         * milliseconds
+                                         */
+    )
+{
+  *pMaxDelay        =MaxDelay;
+  *pMaxEventTimeout =MaxEventTimeout;
+  *pMaxResetTimeout =MaxResetTimeout;
+  EAPI_LIB_RETURN_SUCCESS(EApiWDogGetCapEmul, "");
+}
 uint32_t 
 EApiWDogStartEmul(
-    __IN uint32_t timeout, 
-    __IN uint32_t delay
+    __IN  uint32_t Delay       , /* Delay in milliseconds */
+    __IN  uint32_t EventTimeout, /* Event Timeout in 
+                                  * milliseconds 
+                                  */
+    __IN  uint32_t ResetTimeout  /* Reset Timeout in 
+                                  * milliseconds 
+                                  */
     )
 {
   EAPI_LIB_RETURN_ERROR_IF(
@@ -63,10 +94,22 @@ EApiWDogStartEmul(
       EAPI_STATUS_RUNNING, 
       "Watchdog alread runing, need to stop before starting"
       );
-  if(timeout&delay)
-    WatchdogState=WATCHDOG_DISABLED;
-  else
-    WatchdogState=WATCHDOG_ENABLED;
+  EAPI_LIB_ASSERT_PARAMATER_CHECK(
+    EApiWDogStartEmul, 
+    (Delay>MaxDelay), 
+   "(Delay>pMaxDelay)"
+  );
+  EAPI_LIB_ASSERT_PARAMATER_CHECK(
+    EApiWDogStartEmul, 
+    (EventTimeout>MaxEventTimeout), 
+   "(EventTimeout>pMaxEventTimeout)"
+  );
+  EAPI_LIB_ASSERT_PARAMATER_CHECK(
+    EApiWDogStartEmul, 
+    (ResetTimeout>MaxResetTimeout), 
+   "(ResetTimeout>pMaxResetTimeout)"
+  );
+  WatchdogState=WATCHDOG_ENABLED;
   EAPI_LIB_RETURN_SUCCESS(EApiWDogStartEmul, "");
 }
 uint32_t 

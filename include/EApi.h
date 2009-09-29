@@ -373,7 +373,8 @@ EApiLibUnInitialize(void) ; /* Should be called before
 #define EAPI_ID_BOARD_REVISION_STR         EAPI_UINT32_C(2) /* Board Name String */
 #define EAPI_ID_BOARD_SERIAL_STR           EAPI_UINT32_C(3) /* Board Serial Number String */
 #define EAPI_ID_BOARD_BIOS_REVISION_STR    EAPI_UINT32_C(4) /* Board Bios Revision String */
-#define EAPI_ID_BOARD_PLATFORM_TYPE_STR    EAPI_UINT32_C(5) /* Platform ID (ETX, COM Express, etc...) */
+#define EAPI_ID_BOARD_HW_REVISION_STR      EAPI_UINT32_C(5) /* Board Hardware Revision String */
+#define EAPI_ID_BOARD_PLATFORM_TYPE_STR    EAPI_UINT32_C(6) /* Platform ID (ETX, COM Express, etc...) */
 
 
 /* 
@@ -422,6 +423,7 @@ EApiBoardGetStringA(
 #define EAPI_ID_HWMON_CPU_TEMP            EAPI_UINT32_C(0x20000) /* 0.1 Kelvins */ 
 #define EAPI_ID_HWMON_CHIPSET_TEMP        EAPI_UINT32_C(0x20001) /* 0.1 Kelvins */ 
 #define EAPI_ID_HWMON_SYSTEM_TEMP         EAPI_UINT32_C(0x20002) /* 0.1 Kelvins */ 
+
 #define EAPI_KELVINS_OFFSET 2731
 #define EAPI_ENCODE_CELCIUS(Celsius) (uint32_t)((((Celsius)*10))+EAPI_KELVINS_OFFSET)
 #define EAPI_DECODE_CELCIUS(Celsius) ((Celsius)- EAPI_KELVINS_OFFSET)/10
@@ -639,14 +641,15 @@ EApiStorageAreaWrite(
  *
  *  L = Set to 0   
  *  H = Set to 1   
- *  X = Don't Care
+ *  X = Don't Care(Direction Bit)
  *  0-F Address Bit 
  *
  *  Bits 31-16 are Reserved and should be set to 0
  *
- *  Bit Offset       F E D C B A 9 8 7 6 5 4 3 2 1 0
- *  7  Bit Address   L L L L L L L L 6 5 4 3 2 1 0 X
- *  10 Bit Address   H H H H L 9 8 X 7 6 5 4 3 2 1 0
+ *  Bit Offset      | F E D C B A 9 8 7 6 5 4 3 2 1 0
+ *  ----------------+--------------------------------
+ *  7  Bit Address  | L L L L L L L L 6 5 4 3 2 1 0 X
+ *  10 Bit Address  | H H H H L 9 8 X 7 6 5 4 3 2 1 0
  *
  *  Examples where Don't Care bits set to 0
  *             Encoded Encoded
@@ -699,9 +702,9 @@ EApiI2CGetBusCap(
  *   On Write 1 write cycle                 |
  *   SDA Remains low                        |
  * Timeout due to clock stretching          | EAPI_STATUS_TIMEOUT
- * start<Addr Byte 1><W>Nak                 | EAPI_STATUS_NOT_FOUND
- * start<Addr Byte 1><R>Nak                 | EAPI_STATUS_NOT_FOUND
- * start<Addr Byte 1><W>Ack<Data Byte 1>Nak | EAPI_STATUS_WRITE_ERROR
+ * start<Addr Byte><W>Nak                   | EAPI_STATUS_NOT_FOUND
+ * start<Addr Byte><R>Nak                   | EAPI_STATUS_NOT_FOUND
+ * start<Addr Byte><W>Ack<Data Byte 1>Nak   | EAPI_STATUS_WRITE_ERROR
  * ReadBCnt>(RBufLen+1)                     | EAPI_STATUS_MORE_DATA
  * Common Error                             | Common Error Code
  * Else                                     | EAPI_STATUS_SUCCESS
@@ -743,78 +746,78 @@ EApiI2CWriteReadRaw(
  * Address Format : 7Bit
  * Command Type   : None
  * Data Direction : Write
- * Start<Addr Byte 1><W>Ack<Data Byte 1>Ack Stop
+ * Start<Addr Byte><W>Ack<Data Byte 1>Ack Stop
  *
  * Transfer Type 2: 
  * Address Format : 7Bit
  * Command Type   : None
  * Data Direction : Read 
- * Start<Addr Byte 1><R>Ack<Data Byte 1>Nak Stop
+ * Start<Addr Byte><R>Ack<Data Byte 1>Nak Stop
  *
  * Transfer Type 3: 
  * Address Format : 7Bit
  * Command Type   : Standard
  * Data Direction : Write
- * Start<Addr Byte 1><W>Ack<CMD Byte 1>Ack<Data Byte 1>Ack Stop
+ * Start<Addr Byte><W>Ack<CMD Byte>Ack<Data Byte 1>Ack Stop
  *
  * Transfer Type 4: 
  * Address Format : 7Bit
  * Command Type   : Standard
  * Data Direction : Read
- * Start<Addr Byte 1><W>Ack<CMD Byte 1>Ack 
- * Start<Addr Byte 1><R>Ack<Data Byte 1>Nak Stop
+ * Start<Addr Byte><W>Ack<CMD Byte>Ack 
+ * Start<Addr Byte><R>Ack<Data Byte 1>Nak Stop
  *
  * Transfer Type 5: 
  * Address Format : 7Bit
  * Command Type   : Extended
  * Data Direction : Write
- * Start<Addr Byte 1><W>Ack<CMD Byte 2>Ack<CMD Byte 1>Ack<Data Byte 1>Ack Stop
+ * Start<Addr Byte><W>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack<Data Byte 1>Ack Stop
  *
  * Transfer Type 6: 
  * Address Format : 7Bit
  * Command Type   : Extended
  * Data Direction : Read
- * Start<Addr Byte 1><W>Ack<CMD Byte 2>Ack<CMD Byte 1>Ack 
- * Start<Addr Byte 1><R>Ack<Data Byte 1>Nak Stop
+ * Start<Addr Byte><W>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack 
+ * Start<Addr Byte><R>Ack<Data Byte 1>Nak Stop
  *
  * Transfer Type 7: 
  * Address Format : 10Bit
  * Command Type   : None
  * Data Direction : Write
- * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<Data Byte 1>Ack Stop
+ * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<Data Byte 1>Ack Stop
  *
  * Transfer Type 8: 
  * Address Format : 10Bit
  * Command Type   : None
  * Data Direction : Read
- * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack 
- * Start<Addr Byte 2><R>Ack<Data Byte 1>Nak Stop
+ * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack 
+ * Start<Addr Byte MSB><R>Ack<Data Byte 1>Nak Stop
  *
  * Transfer Type 9: 
  * Address Format : 10Bit
  * Command Type   : Standard
  * Data Direction : Write
- * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<CMD Byte 1>Ack<Data Byte 1>Ack Stop
+ * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte>Ack<Data Byte 1>Ack Stop
  *
  * Transfer Type 10: 
  * Address Format : 10Bit
  * Command Type   : Standard
  * Data Direction : Read
- * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<CMD Byte 1>Ack 
- * Start<Addr Byte 2><R>Ack<Data Byte 1>Nak Stop
+ * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte>Ack 
+ * Start<Addr Byte MSB><R>Ack<Data Byte 1>Nak Stop
  *
  * Transfer Type 11: 
  * Address Format : 10Bit
  * Command Type   : Extended
  * Data Direction : Write
- * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<CMD Byte 2>Ack<CMD Byte 1>Ack<Data Byte 1>Ack Stop
+ * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack<Data Byte 1>Ack Stop
  *
  * Transfer Type 12: 
  * Address Format : 10Bit
  * Command Type   : Extended
  * Data Direction : Read
- * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<CMD Byte 2>Ack<CMD Byte 1>Ack
- * Start<Addr Byte 2><R>Ack<Data Byte 1>Nak Stop
+ * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack
+ * Start<Addr Byte MSB><R>Ack<Data Byte 1>Nak Stop
  *
  */
 #define EAPI_I2C_STD_CMD          EAPI_UINT32_C(0<<30)
@@ -829,6 +832,8 @@ EApiI2CWriteReadRaw(
 #define EAPI_I2C_IS_NO_CMD(x)    (EAPI_UINT32_C((x)&(EAPI_I2C_CMD_TYPE_MASK))==EAPI_I2C_NO_CMD)
 /* 
  * EApiI2CReadTransfer
+ * Addr Byte 1 Below Designates Addr MSB in a 10bit address transfer and 
+ * the complete address in an 7bit address transfer.
  * 
  * Condition                                | Return Values 
  * -----------------------------------------+------------------------------
@@ -866,6 +871,8 @@ EApiI2CReadTransfer(
     );
 /* 
  * EApiI2CWriteTransfer
+ * Addr Byte 1 Below Designates Addr MSB in a 10bit address transfer and 
+ * the complete address in an 7bit address transfer.
  * 
  * Condition                                | Return Values 
  * ---------------------------------------+------------------------------
@@ -904,35 +911,35 @@ EApiI2CWriteTransfer(
  *
  * Probe Type 1: 
  * Address Format : 7Bit
- * Start<Addr Byte 1><W>Ack Stop
+ * Start<Addr Byte><W>Ack Stop
  *
  * Probe Type 2: 
  * Address Format : 10Bit
- * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack Stop
+ * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack Stop
  *
  */
 
 /* 
  * EApiI2CProbeDevice
  * 
- * Condition                                | Return Values 
- * -----------------------------------------+------------------------------
- * Library Uninitialized                    | EAPI_STATUS_NOT_INITIALIZED
- * Bus Busy  SDA/SDC low                    | EAPI_STATUS_BUSY_COLLISION
- * Arbitration Error/Collision Error        | EAPI_STATUS_BUSY_COLLISION
- *   On Write 1 write cycle                 |
- *   SDA Remains low                        |
- * Time-out due to clock stretching         | EAPI_STATUS_TIMEOUT
- *                                          |
- * 7Bit Address                             |
- * start<Addr Byte 1><W>Nak                 | EAPI_STATUS_NOT_FOUND
- *                                          |
- * 10Bit Address                            |
- * start<Addr Byte 2><W>Nak                 | EAPI_STATUS_NOT_FOUND
- * start<Addr Byte 2><W>Ack<Addr Byte 1>Nak | EAPI_STATUS_NOT_FOUND
- *                                          |
- * Common Error                             | Common Error Code
- * Else                                     | EAPI_STATUS_SUCCESS
+ * Condition                                    | Return Values 
+ * ---------------------------------------------+------------------------------
+ * Library Uninitialized                        | EAPI_STATUS_NOT_INITIALIZED
+ * Bus Busy  SDA/SDC low                        | EAPI_STATUS_BUSY_COLLISION
+ * Arbitration Error/Collision Error            | EAPI_STATUS_BUSY_COLLISION
+ *   On Write 1 write cycle                     |
+ *   SDA Remains low                            |
+ * Time-out due to clock stretching             | EAPI_STATUS_TIMEOUT
+ *                                              |
+ * 7Bit Address                                 |
+ * start<Addr Byte><W>Nak                       | EAPI_STATUS_NOT_FOUND
+ *                                              |
+ * 10Bit Address                                |
+ * start<Addr Byte MSB><W>Nak                   | EAPI_STATUS_NOT_FOUND
+ * start<Addr Byte MSB><W>Ack<Addr Byte LSB>Nak | EAPI_STATUS_NOT_FOUND
+ *                                              |
+ * Common Error                                 | Common Error Code
+ * Else                                         | EAPI_STATUS_SUCCESS
  */
 uint32_t 
 EAPI_CALLTYPE
@@ -949,12 +956,81 @@ EApiI2CProbeDevice(
  *
  */
 
+/*
+ *
+ * After EApiWDogStart
+ *
+ * |<- Delay ->|<- Event Timeout ->|<- Reset Timeout ->|
+ * A-----------B-------------------C-------------------D
+ *
+ *
+ * After EApiWDogTrigger
+ *
+ * |<- Event Timeout ->|<- Reset Timeout ->|
+ * E-------------------F-------------------G
+ *
+ *
+ * Stage A
+ *  Watchdog is started.
+ *
+ * Stage B
+ *  Initial Delay Period is exhausted.
+ *
+ * Stage C/F
+ *  Event is triggered, NMI, IRQ, or PIN is Triggered.
+ *  To Allow for possible Software Recovery.
+ *
+ * Stage D/G
+ *  System is reset.
+ *
+ * Stage E
+ *  Watchdog is Triggered.
+ *
+ * EApiWDogTrigger/EApiWDogStop Must be called before Stage C/F
+ * to prevent event from being generated.
+ *
+ * EApiWDogTrigger/EApiWDogStop Must be called before Stage D/G
+ * to prevent The system from being reset.
+ *
+ */
+
+/* 
+ * EApiWDogGetCap
+ * 
+ * Condition                              | Return Values 
+ * ---------------------------------------+------------------------------
+ * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
+ * pMaxDelay==NULL&&                      |
+ * pMaxResetTimeout==NULL&&               |
+ * pMaxEventTimeout==NULL                 | EAPI_STATUS_INVALID_PARAMETER
+ * Common Error                           | Common Error Code
+ * Else                                   | EAPI_STATUS_SUCCESS
+ */
+uint32_t 
+EAPI_CALLTYPE
+EApiWDogGetCap(
+    __OUTOPT uint32_t *pMaxDelay       , /* Maximum Supported 
+                                         * Delay in milliseconds
+                                         */
+    __OUTOPT uint32_t *pMaxEventTimeout, /* Maximum Supported 
+                                         * Event Timeout in 
+                                         * milliseconds
+                                         * 0 == Unsupported
+                                         */
+    __OUTOPT uint32_t *pMaxResetTimeout  /* Maximum Supported 
+                                         * Reset Timeout in 
+                                         * milliseconds
+                                         */
+    );
 /* 
  * EApiWDogStart
  * 
  * Condition                        | Return Values 
  * ---------------------------------+------------------------------
  * Library Uninitialized            | EAPI_STATUS_NOT_INITIALIZED
+ * Delay>pMaxDelay                  | EAPI_STATUS_INVALID_PARAMETER
+ * EventTimeout>pMaxEventTimeout    | EAPI_STATUS_INVALID_PARAMETER
+ * ResetTimeout>pMaxResetTimeout    | EAPI_STATUS_INVALID_PARAMETER
  * Unsupported                      | EAPI_STATUS_UNSUPPORTED
  * Already Running                  | EAPI_STATUS_RUNNING
  * Common Error                     | Common Error Code
@@ -963,9 +1039,15 @@ EApiI2CProbeDevice(
 uint32_t 
 EAPI_CALLTYPE 
 EApiWDogStart(
-    __IN  uint32_t delay   , /* Delay in milliseconds */
-    __IN  uint32_t timeout   /* Timeout in milliseconds */
+    __IN  uint32_t Delay       , /* Delay in milliseconds */
+    __IN  uint32_t EventTimeout, /* Event Timeout in 
+                                  * milliseconds 
+                                  */
+    __IN  uint32_t ResetTimeout  /* Reset Timeout in 
+                                  * milliseconds 
+                                  */
     );
+
 /* 
  * EApiWDogTrigger
  * 
@@ -980,6 +1062,7 @@ EApiWDogStart(
 uint32_t 
 EAPI_CALLTYPE 
 EApiWDogTrigger(void);
+
 /* 
  * EApiWDogStop
  * 

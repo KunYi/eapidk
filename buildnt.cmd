@@ -41,6 +41,7 @@ if /i "%~1"=="/?" GOTO Usage
 if /i "%~1"=="-?" GOTO Usage
 
 
+SET TARGETLIB=EAPI_1
 SET TARGETOSB=WNET
 SET TARGETARCHS="" "I64" "AMD64"
 REM SET TARGETARCHS=""
@@ -74,7 +75,7 @@ IF /I "%~1"=="BUILD_LIB" GOTO Exit
   for %%a in (%TARGETARCHS%) do @(
     call :BUILD_APP_GENERIC EApiValidateAPI EApiValidateAPI.c %%a
   )
-  call :DeleteFiles "%APPSBASE%\EApiValidateAPI\WINNT" %APPHELPFILES% %LCLFILES% "EApi.lib"
+  call :DeleteFiles "%APPSBASE%\EApiValidateAPI\WINNT" %APPHELPFILES% %LCLFILES% "%TARGETLIB%.lib"
   SET APPHELPFILES=
   call :RunProg "%~dp0BuildTools\WINNT\BuildInc.cmd" "%APPSBASE%\EApiValidateAPI\AppVer.h" "APP_BUILD"
   GOTO exit
@@ -178,12 +179,12 @@ REM ########################################################################
   call :BuildProject free     "%EAPILIBBASE%\WINNT"   
   IF ERRORLEVEL 1 GOTO Error_Exit
 
-  call :CopyFiles  "%EAPILIBBASE%\WINNT\objchk_%TARGETOSB%_%TARGETARCHENV%\%TARGETARCH%" "%APPSBASE%\bin\winnt\%TARGETARCHENV%\chk" EApi.dll EApi.pdb
-  call :CopyFiles  "%EAPILIBBASE%\WINNT\objfre_%TARGETOSB%_%TARGETARCHENV%\%TARGETARCH%" "%APPSBASE%\bin\winnt\%TARGETARCHENV%\fre" EApi.dll EApi.pdb
-  call :CopyFiles  "%EAPILIBBASE%\WINNT\objfre_%TARGETOSB%_%TARGETARCHENV%\%TARGETARCH%" "%EAPILIBBASE%\lib\winnt\%TARGETARCHENV%" "EApi.lib"
+  call :CopyFiles  "%EAPILIBBASE%\WINNT\objchk_%TARGETOSB%_%TARGETARCHENV%\%TARGETARCH%" "%APPSBASE%\bin\winnt\%TARGETARCHENV%\chk" %TARGETLIB%.dll %TARGETLIB%.pdb
+  call :CopyFiles  "%EAPILIBBASE%\WINNT\objfre_%TARGETOSB%_%TARGETARCHENV%\%TARGETARCH%" "%APPSBASE%\bin\winnt\%TARGETARCHENV%\fre" %TARGETLIB%.dll %TARGETLIB%.pdb
+  call :CopyFiles  "%EAPILIBBASE%\WINNT\objfre_%TARGETOSB%_%TARGETARCHENV%\%TARGETARCH%" "%EAPILIBBASE%\lib\winnt\%TARGETARCHENV%" "%TARGETLIB%.lib"
 
-  CALL :SignExes "%APPSBASE%\bin\winnt\%TARGETARCHENV%\fre\EApi.dll" 
-  CALL :SignExes "%APPSBASE%\bin\winnt\%TARGETARCHENV%\chk\EApi.dll" 
+  CALL :SignExes "%APPSBASE%\bin\winnt\%TARGETARCHENV%\fre\%TARGETLIB%.dll" 
+  CALL :SignExes "%APPSBASE%\bin\winnt\%TARGETARCHENV%\chk\%TARGETLIB%.dll" 
   GOTO :EOF
 
 :BUILD_APP_GENERIC
@@ -196,9 +197,9 @@ REM ########################################################################
   goto LoopFiles
   :Continue
   call :CopyFiles "%APPSBASE%\%~1"    "%APPSBASE%\%~1\WINNT" %LCLFILES%
-  SET ERRORM= ERROR: Build Lib First missing "lib\winnt\%TARGETARCHENV%\EApi.lib"
-  IF NOT EXIST "%EAPILIBBASE%\lib\winnt\%TARGETARCHENV%\EApi.lib" GOTO ERRORM
-  call :CopyFiles "%EAPILIBBASE%\lib\winnt\%TARGETARCHENV%"  "%APPSBASE%\%~1\WINNT" "EApi.lib"
+  SET ERRORM= ERROR: Build Lib First missing "lib\winnt\%TARGETARCHENV%\%TARGETLIB%.lib"
+  IF NOT EXIST "%EAPILIBBASE%\lib\winnt\%TARGETARCHENV%\%TARGETLIB%.lib" GOTO ERRORM
+  call :CopyFiles "%EAPILIBBASE%\lib\winnt\%TARGETARCHENV%"  "%APPSBASE%\%~1\WINNT" "%TARGETLIB%.lib"
 
   call :BuildProject checked  "%APPSBASE%\%~1\WINNT"
   IF ERRORLEVEL 1 GOTO Error_Exit
