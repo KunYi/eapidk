@@ -55,7 +55,7 @@ option casemap:none
 ;  *
 ;  * Masm doesn't support SQWORD
 ;  
-uint64_t		TYPEDEF		DWORD
+uint64_t		TYPEDEF		QWORD
 
 int64_t		TYPEDEF		SDWORD
 
@@ -402,7 +402,7 @@ EAPI_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000006h
 ;  Name Id 
 ;  Destination pBuffer 
 ;  pBuffer Length 
-@proto_2		TYPEDEF		PROTO STDCALL :uint32_t, :PTR SBYTE, :PTR uint32_t
+@proto_2		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR SBYTE, : NEAR32 PTR uint32_t
 EApiBoardGetStringA		PROTO		@proto_2
 
 ; 
@@ -482,7 +482,7 @@ EAPI_ID_HWMON_FAN_SYSTEM		EQU		000022001h
 ;  
 ;  Value Id 
 ;  Return Value 
-@proto_3		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t
+@proto_3		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t
 EApiBoardGetValue		PROTO		@proto_3
 
 ; 
@@ -512,7 +512,7 @@ EAPI_BACKLIGHT_SET_BRIGHTEST		EQU		0000000ffh
 ;  
 ;  Backlight Id 
 ;  Backlight Enable 
-@proto_4		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t
+@proto_4		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t
 EApiVgaGetBacklightEnable		PROTO		@proto_4
 
 ;  
@@ -545,7 +545,7 @@ EApiVgaSetBacklightEnable		PROTO		@proto_5
 ;  
 ;  Backlight Id 
 ;  Backlight Brightness 
-@proto_6		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t
+@proto_6		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t
 EApiVgaGetBacklightBrightness		PROTO		@proto_6
 
 ;  
@@ -589,7 +589,7 @@ EAPI_PMG_ID_STORAGE_SAMPLE		EQU		0fa741000h
 ;  Write Block Length
 ;                                      * & Alignment 
 ;                                      
-@proto_8		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t, :PTR uint32_t
+@proto_8		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t, : NEAR32 PTR uint32_t
 EApiStorageCap		PROTO		@proto_8
 
 ;  
@@ -615,7 +615,7 @@ EApiStorageCap		PROTO		@proto_8
 ;                                * bytes 
 ;                                
 ;  Number of bytes to read 
-@proto_9		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :PTR , :uint32_t, :uint32_t
+@proto_9		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :NEAR32 PTR , :uint32_t, :uint32_t
 EApiStorageAreaRead		PROTO		@proto_9
 
 ;  
@@ -638,7 +638,7 @@ EApiStorageAreaRead		PROTO		@proto_9
 ;  Byte Offset 
 ;  Pointer to Data pBuffer 
 ;  Number of bytes to write 
-@proto_10		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :PTR , :uint32_t
+@proto_10		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :NEAR32 PTR , :uint32_t
 EApiStorageAreaWrite		PROTO		@proto_10
 
 ; 
@@ -700,7 +700,7 @@ EAPI_ID_I2C_LVDS_2		EQU		000000002h
 ;                                   * Supported on this
 ;                                   * interface 
 ;                                   
-@proto_11		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t
+@proto_11		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t
 EApiI2CGetBusCap		PROTO		@proto_11
 
 ;  
@@ -741,7 +741,7 @@ EApiI2CGetBusCap		PROTO		@proto_11
 ;  Number of Bytes to 
 ;                                    * Read plus 1
 ;                                    
-@proto_12		TYPEDEF		PROTO STDCALL :uint32_t, :uint8_t, :PTR , :uint32_t, :PTR , :uint32_t, :uint32_t
+@proto_12		TYPEDEF		PROTO STDCALL :uint32_t, :uint8_t, :NEAR32 PTR , :uint32_t, : NEAR32 PTR , :uint32_t, :uint32_t
 EApiI2CWriteReadRaw		PROTO		@proto_12
 
 ; 
@@ -865,7 +865,7 @@ EAPI_I2C_CMD_TYPE_MASK		EQU		0c0000000h
 ;  Transfer Data pBuffer 
 ;  Data pBuffer Length 
 ;  Byte Count to read 
-@proto_13		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t, :PTR , :uint32_t, :uint32_t
+@proto_13		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t, :NEAR32 PTR , :uint32_t, :uint32_t
 EApiI2CReadTransfer		PROTO		@proto_13
 
 ;  
@@ -900,7 +900,7 @@ EApiI2CReadTransfer		PROTO		@proto_13
 ;  I2C Command/Offset 
 ;  Transfer Data pBuffer 
 ;  Byte Count to write 
-@proto_14		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t, :PTR , :uint32_t
+@proto_14		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t, :NEAR32 PTR , :uint32_t
 EApiI2CWriteTransfer		PROTO		@proto_14
 
 ; 
@@ -1010,7 +1010,7 @@ EApiI2CProbeDevice		PROTO		@proto_15
 ;                                          * Reset Timeout in 
 ;                                          * milliseconds
 ;                                          
-@proto_16		TYPEDEF		PROTO STDCALL :PTR uint32_t, :PTR uint32_t, :PTR uint32_t
+@proto_16		TYPEDEF		PROTO STDCALL :NEAR32 PTR uint32_t, : NEAR32 PTR uint32_t, : NEAR32 PTR uint32_t
 EApiWDogGetCap		PROTO		@proto_16
 
 ;  
@@ -1124,7 +1124,7 @@ EAPI_GPIO_OUTPUT		EQU		0t
 ;  Supported GPIO Output
 ;                                    * Bit Mask 
 ;                                    
-@proto_20		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t, :PTR uint32_t
+@proto_20		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t, : NEAR32 PTR uint32_t
 EApiGPIOGetDirectionCaps		PROTO		@proto_20
 
 ;  
@@ -1144,7 +1144,7 @@ EApiGPIOGetDirectionCaps		PROTO		@proto_20
 ;                                   * Bits 
 ;                                   
 ;  Current Direction 
-@proto_21		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :PTR uint32_t
+@proto_21		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :NEAR32 PTR uint32_t
 EApiGPIOGetDirection		PROTO		@proto_21
 
 ;  
@@ -1186,7 +1186,7 @@ EApiGPIOSetDirection		PROTO		@proto_22
 ;                                   * Bits 
 ;                                   
 ;  Current Level 
-@proto_23		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :PTR uint32_t
+@proto_23		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :NEAR32 PTR uint32_t
 EApiGPIOGetLevel		PROTO		@proto_23
 
 ;  
