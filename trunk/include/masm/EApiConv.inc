@@ -3,42 +3,61 @@ option expr32
 option casemap:none
 
 ; Begin of file include\masm\EApiConv.h
-; ++
-;<KHeader>
-;+=========================================================================
-;I               EApiDK Embedded Application Development Kit
-;+=========================================================================
-;I  $HeadURL$
-;+=========================================================================
-;I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
-;I      Author: John Kearney,                  John.Kearney@kontron.com
-;I
-;I     License: All rights reserved. This program and the accompanying 
-;I              materials are licensed and made available under the 
-;I              terms and conditions of the BSD License which 
-;I              accompanies this distribution. The full text of the 
-;I              license may be found at 
-;I              http://opensource.org/licenses/bsd-license.php
-;I              
-;I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
-;I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
-;I              ANY KIND, EITHER EXPRESS OR IMPLIED.
-;I
-;I Description: Auto Created for EApiConv.inc
-;I
-;+------------------------------------------------------------------------=
-;I
-;I  File Name            : EApiConv.inc
-;I  File Location        : include\masm
-;I  Last committed       : $Revision$
-;I  Last changed by      : $Author$
-;I  Last changed date    : $Date$
-;I  ID                   : $Id$
-;I
-;+=========================================================================
-;</KHeader>
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApiConv.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApiConv.h
+;  *I  File Location        : includemasm
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
+; 
+;  * Conversion File to allow easier Conversion using h2inc
+;  * h2inc /C /WIN32 /Zu /Ht /FaincludemasmEApiConv.inc includemasmEApiConv.h
+;  * Please note this settings are only for valid for WIN32
+;  
+; 
+;  *  Necessary to do change 
+;  *  uint64_t		TYPEDEF		DWORD
+;  *  int64_t		  TYPEDEF		SDWORD
+;  *  to
+;  *  uint64_t		TYPEDEF		QWORD
+;  *  int64_t		  TYPEDEF		QWORD
+;  *
+;  *  h2inc doesn't recognise unsigned long long
+;  *
+;  * Masm doesn't support SQWORD
+;  
+uint64_t		TYPEDEF		DWORD
 
-int64_t		TYPEDEF		QWORD
+int64_t		TYPEDEF		SDWORD
 
 uint32_t		TYPEDEF		DWORD
 
@@ -77,21 +96,41 @@ INT32_MAX		EQU		07fffffffh
 UINT64_MAX		EQU		0ffffffffh
 INT64_MAX		EQU		0ffffffffh
 ; Begin of file include\masm\..\EApi.h
-; ++
-; +=========================================================================
-; | 
-; |  Copyright (c) 2009, PICMG
-; |  All rights reserved. This program and the accompanying materials                          
-; |  are licensed and made available under the terms and conditions of the BSD License         
-; |  which accompanies this distribution.  The full text of the license may be found at        
-; |  http://opensource.org/licenses/bsd-license.php                                            
-; |                                                                                            
-; |  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-; |  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
-; |
-; |  $Date$$Rev$
-; +=========================================================================
-; --
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2009, PICMG
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApi.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApi.h
+;  *I  File Location        : include
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
 _EAPI_H_		TEXTEQU		<>
 ; *********************************************************************
 EAPI_CALLTYPE		TEXTEQU		<>
@@ -116,7 +155,9 @@ EAPI_VERSION		EQU		000050000h
 ;  *
 ;  
 ;  Description
-;  *   The EAPI library is not yet or unsuccessfully initialized. EApiLibInitialize needs to be called prior to the first access of any other EAPI function.
+;  *   The EAPI library is not yet or unsuccessfully initialized. 
+;  *   EApiLibInitialize needs to be called prior to the first access of any 
+;  *   other EAPI function.
 ;  * Actions
 ;  *   Call EApiLibInitialize..
 ;  
@@ -134,13 +175,15 @@ EAPI_STATUS_INITIALIZED		EQU		0fffffffeh
 ;  
 EAPI_STATUS_ALLOC_ERROR		EQU		0fffffffdh
 ;  Description 
-;  *   Time out in driver. This is Normally caused by hardware/software semaphore timeout. 
+;  *   Time out in driver. This is Normally caused by hardware/software 
+;  *   semaphore timeout. 
 ;  * Actions
 ;  *   Retry.
 ;  
 EAPI_STATUS_DRIVER_TIMEOUT		EQU		0fffffffch
 ;  Description 
-;  *  One or more of the EAPI function call parameters are out of the defined range.
+;  *  One or more of the EAPI function call parameters are out of the 
+;  *  defined range.
 ;  *
 ;  *  Possible Reasons include be
 ;  *  NULL Pointer
@@ -210,7 +253,8 @@ EAPI_STATUS_NOT_FOUND		EQU		0fffffbffh
 ;  
 EAPI_STATUS_TIMEOUT		EQU		0fffffbfeh
 ;  Description
-;  *   EApi  I2C functions specific. The addressed I2C bus is busy or there is a bus collision.
+;  *   EApi  I2C functions specific. The addressed I2C bus is busy or there 
+;  *   is a bus collision.
 ;  *   The I2C bus is in use. Either CLK or DAT are low.
 ;  *   Arbitration loss or bus Collision, data remains low when writing a 1
 ;  * Actions
@@ -228,7 +272,8 @@ EAPI_STATUS_BUSY_COLLISION		EQU		0fffffbfdh
 EAPI_STATUS_READ_ERROR		EQU		0fffffaffh
 ;  Description
 ;  *   I2C Write Error
-;  *     No Acknowledge received after writing any Byte after the First Address Byte.
+;  *     No Acknowledge received after writing any Byte after the First Address 
+;  *     Byte.
 ;  *     Can be caused by 
 ;  *     unsupported Device Command/Index
 ;  *     Ext Command/Index used on Standard Command/Index Device
@@ -241,7 +286,8 @@ EAPI_STATUS_READ_ERROR		EQU		0fffffaffh
 EAPI_STATUS_WRITE_ERROR		EQU		0fffffafeh
 ;  Description
 ;  *   The amount of available data exceeds the buffer size.
-;  *   Storage buffer overflow was prevented. Read count was larger then the defined buffer length.
+;  *   Storage buffer overflow was prevented. Read count was larger then 
+;  *   the defined buffer length.
 ;  *   Read Count > Buffer Length
 ;  * Actions
 ;  *   Either increase the buffer size or reduce the block length.
@@ -272,8 +318,9 @@ EAPI_STATUS_SUCCESS		EQU		000000000h
 @proto_0		TYPEDEF		PROTO STDCALL 
 EApiLibInitialize		PROTO		@proto_0
 
-;  Should be called before calling any other 
-;                              * API function is called
+;  Should be called before 
+;                              * calling any other API 
+;                              * function is called
 ;                              
 ;  
 ;  * EApiLibUnInitialize
@@ -287,7 +334,9 @@ EApiLibInitialize		PROTO		@proto_0
 @proto_1		TYPEDEF		PROTO STDCALL 
 EApiLibUnInitialize		PROTO		@proto_1
 
-;  Should be called before program exit 
+;  Should be called before 
+;                              * program exit 
+;                              
 ;  
 ;  *
 ;  * Plug and Play Identifiers
@@ -302,7 +351,9 @@ EApiLibUnInitialize		PROTO		@proto_1
 ;  * E.G.
 ;  * EAPI_PMG_ID_BOARD_CUSTOMERID
 ;  
-;  PICMG Should register this. 
+;  PICMG Should
+;                                                             * register this. 
+;                                                             
 EAPI_PNPID_PICMG		EQU		00000a741h
 ; 
 ;  *
@@ -310,18 +361,31 @@ EAPI_PNPID_PICMG		EQU		00000a741h
 ;  *
 ;  
 ;  IDS 
-;  Board Manufacturer Name String 
+;  Board Manufacturer
+;                                                              * Name String 
+;                                                              
 EAPI_ID_BOARD_MANUFACTURER_STR		EQU		000000000h
 ;  Board Name String 
 EAPI_ID_BOARD_NAME_STR		EQU		000000001h
 ;  Board Name String 
 EAPI_ID_BOARD_REVISION_STR		EQU		000000002h
-;  Board Serial Number String 
+;  Board Serial 
+; 							     * Number String 
+; 							     
 EAPI_ID_BOARD_SERIAL_STR		EQU		000000003h
-;  Board Bios Revision String 
+;  Board Bios Revision
+; 							     * String 
+; 							     
 EAPI_ID_BOARD_BIOS_REVISION_STR		EQU		000000004h
-;  Platform ID (ETX, COM Express, etc...) 
-EAPI_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000005h
+;  Board Hardware 
+; 							     * Revision String 
+; 							     
+EAPI_ID_BOARD_HW_REVISION_STR		EQU		000000005h
+;  Platform ID 
+; 							     * (ETX, COM Express, 
+; 							     * etc...) 
+; 							     
+EAPI_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000006h
 ;  
 ;  * EApiBoardGetStringA
 ;  * 
@@ -338,7 +402,7 @@ EAPI_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000005h
 ;  Name Id 
 ;  Destination pBuffer 
 ;  pBuffer Length 
-@proto_2		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR SBYTE, : NEAR32 PTR uint32_t
+@proto_2		TYPEDEF		PROTO STDCALL :uint32_t, :PTR SBYTE, :PTR uint32_t
 EApiBoardGetStringA		PROTO		@proto_2
 
 ; 
@@ -347,24 +411,38 @@ EApiBoardGetStringA		PROTO		@proto_2
 ;  *
 ;  
 ;  IDS 
-;  EAPI Specification Revision I.E. The EAPI Spec 
-;                                                                 * Version Bits 31-24, Revision 23-16, 15-0 always 0
-;                                                                 * Used to implement this interface
+;  EAPI Specification 
+;                                                                 * Revision I.E. The 
+;                                                                 * EAPI Spec Version 
+;                                                                 * Bits 31-24, Revision 
+;                                                                 * 23-16, 15-0 always 0
+;                                                                 * Used to implement 
+;                                                                 * this interface
 ;                                                                 
 EAPI_ID_GET_EAPI_SPEC_VERSION		EQU		000000000h
 ;  Units = Boots 
 EAPI_ID_BOARD_BOOT_COUNTER_VAL		EQU		000000001h
 ;  Units = Minutes 
 EAPI_ID_BOARD_RUNNING_TIME_METER_VAL		EQU		000000002h
-;  Encoded PNP ID Format (Compressed ASCII)
+;  Encoded PNP ID 
+;                                                                 * Format 
+;                                                                 * (Compressed ASCII)
+;                                                                 
 EAPI_ID_BOARD_PNPID_VAL		EQU		000000003h
-;  Platform Revision I.E. The PICMG Spec 
-;                                                                 * Version Bits 31-24, Revision 23-16, 15-0 always 0
+;  Platform Revision 
+;                                                                 * I.E. The PICMG Spec 
+;                                                                 * Version Bits 31-24,
+;                                                                 * Revision 23-16, 
+;                                                                 * 15-0 always 0
 ;                                                                 
 EAPI_ID_BOARD_PLATFORM_REV_VAL		EQU		000000004h
-;  Vendor Specific (Optional) 
+;  Vendor Specific 
+;                                                                   * (Optional) 
+;                                                                   
 EAPI_ID_BOARD_DRIVER_VERSION_VAL		EQU		000010000h
-;  Vendor Specific (Optional) 
+;  Vendor Specific
+;                                                                   * (Optional) 
+;                                                                   
 EAPI_ID_BOARD_LIB_VERSION_VAL		EQU		000010001h
 ;  0.1 Kelvins 
 EAPI_ID_HWMON_CPU_TEMP		EQU		000020000h
@@ -404,7 +482,7 @@ EAPI_ID_HWMON_FAN_SYSTEM		EQU		000022001h
 ;  
 ;  Value Id 
 ;  Return Value 
-@proto_3		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t
+@proto_3		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t
 EApiBoardGetValue		PROTO		@proto_3
 
 ; 
@@ -413,9 +491,9 @@ EApiBoardGetValue		PROTO		@proto_3
 ;  *
 ;  
 ;  IDS 
-EAPI_ID_BACKLIGHT_1		EQU		0t
-EAPI_ID_BACKLIGHT_2		EQU		1t
-EAPI_ID_BACKLIGHT_3		EQU		3t
+EAPI_ID_BACKLIGHT_1		EQU		000000000h
+EAPI_ID_BACKLIGHT_2		EQU		000000001h
+EAPI_ID_BACKLIGHT_3		EQU		000000002h
 ;  Backlight Values 
 EAPI_BACKLIGHT_SET_ON		EQU		000000000h
 EAPI_BACKLIGHT_SET_OFF		EQU		0ffffffffh
@@ -434,7 +512,7 @@ EAPI_BACKLIGHT_SET_BRIGHTEST		EQU		0000000ffh
 ;  
 ;  Backlight Id 
 ;  Backlight Enable 
-@proto_4		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t
+@proto_4		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t
 EApiVgaGetBacklightEnable		PROTO		@proto_4
 
 ;  
@@ -467,7 +545,7 @@ EApiVgaSetBacklightEnable		PROTO		@proto_5
 ;  
 ;  Backlight Id 
 ;  Backlight Brightness 
-@proto_6		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t
+@proto_6		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t
 EApiVgaGetBacklightBrightness		PROTO		@proto_6
 
 ;  
@@ -503,13 +581,15 @@ EAPI_PMG_ID_STORAGE_SAMPLE		EQU		0fa741000h
 ;  * Library Uninitialized                        | EAPI_STATUS_NOT_INITIALIZED
 ;  * ((pStorageSize==NULL)&&(pBlockLength==NULL)) | EAPI_STATUS_INVALID_PARAMETER
 ;  * Unsupported Id                               | EAPI_STATUS_UNSUPPORTED
-;  * Common Error                           | Common Error Code
+;  * Common Error                                 | Common Error Code
 ;  * Else                                         | EAPI_STATUS_SUCCESS
 ;  
 ;  Storage Area Id 
 ;  Total 
-;  Write Block Length & Alignment 
-@proto_8		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t, : NEAR32 PTR uint32_t
+;  Write Block Length
+;                                      * & Alignment 
+;                                      
+@proto_8		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t, :PTR uint32_t
 EApiStorageCap		PROTO		@proto_8
 
 ;  
@@ -530,10 +610,12 @@ EApiStorageCap		PROTO		@proto_8
 ;  
 ;  Storage Area Id 
 ;  Byte Offset 
-;  Pointer to Date pBuffer 
-;  Data pBuffer Size in bytes 
+;  Pointer to Data pBuffer 
+;  Data pBuffer Size in 
+;                                * bytes 
+;                                
 ;  Number of bytes to read 
-@proto_9		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :NEAR32 PTR , :uint32_t, :uint32_t
+@proto_9		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :PTR , :uint32_t, :uint32_t
 EApiStorageAreaRead		PROTO		@proto_9
 
 ;  
@@ -554,9 +636,9 @@ EApiStorageAreaRead		PROTO		@proto_9
 ;  
 ;  Storage Area Id 
 ;  Byte Offset 
-;  Pointer to Date pBuffer 
+;  Pointer to Data pBuffer 
 ;  Number of bytes to write 
-@proto_10		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :NEAR32 PTR , :uint32_t
+@proto_10		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :PTR , :uint32_t
 EApiStorageAreaWrite		PROTO		@proto_10
 
 ; 
@@ -565,25 +647,32 @@ EApiStorageAreaWrite		PROTO		@proto_10
 ;  *
 ;  
 ;  IDs 
-;  Baseboard I2C Interface required 
+;  Baseboard I2C Interface
+;                                                      * required 
+;                                                      
 EAPI_ID_I2C_EXTERNAL		EQU		000000000h
-;  LVDS/EDP 1 Interface optional 
+;  LVDS/EDP 1 Interface 
+;                                                      * (optional)
+;                                                      
 EAPI_ID_I2C_LVDS_1		EQU		000000001h
-;  LVDS/EDP 2 Interface optional 
+;  LVDS/EDP 2 Interface 
+;                                                      * (optional)
+;                                                      
 EAPI_ID_I2C_LVDS_2		EQU		000000002h
 ; 
 ;  * I2C Address Format 
 ;  *
 ;  *  L = Set to 0   
 ;  *  H = Set to 1   
-;  *  X = Don't Care
+;  *  X = Don't Care(Direction Bit)
 ;  *  0-F Address Bit 
 ;  *
 ;  *  Bits 31-16 are Reserved and should be set to 0
 ;  *
-;  *  Bit Offset       F E D C B A 9 8 7 6 5 4 3 2 1 0
-;  *  7  Bit Address   L L L L L L L L 6 5 4 3 2 1 0 X
-;  *  10 Bit Address   H H H H Z 9 8 X 7 6 5 4 3 2 1 0
+;  *  Bit Offset      | F E D C B A 9 8 7 6 5 4 3 2 1 0
+;  *  ----------------+--------------------------------
+;  *  7  Bit Address  | L L L L L L L L 6 5 4 3 2 1 0 X
+;  *  10 Bit Address  | H H H H L 9 8 X 7 6 5 4 3 2 1 0
 ;  *
 ;  *  Examples where Don't Care bits set to 0
 ;  *             Encoded Encoded
@@ -607,8 +696,11 @@ EAPI_ID_I2C_LVDS_2		EQU		000000002h
 ;  * Else                                   | EAPI_STATUS_SUCCESS
 ;  
 ;  I2C Bus Id 
-;  Max Block Length Supported on this interface 
-@proto_11		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t
+;  Max Block Length 
+;                                   * Supported on this
+;                                   * interface 
+;                                   
+@proto_11		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t
 EApiI2CGetBusCap		PROTO		@proto_11
 
 ;  
@@ -617,33 +709,39 @@ EApiI2CGetBusCap		PROTO		@proto_11
 ;  * Condition                                | Return Values 
 ;  * -----------------------------------------+------------------------------
 ;  * Library Uninitialized                    | EAPI_STATUS_NOT_INITIALIZED
-;  * WriteBCnt&&(pWBuffer==NULL)              | EAPI_STATUS_INVALID_PARAMETER
-;  * ReadBCnt&&(pRBuffer==NULL)               | EAPI_STATUS_INVALID_PARAMETER
-;  * ReadBCnt&&(RBufLen==0)                   | EAPI_STATUS_INVALID_PARAMETER
+;  * (WriteBCnt>1)&&(pWBuffer==NULL)          | EAPI_STATUS_INVALID_PARAMETER
+;  * (ReadBCnt>1)&&(pRBuffer==NULL)           | EAPI_STATUS_INVALID_PARAMETER
+;  * (ReadBCnt>1)&&(RBufLen==0)               | EAPI_STATUS_INVALID_PARAMETER
 ;  * ((WriteBCnt==0)&&(ReadBCnt==0))          | EAPI_STATUS_INVALID_PARAMETER
 ;  * unknown Id                               | EAPI_STATUS_UNSUPPORTED
-;  * WriteBCnt>pMaxBlkLen                     | EAPI_STATUS_INVALID_BLOCK_LENGTH
-;  * ReadBCnt>pMaxBlkLen                      | EAPI_STATUS_INVALID_BLOCK_LENGTH
+;  * WriteBCnt>(pMaxBlkLen+1)                 | EAPI_STATUS_INVALID_BLOCK_LENGTH
+;  * ReadBCnt>(pMaxBlkLen+1)                  | EAPI_STATUS_INVALID_BLOCK_LENGTH
 ;  * Bus Busy  SDA/SDC low                    | EAPI_STATUS_BUSY_COLLISION
 ;  * Arbitration Error/Collision Error        | EAPI_STATUS_BUSY_COLLISION
 ;  *   On Write 1 write cycle                 |
 ;  *   SDA Remains low                        |
 ;  * Timeout due to clock stretching          | EAPI_STATUS_TIMEOUT
-;  * start<Addr Byte 1><W>Nak                 | EAPI_STATUS_NOT_FOUND
-;  * start<Addr Byte 1><R>Nak                 | EAPI_STATUS_NOT_FOUND
-;  * start<Addr Byte 1><W>Ack<Data Byte 1>Nak | EAPI_STATUS_WRITE_ERROR
-;  * ReadBCnt>RBufLen                         | EAPI_STATUS_MORE_DATA
+;  * start<Addr Byte><W>Nak                   | EAPI_STATUS_NOT_FOUND
+;  * start<Addr Byte><R>Nak                   | EAPI_STATUS_NOT_FOUND
+;  * start<Addr Byte><W>Ack<Data Byte 1>Nak   | EAPI_STATUS_WRITE_ERROR
+;  * ReadBCnt>(RBufLen+1)                     | EAPI_STATUS_MORE_DATA
 ;  * Common Error                             | Common Error Code
 ;  * Else                                     | EAPI_STATUS_SUCCESS
 ;  
 ;  I2C Bus Id 
-;  Encoded 7Bit I2C Device Address 
+;  Encoded 7Bit I2C
+;                                    * Device Address 
+;                                    
 ;  Write Data pBuffer 
-;  Number of Bytes to write 
+;  Number of Bytes to 
+;                                    * write plus 1
+;                                    
 ;  Read Data pBuffer 
 ;  Data pBuffer Length 
-;  Number of Bytes to Read 
-@proto_12		TYPEDEF		PROTO STDCALL :uint32_t, :uint8_t, :NEAR32 PTR , :uint32_t, : NEAR32 PTR , :uint32_t, :uint32_t
+;  Number of Bytes to 
+;                                    * Read plus 1
+;                                    
+@proto_12		TYPEDEF		PROTO STDCALL :uint32_t, :uint8_t, :PTR , :uint32_t, :PTR , :uint32_t, :uint32_t
 EApiI2CWriteReadRaw		PROTO		@proto_12
 
 ; 
@@ -654,78 +752,78 @@ EApiI2CWriteReadRaw		PROTO		@proto_12
 ;  * Address Format : 7Bit
 ;  * Command Type   : None
 ;  * Data Direction : Write
-;  * Start<Addr Byte 1><W>Ack<Data Byte 1>Ack Stop
+;  * Start<Addr Byte><W>Ack<Data Byte 1>Ack Stop
 ;  *
 ;  * Transfer Type 2: 
 ;  * Address Format : 7Bit
 ;  * Command Type   : None
 ;  * Data Direction : Read 
-;  * Start<Addr Byte 1><R>Ack<Data Byte 1>Nak Stop
+;  * Start<Addr Byte><R>Ack<Data Byte 1>Nak Stop
 ;  *
 ;  * Transfer Type 3: 
 ;  * Address Format : 7Bit
 ;  * Command Type   : Standard
 ;  * Data Direction : Write
-;  * Start<Addr Byte 1><W>Ack<CMD Byte 1>Ack<Data Byte 1>Ack Stop
+;  * Start<Addr Byte><W>Ack<CMD Byte>Ack<Data Byte 1>Ack Stop
 ;  *
 ;  * Transfer Type 4: 
 ;  * Address Format : 7Bit
 ;  * Command Type   : Standard
 ;  * Data Direction : Read
-;  * Start<Addr Byte 1><W>Ack<CMD Byte 1>Ack 
-;  * Start<Addr Byte 1><R>Ack<Data Byte 1>Nak Stop
+;  * Start<Addr Byte><W>Ack<CMD Byte>Ack 
+;  * Start<Addr Byte><R>Ack<Data Byte 1>Nak Stop
 ;  *
 ;  * Transfer Type 5: 
 ;  * Address Format : 7Bit
 ;  * Command Type   : Extended
 ;  * Data Direction : Write
-;  * Start<Addr Byte 1><W>Ack<CMD Byte 2>Ack<CMD Byte 1>Ack<Data Byte 1>Ack Stop
+;  * Start<Addr Byte><W>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack<Data Byte 1>Ack Stop
 ;  *
 ;  * Transfer Type 6: 
 ;  * Address Format : 7Bit
 ;  * Command Type   : Extended
 ;  * Data Direction : Read
-;  * Start<Addr Byte 1><W>Ack<CMD Byte 2>Ack<CMD Byte 1>Ack 
-;  * Start<Addr Byte 1><R>Ack<Data Byte 1>Nak Stop
+;  * Start<Addr Byte><W>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack 
+;  * Start<Addr Byte><R>Ack<Data Byte 1>Nak Stop
 ;  *
 ;  * Transfer Type 7: 
 ;  * Address Format : 10Bit
 ;  * Command Type   : None
 ;  * Data Direction : Write
-;  * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<Data Byte 1>Ack Stop
+;  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<Data Byte 1>Ack Stop
 ;  *
 ;  * Transfer Type 8: 
 ;  * Address Format : 10Bit
 ;  * Command Type   : None
 ;  * Data Direction : Read
-;  * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack 
-;  * Start<Addr Byte 2><R>Ack<Data Byte 1>Nak Stop
+;  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack 
+;  * Start<Addr Byte MSB><R>Ack<Data Byte 1>Nak Stop
 ;  *
 ;  * Transfer Type 9: 
 ;  * Address Format : 10Bit
 ;  * Command Type   : Standard
 ;  * Data Direction : Write
-;  * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<CMD Byte 1>Ack<Data Byte 1>Ack Stop
+;  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte>Ack<Data Byte 1>Ack Stop
 ;  *
 ;  * Transfer Type 10: 
 ;  * Address Format : 10Bit
 ;  * Command Type   : Standard
 ;  * Data Direction : Read
-;  * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<CMD Byte 1>Ack 
-;  * Start<Addr Byte 2><R>Ack<Data Byte 1>Nak Stop
+;  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte>Ack 
+;  * Start<Addr Byte MSB><R>Ack<Data Byte 1>Nak Stop
 ;  *
 ;  * Transfer Type 11: 
 ;  * Address Format : 10Bit
 ;  * Command Type   : Extended
 ;  * Data Direction : Write
-;  * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<CMD Byte 2>Ack<CMD Byte 1>Ack<Data Byte 1>Ack Stop
+;  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack<Data Byte 1>Ack Stop
 ;  *
 ;  * Transfer Type 12: 
 ;  * Address Format : 10Bit
 ;  * Command Type   : Extended
 ;  * Data Direction : Read
-;  * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack<CMD Byte 2>Ack<CMD Byte 1>Ack
-;  * Start<Addr Byte 2><R>Ack<Data Byte 1>Nak Stop
+;  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack
+;  * Start<Addr Byte MSB><R>Ack<Data Byte 1>Nak Stop
 ;  *
 ;  
 EAPI_I2C_STD_CMD		EQU		000000000h
@@ -734,6 +832,8 @@ EAPI_I2C_NO_CMD		EQU		040000000h
 EAPI_I2C_CMD_TYPE_MASK		EQU		0c0000000h
 ;  
 ;  * EApiI2CReadTransfer
+;  * Addr Byte 1 Below Designates Addr MSB in a 10bit address transfer and 
+;  * the complete address in an 7bit address transfer.
 ;  * 
 ;  * Condition                                | Return Values 
 ;  * -----------------------------------------+------------------------------
@@ -758,16 +858,20 @@ EAPI_I2C_CMD_TYPE_MASK		EQU		0c0000000h
 ;  * Else                                     | EAPI_STATUS_SUCCESS
 ;  
 ;  I2C Bus Id 
-;  Encoded 7/10Bit I2C Device Address 
+;  Encoded 7/10Bit I2C
+;                                * Device Address
+;                                
 ;  I2C Command/Offset 
 ;  Transfer Data pBuffer 
 ;  Data pBuffer Length 
 ;  Byte Count to read 
-@proto_13		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t, :NEAR32 PTR , :uint32_t, :uint32_t
+@proto_13		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t, :PTR , :uint32_t, :uint32_t
 EApiI2CReadTransfer		PROTO		@proto_13
 
 ;  
 ;  * EApiI2CWriteTransfer
+;  * Addr Byte 1 Below Designates Addr MSB in a 10bit address transfer and 
+;  * the complete address in an 7bit address transfer.
 ;  * 
 ;  * Condition                                | Return Values 
 ;  * ---------------------------------------+------------------------------
@@ -790,11 +894,13 @@ EApiI2CReadTransfer		PROTO		@proto_13
 ;  * Else                                     | EAPI_STATUS_SUCCESS
 ;  
 ;  I2C Bus Id 
-;  Encoded 7/10Bit I2C Device Address 
+;  Encoded 7/10Bit I2C 
+;                                * Device Address 
+;                                
 ;  I2C Command/Offset 
 ;  Transfer Data pBuffer 
 ;  Byte Count to write 
-@proto_14		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t, :NEAR32 PTR , :uint32_t
+@proto_14		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t, :PTR , :uint32_t
 EApiI2CWriteTransfer		PROTO		@proto_14
 
 ; 
@@ -802,38 +908,40 @@ EApiI2CWriteTransfer		PROTO		@proto_14
 ;  *
 ;  * Probe Type 1: 
 ;  * Address Format : 7Bit
-;  * Start<Addr Byte 1><W>Ack Stop
+;  * Start<Addr Byte><W>Ack Stop
 ;  *
 ;  * Probe Type 2: 
-;  * Address Format : 7Bit
-;  * Start<Addr Byte 2><W>Ack<Addr Byte 1>Ack Stop
+;  * Address Format : 10Bit
+;  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack Stop
 ;  *
 ;  
 ;  
 ;  * EApiI2CProbeDevice
 ;  * 
-;  * Condition                                | Return Values 
-;  * -----------------------------------------+------------------------------
-;  * Library Uninitialized                    | EAPI_STATUS_NOT_INITIALIZED
-;  * Bus Busy  SDA/SDC low                    | EAPI_STATUS_BUSY_COLLISION
-;  * Arbitration Error/Collision Error        | EAPI_STATUS_BUSY_COLLISION
-;  *   On Write 1 write cycle                 |
-;  *   SDA Remains low                        |
-;  * Time-out due to clock stretching         | EAPI_STATUS_TIMEOUT
-;  *                                          |
-;  * 7Bit Address                             |
-;  * start<Addr Byte 1><W>Nak                 | EAPI_STATUS_NOT_FOUND
-;  *                                          |
-;  * 10Bit Address                            |
-;  * start<Addr Byte 2><W>Nak                 | EAPI_STATUS_NOT_FOUND
-;  * start<Addr Byte 2><W>Ack<Addr Byte 1>Nak | EAPI_STATUS_NOT_FOUND
-;  *                                          |
-;  * Common Error                             | Common Error Code
-;  * Else                                     | EAPI_STATUS_SUCCESS
+;  * Condition                                    | Return Values 
+;  * ---------------------------------------------+------------------------------
+;  * Library Uninitialized                        | EAPI_STATUS_NOT_INITIALIZED
+;  * Bus Busy  SDA/SDC low                        | EAPI_STATUS_BUSY_COLLISION
+;  * Arbitration Error/Collision Error            | EAPI_STATUS_BUSY_COLLISION
+;  *   On Write 1 write cycle                     |
+;  *   SDA Remains low                            |
+;  * Time-out due to clock stretching             | EAPI_STATUS_TIMEOUT
+;  *                                              |
+;  * 7Bit Address                                 |
+;  * start<Addr Byte><W>Nak                       | EAPI_STATUS_NOT_FOUND
+;  *                                              |
+;  * 10Bit Address                                |
+;  * start<Addr Byte MSB><W>Nak                   | EAPI_STATUS_NOT_FOUND
+;  * start<Addr Byte MSB><W>Ack<Addr Byte LSB>Nak | EAPI_STATUS_NOT_FOUND
+;  *                                              |
+;  * Common Error                                 | Common Error Code
+;  * Else                                         | EAPI_STATUS_SUCCESS
 ;  
 ;  I2C Bus Id 
-;  Encoded 7/10Bit I2C Device Address 
-@proto_15		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :VARARG
+;  Encoded 7/10Bit 
+;                             * I2C Device Address 
+;                             
+@proto_15		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t
 EApiI2CProbeDevice		PROTO		@proto_15
 
 ; 
@@ -841,21 +949,93 @@ EApiI2CProbeDevice		PROTO		@proto_15
 ;  *      W A T C H D O G
 ;  *
 ;  
+; 
+;  *
+;  * After EApiWDogStart
+;  *
+;  * |<- Delay ->|<- Event Timeout ->|<- Reset Timeout ->|
+;  * A-----------B-------------------C-------------------D
+;  *
+;  *
+;  * After EApiWDogTrigger
+;  *
+;  * |<- Event Timeout ->|<- Reset Timeout ->|
+;  * E-------------------F-------------------G
+;  *
+;  *
+;  * Stage A
+;  *  Watchdog is started.
+;  *
+;  * Stage B
+;  *  Initial Delay Period is exhausted.
+;  *
+;  * Stage C/F
+;  *  Event is triggered, NMI, IRQ, or PIN is Triggered.
+;  *  To Allow for possible Software Recovery.
+;  *
+;  * Stage D/G
+;  *  System is reset.
+;  *
+;  * Stage E
+;  *  Watchdog is Triggered.
+;  *
+;  * EApiWDogTrigger/EApiWDogStop Must be called before Stage C/F
+;  * to prevent event from being generated.
+;  *
+;  * EApiWDogTrigger/EApiWDogStop Must be called before Stage D/G
+;  * to prevent The system from being reset.
+;  *
+;  
+;  
+;  * EApiWDogGetCap
+;  * 
+;  * Condition                              | Return Values 
+;  * ---------------------------------------+------------------------------
+;  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
+;  * pMaxDelay==NULL&&                      |
+;  * pMaxResetTimeout==NULL&&               |
+;  * pMaxEventTimeout==NULL                 | EAPI_STATUS_INVALID_PARAMETER
+;  * Common Error                           | Common Error Code
+;  * Else                                   | EAPI_STATUS_SUCCESS
+;  
+;  Maximum Supported 
+;                                          * Delay in milliseconds
+;                                          
+;  Maximum Supported 
+;                                          * Event Timeout in 
+;                                          * milliseconds
+;                                          * 0 == Unsupported
+;                                          
+;  Maximum Supported 
+;                                          * Reset Timeout in 
+;                                          * milliseconds
+;                                          
+@proto_16		TYPEDEF		PROTO STDCALL :PTR uint32_t, :PTR uint32_t, :PTR uint32_t
+EApiWDogGetCap		PROTO		@proto_16
+
 ;  
 ;  * EApiWDogStart
 ;  * 
 ;  * Condition                        | Return Values 
 ;  * ---------------------------------+------------------------------
 ;  * Library Uninitialized            | EAPI_STATUS_NOT_INITIALIZED
+;  * Delay>pMaxDelay                  | EAPI_STATUS_INVALID_PARAMETER
+;  * EventTimeout>pMaxEventTimeout    | EAPI_STATUS_INVALID_PARAMETER
+;  * ResetTimeout>pMaxResetTimeout    | EAPI_STATUS_INVALID_PARAMETER
 ;  * Unsupported                      | EAPI_STATUS_UNSUPPORTED
 ;  * Already Running                  | EAPI_STATUS_RUNNING
 ;  * Common Error                     | Common Error Code
 ;  * Else                             | EAPI_STATUS_SUCCESS
 ;  
-;  Timeout in milliseconds 
 ;  Delay in milliseconds 
-@proto_16		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t
-EApiWDogStart		PROTO		@proto_16
+;  Event Timeout in 
+;                                   * milliseconds 
+;                                   
+;  Reset Timeout in 
+;                                   * milliseconds 
+;                                   
+@proto_17		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t
+EApiWDogStart		PROTO		@proto_17
 
 ;  
 ;  * EApiWDogTrigger
@@ -868,8 +1048,8 @@ EApiWDogStart		PROTO		@proto_16
 ;  * Common Error                     | Common Error Code
 ;  * Else                             | EAPI_STATUS_SUCCESS
 ;  
-@proto_17		TYPEDEF		PROTO STDCALL 
-EApiWDogTrigger		PROTO		@proto_17
+@proto_18		TYPEDEF		PROTO STDCALL 
+EApiWDogTrigger		PROTO		@proto_18
 
 ;  
 ;  * EApiWDogStop
@@ -881,8 +1061,8 @@ EApiWDogTrigger		PROTO		@proto_17
 ;  * Common Error                     | Common Error Code
 ;  * Else                             | EAPI_STATUS_SUCCESS
 ;  
-@proto_18		TYPEDEF		PROTO STDCALL 
-EApiWDogStop		PROTO		@proto_18
+@proto_19		TYPEDEF		PROTO STDCALL 
+EApiWDogStop		PROTO		@proto_19
 
 ; 
 ;  *
@@ -905,11 +1085,17 @@ EAPI_ID_GPIO_GPIO03		EQU		000000003h
 ; 
 ;  * Multiple GPIOs Per ID Mapping
 ;  
-;  GPIOs  0 - 31 (Optional) 
+;  GPIOs  0 - 31 
+;                                                             * (optional)
+;                                                             
 EAPI_ID_GPIO_BITMASK00		EQU		000010000h
-;  GPIOs 32 - 63 (Optional) 
+;  GPIOs 32 - 63 
+;                                                             * (optional)
+;                                                             
 EAPI_ID_GPIO_BITMASK01		EQU		000010001h
-;  GPIOs 64 - 95 (Optional) 
+;  GPIOs 64 - 95
+;                                                             * (optional)
+;                                                             
 EAPI_ID_GPIO_BITMASK02		EQU		000010002h
 ;  Bit mask Bit States 
 EAPI_GPIO_BITMASK_SELECT		EQU		1t
@@ -932,10 +1118,14 @@ EAPI_GPIO_OUTPUT		EQU		0t
 ;  * Else                               | EAPI_STATUS_SUCCESS
 ;  
 ;  GPIO Id 
-;  Supported GPIO Input Bit Mask 
-;  Supported GPIO Output Bit Mask 
-@proto_19		TYPEDEF		PROTO STDCALL :uint32_t, :NEAR32 PTR uint32_t, : NEAR32 PTR uint32_t
-EApiGPIOGetDirectionCaps		PROTO		@proto_19
+;  Supported GPIO Input
+;                                    * Bit Mask 
+;                                    
+;  Supported GPIO Output
+;                                    * Bit Mask 
+;                                    
+@proto_20		TYPEDEF		PROTO STDCALL :uint32_t, :PTR uint32_t, :PTR uint32_t
+EApiGPIOGetDirectionCaps		PROTO		@proto_20
 
 ;  
 ;  * EApiGPIOGetDirection
@@ -950,10 +1140,12 @@ EApiGPIOGetDirectionCaps		PROTO		@proto_19
 ;  * Else                               | EAPI_STATUS_SUCCESS
 ;  
 ;  GPIO Id 
-;  Bit mask of Affected Bits 
+;  Bit mask of Affected
+;                                   * Bits 
+;                                   
 ;  Current Direction 
-@proto_20		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :NEAR32 PTR uint32_t
-EApiGPIOGetDirection		PROTO		@proto_20
+@proto_21		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :PTR uint32_t
+EApiGPIOGetDirection		PROTO		@proto_21
 
 ;  
 ;  * EApiGPIOSetDirection
@@ -970,10 +1162,12 @@ EApiGPIOGetDirection		PROTO		@proto_20
 ;  * Else                               | EAPI_STATUS_SUCCESS
 ;  
 ;  GPIO Id 
-;  Bit mask of Affected Bits 
+;  Bit mask of Affected 
+;                                   * Bits 
+;                                   
 ;  Direction 
-@proto_21		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t
-EApiGPIOSetDirection		PROTO		@proto_21
+@proto_22		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t
+EApiGPIOSetDirection		PROTO		@proto_22
 
 ;  
 ;  * EApiGPIOGetLevel
@@ -988,10 +1182,12 @@ EApiGPIOSetDirection		PROTO		@proto_21
 ;  * Else                               | EAPI_STATUS_SUCCESS
 ;  
 ;  GPIO Id 
-;  Bit mask of Affected Bits 
+;  Bit mask of Affected
+;                                   * Bits 
+;                                   
 ;  Current Level 
-@proto_22		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :NEAR32 PTR uint32_t
-EApiGPIOGetLevel		PROTO		@proto_22
+@proto_23		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :PTR uint32_t
+EApiGPIOGetLevel		PROTO		@proto_23
 
 ;  
 ;  * EApiGPIOSetLevel
@@ -1005,28 +1201,50 @@ EApiGPIOGetLevel		PROTO		@proto_22
 ;  * Else                               | EAPI_STATUS_SUCCESS
 ;  
 ;  GPIO Id 
-;  Bit mask of Affected Bits 
+;  Bit mask of Affected 
+;                                   * Bits 
+;                                   
 ;  Level 
-@proto_23		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t
-EApiGPIOSetLevel		PROTO		@proto_23
+@proto_24		TYPEDEF		PROTO STDCALL :uint32_t, :uint32_t, :uint32_t
+EApiGPIOSetLevel		PROTO		@proto_24
 
 ;  COMExpress Platform Specific ID Mappings   
 ; Begin of file include\masm\..\EApiCOM0.h
-; ++
-; +=========================================================================
-; | 
-; |  Copyright (c) 2009, PICMG
-; |  All rights reserved. This program and the accompanying materials                          
-; |  are licensed and made available under the terms and conditions of the BSD License         
-; |  which accompanies this distribution.  The full text of the license may be found at        
-; |  http://opensource.org/licenses/bsd-license.php                                            
-; |                                                                                            
-; |  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-; |  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
-; |
-; |  $Date$$Rev$
-; +=========================================================================
-; --
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2009, PICMG
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApiCOM0.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApiCOM0.h
+;  *I  File Location        : include
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
 _EAPICOM0_H_		TEXTEQU		<>
 ; 
 ;  *
@@ -1038,7 +1256,7 @@ EAPI_COM0_ID_BOARD_MANUFACTURER_STR		EQU		000000000h
 EAPI_COM0_ID_BOARD_NAME_STR		EQU		000000001h
 EAPI_COM0_ID_BOARD_SERIAL_STR		EQU		000000003h
 EAPI_COM0_ID_BOARD_BIOS_REVISION_STR		EQU		000000004h
-EAPI_COM0_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000005h
+EAPI_COM0_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000006h
 EAPI_COM0_PLATFORM_STR		TEXTEQU		<"COMExpress">
 ; 
 ;  *
@@ -1054,6 +1272,18 @@ EAPI_COM0_ID_BOARD_DRIVER_VERSION_VAL		EQU		000010000h
 EAPI_COM0_ID_BOARD_LIB_VERSION_VAL		EQU		000010001h
 EAPI_COM0_REV_1_0		EQU		001000000h
 EAPI_COM0_REV_2_0		EQU		002000000h
+EAPI_COM0_ID_HWMON_CPU_TEMP		EQU		000020000h
+EAPI_COM0_ID_HWMON_CHIPSET_TEMP		EQU		000020001h
+EAPI_COM0_ID_HWMON_SYSTEM_TEMP		EQU		000020002h
+EAPI_COM0_ID_HWMON_VOLTAGE_VCORE		EQU		000021004h
+EAPI_COM0_ID_HWMON_VOLTAGE_2V5		EQU		000021008h
+EAPI_COM0_ID_HWMON_VOLTAGE_3V3		EQU		00002100ch
+EAPI_COM0_ID_HWMON_VOLTAGE_VBAT		EQU		000021010h
+EAPI_COM0_ID_HWMON_VOLTAGE_5V		EQU		000021014h
+EAPI_COM0_ID_HWMON_VOLTAGE_5VSB		EQU		000021018h
+EAPI_COM0_ID_HWMON_VOLTAGE_12V		EQU		00002101ch
+EAPI_COM0_ID_HWMON_FAN_CPU		EQU		000022000h
+EAPI_COM0_ID_HWMON_FAN_SYSTEM		EQU		000022001h
 ; 
 ;  *
 ;  *      B A C K L I G H T
@@ -1064,10 +1294,10 @@ EAPI_COM0_REV_2_0		EQU		002000000h
 ;  *
 ;  * Internal PWM
 ;  * EAPI_COM0_ID_I2C_LVDS_1 I2C Device
-;  * DDI1 SDVOB PWM
-;  * DDI1 SDVOC PWM
-;  * DDI1 SDVOB I2C Device
-;  * DDI1 SDVOC I2C Device
+;  * SDVOB PWM
+;  * SDVOB I2C Device
+;  * SDVOC PWM
+;  * SDVOC I2C Device
 ;  * DDI1 I2C Device
 ;  * DDI2 I2C Device
 ;  * DDI3 I2C Device
@@ -1107,32 +1337,45 @@ EAPI_COM0_ID_GPIO_GPO0		EQU		000000004h
 EAPI_COM0_ID_GPIO_GPO1		EQU		000000005h
 EAPI_COM0_ID_GPIO_GPO2		EQU		000000006h
 EAPI_COM0_ID_GPIO_GPO3		EQU		000000007h
-; 
-;  *
-;  *      T E M P E R A T U R E
-;  *
-;  
-;  IDs 
-EAPI_COM0_ID_TEMP_CPU		TEXTEQU		<EAPI_ID_TEMP_CPU>
 ;  _EAPICOM0_H_ 
 ; End of file include\masm\..\EApiCOM0.h
 ;  TCA Platform Specific ID Mappings          
 ; Begin of file include\masm\..\EApiTCA.h
-; ++
-; +=========================================================================
-; | 
-; |  Copyright (c) 2009, PICMG
-; |  All rights reserved. This program and the accompanying materials                          
-; |  are licensed and made available under the terms and conditions of the BSD License         
-; |  which accompanies this distribution.  The full text of the license may be found at        
-; |  http://opensource.org/licenses/bsd-license.php                                            
-; |                                                                                            
-; |  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-; |  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
-; |
-; |  $Date$$Rev$
-; +=========================================================================
-; --
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApiTCA.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApiTCA.h
+;  *I  File Location        : include
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
 _EAPICOM_H_		TEXTEQU		<>
 ; 
 ;  *
@@ -1144,7 +1387,7 @@ EAPI_TCA_ID_BOARD_MANUFACTURER_STR		EQU		000000000h
 EAPI_TCA_ID_BOARD_NAME_STR		EQU		000000001h
 EAPI_TCA_ID_BOARD_SERIAL_STR		EQU		000000003h
 EAPI_TCA_ID_BOARD_BIOS_REVISION_STR		EQU		000000004h
-EAPI_TCA_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000005h
+EAPI_TCA_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000006h
 EAPI_TCA_PLATFORM_STR		TEXTEQU		<"TCA">
 EAPI_ATCA_PLATFORM_STR		TEXTEQU		<"AdvancedTCA">
 EAPI_MTCA_PLATFORM_STR		TEXTEQU		<"MicroTCA">
@@ -1162,6 +1405,18 @@ EAPI_TCA_ID_BOARD_DRIVER_VERSION_VAL		EQU		000010000h
 EAPI_TCA_ID_BOARD_LIB_VERSION_VAL		EQU		000010001h
 EAPI_TCA_REV_1_0		EQU		001000000h
 EAPI_TCA_REV_2_0		EQU		002000000h
+EAPI_TCA_ID_HWMON_CPU_TEMP		EQU		000020000h
+EAPI_TCA_ID_HWMON_CHIPSET_TEMP		EQU		000020001h
+EAPI_TCA_ID_HWMON_SYSTEM_TEMP		EQU		000020002h
+EAPI_TCA_ID_HWMON_VOLTAGE_VCORE		EQU		000021004h
+EAPI_TCA_ID_HWMON_VOLTAGE_2V5		EQU		000021008h
+EAPI_TCA_ID_HWMON_VOLTAGE_3V3		EQU		00002100ch
+EAPI_TCA_ID_HWMON_VOLTAGE_VBAT		EQU		000021010h
+EAPI_TCA_ID_HWMON_VOLTAGE_5V		EQU		000021014h
+EAPI_TCA_ID_HWMON_VOLTAGE_5VSB		EQU		000021018h
+EAPI_TCA_ID_HWMON_VOLTAGE_12V		EQU		00002101ch
+EAPI_TCA_ID_HWMON_FAN_CPU		EQU		000022000h
+EAPI_TCA_ID_HWMON_FAN_SYSTEM		EQU		000022001h
 ; 
 ;  *
 ;  *      B A C K L I G H T
@@ -1196,32 +1451,45 @@ EAPI_TCA_ID_I2C_LVDS_2		EQU		000000002h
 ;  * No GPIOs Supported
 ;  *
 ;  
-; 
-;  *
-;  *      T E M P E R A T U R E
-;  *
-;  
-;  IDs 
-EAPI_TCA_ID_TEMP_CPU		TEXTEQU		<EAPI_ID_TEMP_CPU>
 ;  _EAPICOM_H_ 
 ; End of file include\masm\..\EApiTCA.h
 ;  ETX Platform Specific ID Mappings          
 ; Begin of file include\masm\..\EApiETX.h
-; ++
-; +=========================================================================
-; | 
-; |  Copyright (c) 2009, PICMG
-; |  All rights reserved. This program and the accompanying materials                          
-; |  are licensed and made available under the terms and conditions of the BSD License         
-; |  which accompanies this distribution.  The full text of the license may be found at        
-; |  http://opensource.org/licenses/bsd-license.php                                            
-; |                                                                                            
-; |  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-; |  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
-; |
-; |  $Date$$Rev$
-; +=========================================================================
-; --
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApiETX.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApiETX.h
+;  *I  File Location        : include
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
 _EAPIETX_H_		TEXTEQU		<>
 ; 
 ;  *
@@ -1233,7 +1501,7 @@ EAPI_ETX_ID_BOARD_MANUFACTURER_STR		EQU		000000000h
 EAPI_ETX_ID_BOARD_NAME_STR		EQU		000000001h
 EAPI_ETX_ID_BOARD_SERIAL_STR		EQU		000000003h
 EAPI_ETX_ID_BOARD_BIOS_REVISION_STR		EQU		000000004h
-EAPI_ETX_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000005h
+EAPI_ETX_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000006h
 EAPI_ETX_PLATFORM_STR		TEXTEQU		<"ETX">
 ; 
 ;  *
@@ -1249,7 +1517,18 @@ EAPI_ETX_ID_BOARD_DRIVER_VERSION_VAL		EQU		000010000h
 EAPI_ETX_ID_BOARD_LIB_VERSION_VAL		EQU		000010001h
 EAPI_ETX_REV_1_0		EQU		001000000h
 EAPI_ETX_REV_2_0		EQU		002000000h
-EAPI_ETX_REV_3_0		EQU		003000000h
+EAPI_ETX_ID_HWMON_CPU_TEMP		EQU		000020000h
+EAPI_ETX_ID_HWMON_CHIPSET_TEMP		EQU		000020001h
+EAPI_ETX_ID_HWMON_SYSTEM_TEMP		EQU		000020002h
+EAPI_ETX_ID_HWMON_VOLTAGE_VCORE		EQU		000021004h
+EAPI_ETX_ID_HWMON_VOLTAGE_2V5		EQU		000021008h
+EAPI_ETX_ID_HWMON_VOLTAGE_3V3		EQU		00002100ch
+EAPI_ETX_ID_HWMON_VOLTAGE_VBAT		EQU		000021010h
+EAPI_ETX_ID_HWMON_VOLTAGE_5V		EQU		000021014h
+EAPI_ETX_ID_HWMON_VOLTAGE_5VSB		EQU		000021018h
+EAPI_ETX_ID_HWMON_VOLTAGE_12V		EQU		00002101ch
+EAPI_ETX_ID_HWMON_FAN_CPU		EQU		000022000h
+EAPI_ETX_ID_HWMON_FAN_SYSTEM		EQU		000022001h
 ; 
 ;  *
 ;  *      B A C K L I G H T
@@ -1284,32 +1563,45 @@ EAPI_ETX_ID_I2C_LVDS_2		EQU		000000002h
 ;  * No GPIOs Supported
 ;  *
 ;  
-; 
-;  *
-;  *      T E M P E R A T U R E
-;  *
-;  
-;  IDs 
-EAPI_ETX_ID_TEMP_CPU		TEXTEQU		<EAPI_ID_TEMP_CPU>
 ;  _EAPIETX_H_ 
 ; End of file include\masm\..\EApiETX.h
 ;  Q Seven Platform Specific ID Mappings      
 ; Begin of file include\masm\..\EApiQ7.h
-; ++
-; +=========================================================================
-; | 
-; |  Copyright (c) 2009, Q7 Consortium
-; |  All rights reserved. This program and the accompanying materials                          
-; |  are licensed and made available under the terms and conditions of the BSD License         
-; |  which accompanies this distribution.  The full text of the license may be found at        
-; |  http://opensource.org/licenses/bsd-license.php                                            
-; |                                                                                            
-; |  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-; |  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
-; |
-; |  $Date$$Rev$
-; +=========================================================================
-; --
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApiQ7.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApiQ7.h
+;  *I  File Location        : include
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
 _EAPIQ7_H_		TEXTEQU		<>
 ; 
 ;  *
@@ -1321,7 +1613,7 @@ EAPI_Q7_ID_BOARD_MANUFACTURER_STR		EQU		000000000h
 EAPI_Q7_ID_BOARD_NAME_STR		EQU		000000001h
 EAPI_Q7_ID_BOARD_SERIAL_STR		EQU		000000003h
 EAPI_Q7_ID_BOARD_BIOS_REVISION_STR		EQU		000000004h
-EAPI_Q7_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000005h
+EAPI_Q7_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000006h
 EAPI_Q7_PLATFORM_STR		TEXTEQU		<"QSeven">
 ; 
 ;  *
@@ -1336,6 +1628,18 @@ EAPI_Q7_ID_BOARD_PLATFORM_REV_VAL		EQU		000000004h
 EAPI_Q7_ID_BOARD_DRIVER_VERSION_VAL		EQU		000010000h
 EAPI_Q7_ID_BOARD_LIB_VERSION_VAL		EQU		000010001h
 EAPI_Q7_REV_1_0		EQU		001000000h
+EAPI_Q7_ID_HWMON_CPU_TEMP		EQU		000020000h
+EAPI_Q7_ID_HWMON_CHIPSET_TEMP		EQU		000020001h
+EAPI_Q7_ID_HWMON_SYSTEM_TEMP		EQU		000020002h
+EAPI_Q7_ID_HWMON_VOLTAGE_VCORE		EQU		000021004h
+EAPI_Q7_ID_HWMON_VOLTAGE_2V5		EQU		000021008h
+EAPI_Q7_ID_HWMON_VOLTAGE_3V3		EQU		00002100ch
+EAPI_Q7_ID_HWMON_VOLTAGE_VBAT		EQU		000021010h
+EAPI_Q7_ID_HWMON_VOLTAGE_5V		EQU		000021014h
+EAPI_Q7_ID_HWMON_VOLTAGE_5VSB		EQU		000021018h
+EAPI_Q7_ID_HWMON_VOLTAGE_12V		EQU		00002101ch
+EAPI_Q7_ID_HWMON_FAN_CPU		EQU		000022000h
+EAPI_Q7_ID_HWMON_FAN_SYSTEM		EQU		000022001h
 ; 
 ;  *
 ;  *      B A C K L I G H T
@@ -1370,32 +1674,45 @@ EAPI_Q7_ID_I2C_LVDS_2		EQU		000000002h
 ;  * No GPIOs Supported
 ;  *
 ;  
-; 
-;  *
-;  *      T E M P E R A T U R E
-;  *
-;  
-;  IDs 
-EAPI_Q7_ID_TEMP_CPU		TEXTEQU		<EAPI_ID_TEMP_CPU>
 ;  _EAPIQ7_H_ 
 ; End of file include\masm\..\EApiQ7.h
 ;  MOPS Platform Specific ID Mappings         
 ; Begin of file include\masm\..\EApiMOPS.h
-; ++
-; +=========================================================================
-; | 
-; |  Copyright (c) 2009, PICMG
-; |  All rights reserved. This program and the accompanying materials                          
-; |  are licensed and made available under the terms and conditions of the BSD License         
-; |  which accompanies this distribution.  The full text of the license may be found at        
-; |  http://opensource.org/licenses/bsd-license.php                                            
-; |                                                                                            
-; |  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-; |  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
-; |
-; |  $Date$$Rev$
-; +=========================================================================
-; --
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApiMOPS.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApiMOPS.h
+;  *I  File Location        : include
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
 _EAPIMOPS_H_		TEXTEQU		<>
 ; 
 ;  *
@@ -1407,7 +1724,7 @@ EAPI_MOPS_ID_BOARD_MANUFACTURER_STR		EQU		000000000h
 EAPI_MOPS_ID_BOARD_NAME_STR		EQU		000000001h
 EAPI_MOPS_ID_BOARD_SERIAL_STR		EQU		000000003h
 EAPI_MOPS_ID_BOARD_BIOS_REVISION_STR		EQU		000000004h
-EAPI_MOPS_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000005h
+EAPI_MOPS_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000006h
 EAPI_MOPS_PLATFORM_STR		TEXTEQU		<"MOPS">
 ; 
 ;  *
@@ -1422,6 +1739,18 @@ EAPI_MOPS_ID_BOARD_PLATFORM_REV_VAL		EQU		000000004h
 EAPI_MOPS_ID_BOARD_DRIVER_VERSION_VAL		EQU		000010000h
 EAPI_MOPS_ID_BOARD_LIB_VERSION_VAL		EQU		000010001h
 EAPI_MOPS_REV_1_0		EQU		001000000h
+EAPI_MOPS_ID_HWMON_CPU_TEMP		EQU		000020000h
+EAPI_MOPS_ID_HWMON_CHIPSET_TEMP		EQU		000020001h
+EAPI_MOPS_ID_HWMON_SYSTEM_TEMP		EQU		000020002h
+EAPI_MOPS_ID_HWMON_VOLTAGE_VCORE		EQU		000021004h
+EAPI_MOPS_ID_HWMON_VOLTAGE_2V5		EQU		000021008h
+EAPI_MOPS_ID_HWMON_VOLTAGE_3V3		EQU		00002100ch
+EAPI_MOPS_ID_HWMON_VOLTAGE_VBAT		EQU		000021010h
+EAPI_MOPS_ID_HWMON_VOLTAGE_5V		EQU		000021014h
+EAPI_MOPS_ID_HWMON_VOLTAGE_5VSB		EQU		000021018h
+EAPI_MOPS_ID_HWMON_VOLTAGE_12V		EQU		00002101ch
+EAPI_MOPS_ID_HWMON_FAN_CPU		EQU		000022000h
+EAPI_MOPS_ID_HWMON_FAN_SYSTEM		EQU		000022001h
 ; 
 ;  *
 ;  *      B A C K L I G H T
@@ -1456,32 +1785,45 @@ EAPI_MOPS_ID_I2C_LVDS_2		EQU		000000002h
 ;  * No GPIOs Supported
 ;  *
 ;  
-; 
-;  *
-;  *      T E M P E R A T U R E
-;  *
-;  
-;  IDs 
-EAPI_MOPS_ID_TEMP_CPU		TEXTEQU		<EAPI_ID_TEMP_CPU>
 ;  _EAPIMOPS_H_ 
 ; End of file include\masm\..\EApiMOPS.h
 ;  PISA Platform Specific ID Mappings         
 ; Begin of file include\masm\..\EApiPISA.h
-; ++
-; +=========================================================================
-; | 
-; |  Copyright (c) 2009, PICMG
-; |  All rights reserved. This program and the accompanying materials                          
-; |  are licensed and made available under the terms and conditions of the BSD License         
-; |  which accompanies this distribution.  The full text of the license may be found at        
-; |  http://opensource.org/licenses/bsd-license.php                                            
-; |                                                                                            
-; |  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-; |  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
-; |
-; |  $Date$$Rev$
-; +=========================================================================
-; --
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApiPISA.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApiPISA.h
+;  *I  File Location        : include
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
 _EAPIPISA_H_		TEXTEQU		<>
 ; 
 ;  *
@@ -1493,7 +1835,7 @@ EAPI_PISA_ID_BOARD_MANUFACTURER_STR		EQU		000000000h
 EAPI_PISA_ID_BOARD_NAME_STR		EQU		000000001h
 EAPI_PISA_ID_BOARD_SERIAL_STR		EQU		000000003h
 EAPI_PISA_ID_BOARD_BIOS_REVISION_STR		EQU		000000004h
-EAPI_PISA_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000005h
+EAPI_PISA_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000006h
 EAPI_PISA_PLATFORM_STR		TEXTEQU		<"PISA">
 ; 
 ;  *
@@ -1508,6 +1850,18 @@ EAPI_PISA_ID_BOARD_PLATFORM_REV_VAL		EQU		000000004h
 EAPI_PISA_ID_BOARD_DRIVER_VERSION_VAL		EQU		000010000h
 EAPI_PISA_ID_BOARD_LIB_VERSION_VAL		EQU		000010001h
 EAPI_PISA_REV_1_0		EQU		001000000h
+EAPI_PISA_ID_HWMON_CPU_TEMP		EQU		000020000h
+EAPI_PISA_ID_HWMON_CHIPSET_TEMP		EQU		000020001h
+EAPI_PISA_ID_HWMON_SYSTEM_TEMP		EQU		000020002h
+EAPI_PISA_ID_HWMON_VOLTAGE_VCORE		EQU		000021004h
+EAPI_PISA_ID_HWMON_VOLTAGE_2V5		EQU		000021008h
+EAPI_PISA_ID_HWMON_VOLTAGE_3V3		EQU		00002100ch
+EAPI_PISA_ID_HWMON_VOLTAGE_VBAT		EQU		000021010h
+EAPI_PISA_ID_HWMON_VOLTAGE_5V		EQU		000021014h
+EAPI_PISA_ID_HWMON_VOLTAGE_5VSB		EQU		000021018h
+EAPI_PISA_ID_HWMON_VOLTAGE_12V		EQU		00002101ch
+EAPI_PISA_ID_HWMON_FAN_CPU		EQU		000022000h
+EAPI_PISA_ID_HWMON_FAN_SYSTEM		EQU		000022001h
 ; 
 ;  *
 ;  *      B A C K L I G H T
@@ -1542,32 +1896,45 @@ EAPI_PISA_ID_I2C_LVDS_2		EQU		000000002h
 ;  * No GPIOs Supported
 ;  *
 ;  
-; 
-;  *
-;  *      T E M P E R A T U R E
-;  *
-;  
-;  IDs 
-EAPI_PISA_ID_TEMP_CPU		TEXTEQU		<EAPI_ID_TEMP_CPU>
 ;  _EAPIPISA_H_ 
 ; End of file include\masm\..\EApiPISA.h
 ;  EPIC Platform Specific ID Mappings         
 ; Begin of file include\masm\..\EApiEPIC.h
-; ++
-; +=========================================================================
-; | 
-; |  Copyright (c) 2009, PICMG
-; |  All rights reserved. This program and the accompanying materials                          
-; |  are licensed and made available under the terms and conditions of the BSD License         
-; |  which accompanies this distribution.  The full text of the license may be found at        
-; |  http://opensource.org/licenses/bsd-license.php                                            
-; |                                                                                            
-; |  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
-; |  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.             
-; |
-; |  $Date$$Rev$
-; +=========================================================================
-; --
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApiEPIC.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApiEPIC.h
+;  *I  File Location        : include
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
 _EAPIEPIC_H_		TEXTEQU		<>
 ; 
 ;  *
@@ -1579,7 +1946,7 @@ EAPI_EPIC_ID_BOARD_MANUFACTURER_STR		EQU		000000000h
 EAPI_EPIC_ID_BOARD_NAME_STR		EQU		000000001h
 EAPI_EPIC_ID_BOARD_SERIAL_STR		EQU		000000003h
 EAPI_EPIC_ID_BOARD_BIOS_REVISION_STR		EQU		000000004h
-EAPI_EPIC_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000005h
+EAPI_EPIC_ID_BOARD_PLATFORM_TYPE_STR		EQU		000000006h
 EAPI_EPIC_PLATFORM_STR		TEXTEQU		<"EPIC">
 ; 
 ;  *
@@ -1594,6 +1961,18 @@ EAPI_EPIC_ID_BOARD_PLATFORM_REV_VAL		EQU		000000004h
 EAPI_EPIC_ID_BOARD_DRIVER_VERSION_VAL		EQU		000010000h
 EAPI_EPIC_ID_BOARD_LIB_VERSION_VAL		EQU		000010001h
 EAPI_EPIC_REV_1_0		EQU		001000000h
+EAPI_EPIC_ID_HWMON_CPU_TEMP		EQU		000020000h
+EAPI_EPIC_ID_HWMON_CHIPSET_TEMP		EQU		000020001h
+EAPI_EPIC_ID_HWMON_SYSTEM_TEMP		EQU		000020002h
+EAPI_EPIC_ID_HWMON_VOLTAGE_VCORE		EQU		000021004h
+EAPI_EPIC_ID_HWMON_VOLTAGE_2V5		EQU		000021008h
+EAPI_EPIC_ID_HWMON_VOLTAGE_3V3		EQU		00002100ch
+EAPI_EPIC_ID_HWMON_VOLTAGE_VBAT		EQU		000021010h
+EAPI_EPIC_ID_HWMON_VOLTAGE_5V		EQU		000021014h
+EAPI_EPIC_ID_HWMON_VOLTAGE_5VSB		EQU		000021018h
+EAPI_EPIC_ID_HWMON_VOLTAGE_12V		EQU		00002101ch
+EAPI_EPIC_ID_HWMON_FAN_CPU		EQU		000022000h
+EAPI_EPIC_ID_HWMON_FAN_SYSTEM		EQU		000022001h
 ; 
 ;  *
 ;  *      B A C K L I G H T
@@ -1603,11 +1982,11 @@ EAPI_EPIC_REV_1_0		EQU		001000000h
 ;  * COM Express Backlight Fill Order
 ;  *
 ;  * Internal PWM
-;  * EAPI_EPIC_ID_I2C_LVDS_1 I2C Device
-;  * DDI1 SDVOB PWM
-;  * DDI1 SDVOC PWM
-;  * DDI1 SDVOB I2C Device
-;  * DDI1 SDVOC I2C Device
+;  * EAPI_COM0_ID_I2C_LVDS_1 I2C Device
+;  * SDVOB PWM
+;  * SDVOB I2C Device
+;  * SDVOC PWM
+;  * SDVOC I2C Device
 ;  * DDI1 I2C Device
 ;  * DDI2 I2C Device
 ;  * DDI3 I2C Device
@@ -1647,13 +2026,6 @@ EAPI_EPIC_ID_GPIO_GPIO4		EQU		000000004h
 EAPI_EPIC_ID_GPIO_GPIO5		EQU		000000005h
 EAPI_EPIC_ID_GPIO_GPIO6		EQU		000000006h
 EAPI_EPIC_ID_GPIO_GPIO7		EQU		000000007h
-; 
-;  *
-;  *      T E M P E R A T U R E
-;  *
-;  
-;  IDs 
-EAPI_EPIC_ID_TEMP_CPU		TEXTEQU		<EAPI_ID_TEMP_CPU>
 ;  _EAPIEPIC_H_ 
 ; End of file include\masm\..\EApiEPIC.h
 ; **************************************************************************

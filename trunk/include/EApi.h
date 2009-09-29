@@ -138,7 +138,9 @@ extern "C" {
  *
  */
 /* Description
- *   The EAPI library is not yet or unsuccessfully initialized. EApiLibInitialize needs to be called prior to the first access of any other EAPI function.
+ *   The EAPI library is not yet or unsuccessfully initialized. 
+ *   EApiLibInitialize needs to be called prior to the first access of any 
+ *   other EAPI function.
  * Actions
  *   Call EApiLibInitialize..
  */
@@ -159,14 +161,16 @@ extern "C" {
 #define EAPI_STATUS_ALLOC_ERROR       EAPI_UINT32_C(0xFFFFFFFD)
 
 /* Description 
- *   Time out in driver. This is Normally caused by hardware/software semaphore timeout. 
+ *   Time out in driver. This is Normally caused by hardware/software 
+ *   semaphore timeout. 
  * Actions
  *   Retry.
  */
 #define EAPI_STATUS_DRIVER_TIMEOUT    EAPI_UINT32_C(0xFFFFFFFC)
 
 /* Description 
- *  One or more of the EAPI function call parameters are out of the defined range.
+ *  One or more of the EAPI function call parameters are out of the 
+ *  defined range.
  *
  *  Possible Reasons include be
  *  NULL Pointer
@@ -245,7 +249,8 @@ extern "C" {
 #define EAPI_STATUS_TIMEOUT           EAPI_UINT32_C(0xFFFFFBFE)
 
 /* Description
- *   EApi  I2C functions specific. The addressed I2C bus is busy or there is a bus collision.
+ *   EApi  I2C functions specific. The addressed I2C bus is busy or there 
+ *   is a bus collision.
  *   The I2C bus is in use. Either CLK or DAT are low.
  *   Arbitration loss or bus Collision, data remains low when writing a 1
  * Actions
@@ -265,7 +270,8 @@ extern "C" {
 
 /* Description
  *   I2C Write Error
- *     No Acknowledge received after writing any Byte after the First Address Byte.
+ *     No Acknowledge received after writing any Byte after the First Address 
+ *     Byte.
  *     Can be caused by 
  *     unsupported Device Command/Index
  *     Ext Command/Index used on Standard Command/Index Device
@@ -280,7 +286,8 @@ extern "C" {
 
 /* Description
  *   The amount of available data exceeds the buffer size.
- *   Storage buffer overflow was prevented. Read count was larger then the defined buffer length.
+ *   Storage buffer overflow was prevented. Read count was larger then 
+ *   the defined buffer length.
  *   Read Count > Buffer Length
  * Actions
  *   Either increase the buffer size or reduce the block length.
@@ -360,7 +367,9 @@ EApiLibUnInitialize(void) ; /* Should be called before
 #define EAPI_CREATE_CUST_ID(a, b, c, Id)\
       EAPI_UINT32_C((0xF<<28)|(EAPI_CREATE_PNPID(a, b, c)<<12)|(Id&0xFFF))
 
-#define EAPI_PNPID_PICMG EAPI_CREATE_PNPID('P', 'M', 'G')  /* PICMG Should register this. */
+#define EAPI_PNPID_PICMG EAPI_CREATE_PNPID('P', 'M', 'G')  /* PICMG Should
+                                                            * register this. 
+                                                            */
 
 /*
  *
@@ -368,13 +377,24 @@ EApiLibUnInitialize(void) ; /* Should be called before
  *
  */
 /* IDS */
-#define EAPI_ID_BOARD_MANUFACTURER_STR     EAPI_UINT32_C(0) /* Board Manufacturer Name String */
+#define EAPI_ID_BOARD_MANUFACTURER_STR     EAPI_UINT32_C(0) /* Board Manufacturer
+                                                             * Name String 
+                                                             */
 #define EAPI_ID_BOARD_NAME_STR             EAPI_UINT32_C(1) /* Board Name String */
 #define EAPI_ID_BOARD_REVISION_STR         EAPI_UINT32_C(2) /* Board Name String */
-#define EAPI_ID_BOARD_SERIAL_STR           EAPI_UINT32_C(3) /* Board Serial Number String */
-#define EAPI_ID_BOARD_BIOS_REVISION_STR    EAPI_UINT32_C(4) /* Board Bios Revision String */
-#define EAPI_ID_BOARD_HW_REVISION_STR      EAPI_UINT32_C(5) /* Board Hardware Revision String */
-#define EAPI_ID_BOARD_PLATFORM_TYPE_STR    EAPI_UINT32_C(6) /* Platform ID (ETX, COM Express, etc...) */
+#define EAPI_ID_BOARD_SERIAL_STR           EAPI_UINT32_C(3) /* Board Serial 
+							     * Number String 
+							     */
+#define EAPI_ID_BOARD_BIOS_REVISION_STR    EAPI_UINT32_C(4) /* Board Bios Revision
+							     * String 
+							     */
+#define EAPI_ID_BOARD_HW_REVISION_STR      EAPI_UINT32_C(5) /* Board Hardware 
+							     * Revision String 
+							     */
+#define EAPI_ID_BOARD_PLATFORM_TYPE_STR    EAPI_UINT32_C(6) /* Platform ID 
+							     * (ETX, COM Express, 
+							     * etc...) 
+							     */
 
 
 /* 
@@ -405,20 +425,34 @@ EApiBoardGetStringA(
  *
  */
 /* IDS */
-#define EAPI_ID_GET_EAPI_SPEC_VERSION         EAPI_UINT32_C(0) /* EAPI Specification Revision I.E. The EAPI Spec 
-                                                                * Version Bits 31-24, Revision 23-16, 15-0 always 0
-                                                                * Used to implement this interface
+#define EAPI_ID_GET_EAPI_SPEC_VERSION         EAPI_UINT32_C(0) /* EAPI Specification 
+                                                                * Revision I.E. The 
+                                                                * EAPI Spec Version 
+                                                                * Bits 31-24, Revision 
+                                                                * 23-16, 15-0 always 0
+                                                                * Used to implement 
+                                                                * this interface
                                                                 */
 
 #define EAPI_ID_BOARD_BOOT_COUNTER_VAL        EAPI_UINT32_C(1) /* Units = Boots */
 #define EAPI_ID_BOARD_RUNNING_TIME_METER_VAL  EAPI_UINT32_C(2) /* Units = Minutes */
-#define EAPI_ID_BOARD_PNPID_VAL               EAPI_UINT32_C(3) /* Encoded PNP ID Format (Compressed ASCII)*/
-#define EAPI_ID_BOARD_PLATFORM_REV_VAL        EAPI_UINT32_C(4) /* Platform Revision I.E. The PICMG Spec 
-                                                                * Version Bits 31-24, Revision 23-16, 15-0 always 0
+#define EAPI_ID_BOARD_PNPID_VAL               EAPI_UINT32_C(3) /* Encoded PNP ID 
+                                                                * Format 
+                                                                * (Compressed ASCII)
+                                                                */
+#define EAPI_ID_BOARD_PLATFORM_REV_VAL        EAPI_UINT32_C(4) /* Platform Revision 
+                                                                * I.E. The PICMG Spec 
+                                                                * Version Bits 31-24,
+                                                                * Revision 23-16, 
+                                                                * 15-0 always 0
                                                                 */
 
-#define EAPI_ID_BOARD_DRIVER_VERSION_VAL  EAPI_UINT32_C(0x10000) /* Vendor Specific (Optional) */
-#define EAPI_ID_BOARD_LIB_VERSION_VAL     EAPI_UINT32_C(0x10001) /* Vendor Specific (Optional) */
+#define EAPI_ID_BOARD_DRIVER_VERSION_VAL  EAPI_UINT32_C(0x10000) /* Vendor Specific 
+                                                                  * (Optional) 
+                                                                  */
+#define EAPI_ID_BOARD_LIB_VERSION_VAL     EAPI_UINT32_C(0x10001) /* Vendor Specific
+                                                                  * (Optional) 
+                                                                  */
 
 #define EAPI_ID_HWMON_CPU_TEMP            EAPI_UINT32_C(0x20000) /* 0.1 Kelvins */ 
 #define EAPI_ID_HWMON_CHIPSET_TEMP        EAPI_UINT32_C(0x20001) /* 0.1 Kelvins */ 
@@ -552,7 +586,8 @@ EApiVgaSetBacklightBrightness(
  */
 /* IDs */
 #define EAPI_ID_STORAGE_STD              EAPI_UINT32_C(0)
-#define EAPI_PMG_ID_STORAGE_SAMPLE       EAPI_CREATE_CUST_ID('P', 'M', 'G', 0) /* Dummy Example */
+/* Dummy Example */
+#define EAPI_PMG_ID_STORAGE_SAMPLE       EAPI_CREATE_CUST_ID('P', 'M', 'G', 0) 
 /* 
  * EApiStorageCap
  * 
@@ -632,9 +667,15 @@ EApiStorageAreaWrite(
  *
  */
 /* IDs */
-#define EAPI_ID_I2C_EXTERNAL       EAPI_UINT32_C(0) /* Baseboard I2C Interface required */
-#define EAPI_ID_I2C_LVDS_1         EAPI_UINT32_C(1) /* LVDS/EDP 1 Interface optional */
-#define EAPI_ID_I2C_LVDS_2         EAPI_UINT32_C(2) /* LVDS/EDP 2 Interface optional */
+#define EAPI_ID_I2C_EXTERNAL       EAPI_UINT32_C(0) /* Baseboard I2C Interface
+                                                     * required 
+                                                     */
+#define EAPI_ID_I2C_LVDS_1         EAPI_UINT32_C(1) /* LVDS/EDP 1 Interface 
+                                                     * (optional)
+                                                     */
+#define EAPI_ID_I2C_LVDS_2         EAPI_UINT32_C(2) /* LVDS/EDP 2 Interface 
+                                                     * (optional)
+                                                     */
 
 /*
  * I2C Address Format 
@@ -1101,9 +1142,16 @@ EApiWDogStop(void);
 #define EAPI_GPIO_BITMASK_MASK(GPIO_NUM) EAPI_UINT32_C((1<<((GPIO_NUM)&0x1F))
 #define EAPI_GPIO_BITMASK_TEST_STATE(GPIO_NUM, TState, TValue) \
                         (((TValue>>((GPIO_NUM)&0x1F))&1)==(TState))
-#define EAPI_ID_GPIO_BITMASK00    EAPI_GPIO_BITMASK_ID( 0) /* GPIOs  0 - 31 (Optional) */
-#define EAPI_ID_GPIO_BITMASK01    EAPI_GPIO_BITMASK_ID(32) /* GPIOs 32 - 63 (Optional) */
-#define EAPI_ID_GPIO_BITMASK02    EAPI_GPIO_BITMASK_ID(64) /* GPIOs 64 - 95 (Optional) */
+
+#define EAPI_ID_GPIO_BITMASK00    EAPI_GPIO_BITMASK_ID( 0) /* GPIOs  0 - 31 
+                                                            * (optional)
+                                                            */
+#define EAPI_ID_GPIO_BITMASK01    EAPI_GPIO_BITMASK_ID(32) /* GPIOs 32 - 63 
+                                                            * (optional)
+                                                            */
+#define EAPI_ID_GPIO_BITMASK02    EAPI_GPIO_BITMASK_ID(64) /* GPIOs 64 - 95
+                                                            * (optional)
+                                                            */
 
 
 /* Bit mask Bit States */
