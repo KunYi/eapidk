@@ -43,9 +43,31 @@ extern "C" {
 #endif
 
 uint32_t 
+EAPI_CALLTYPE
+EApiWDogGetCapEmul(
+    __OUTOPT uint32_t *pMaxDelay       ,/* Maximum Supported 
+                                         * Delay in milliseconds
+                                         */
+    __OUTOPT uint32_t *pMaxEventTimeout,/* Maximum Supported 
+                                         * Event Timeout in 
+                                         * milliseconds
+                                         * 0 == Unsupported
+                                         */
+    __OUTOPT uint32_t *pMaxResetTimeout /* Maximum Supported 
+                                         * Reset Timeout in 
+                                         * milliseconds
+                                         */
+    );
+	
+uint32_t 
 EApiWDogStartEmul(
-    __IN uint32_t timeout, 
-    __IN uint32_t delay
+    __IN  uint32_t Delay       , /* Delay in milliseconds */
+    __IN  uint32_t EventTimeout, /* Event Timeout in 
+                                  * milliseconds 
+                                  */
+    __IN  uint32_t ResetTimeout  /* Reset Timeout in 
+                                  * milliseconds 
+                                  */
     );
 uint32_t
 EApiWDogTriggerEmul(void);

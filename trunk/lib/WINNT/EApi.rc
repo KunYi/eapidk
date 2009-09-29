@@ -124,8 +124,8 @@
 #define VER_FILETYPE                VFT_DLL
 #define VER_FILESUBTYPE             VFT2_UNKNOWN
 #define VER_FILEDESCRIPTION_STR     "Embedded Application Programming Interface"
-#define VER_INTERNALNAME_STR        "EApi.dll"
-#define VER_ORIGINALFILENAME_STR    "EApi.dll"
+#define VER_INTERNALNAME_STR        "EApi_1.dll"
+#define VER_ORIGINALFILENAME_STR    "EApi_1.dll"
 
 #include "common.ver"
 
