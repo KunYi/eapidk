@@ -14,7 +14,7 @@
 |
 |  Author: John Kearney,                      John.Kearney@kontron.com
 | 
-|  $Date$$Rev$
+|  $Date: 2009-08-21 13:26:22 +0200 (Fr, 21 Aug 2009) $$Rev: 1 $
 +=========================================================================
 --*/
 #include <windows.h>
