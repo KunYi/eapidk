@@ -38,6 +38,42 @@ option casemap:none
 ;  *+=========================================================================
 ;  *</KHeader>
 ;  
+; Begin of file include\masm\h2inc.h
+; 
+;  *<KHeader>
+;  *+=========================================================================
+;  *I               EApiDK Embedded Application Development Kit
+;  *+=========================================================================
+;  *I  $HeadURL$
+;  *+=========================================================================
+;  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+;  *I      Author: John Kearney,                  John.Kearney@kontron.com
+;  *I
+;  *I     License: All rights reserved. This program and the accompanying 
+;  *I              materials are licensed and made available under the 
+;  *I              terms and conditions of the BSD License which 
+;  *I              accompanies this distribution. The full text of the 
+;  *I              license may be found at 
+;  *I              http://opensource.org/licenses/bsd-license.php
+;  *I              
+;  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
+;  *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+;  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
+;  *I
+;  *I Description: Auto Created for EApiConv.h
+;  *I
+;  *+------------------------------------------------------------------------=
+;  *I
+;  *I  File Name            : EApiConv.h
+;  *I  File Location        : includemasm
+;  *I  Last committed       : $Revision$
+;  *I  Last changed by      : $Author$
+;  *I  Last changed date    : $Date$
+;  *I  ID                   : $Id$
+;  *I
+;  *+=========================================================================
+;  *</KHeader>
+;  
 ; 
 ;  * Conversion File to allow easier Conversion using h2inc
 ;  * h2inc /C /WIN32 /Zu /Ht /FaincludemasmEApiConv.inc includemasmEApiConv.h
@@ -57,8 +93,7 @@ option casemap:none
 ;  
 uint64_t		TYPEDEF		QWORD
 
-int64_t		TYPEDEF		SDWORD
-
+; typedef   signed long   int64_t;
 uint32_t		TYPEDEF		DWORD
 
 int32_t		TYPEDEF		SDWORD
@@ -75,6 +110,12 @@ size_t		TYPEDEF		int32_t
 
 wchar_t		TYPEDEF		uint16_t
 
+COM0_INT32_C		TEXTEQU		<>
+COM0_INT16_C		TEXTEQU		<>
+COM0_INT8_C		TEXTEQU		<>
+COM0_UINT32_C		TEXTEQU		<>
+COM0_UINT16_C		TEXTEQU		<>
+COM0_UINT8_C		TEXTEQU		<>
 EAPI_INT32_C		TEXTEQU		<>
 EAPI_INT16_C		TEXTEQU		<>
 EAPI_INT8_C		TEXTEQU		<>
@@ -95,6 +136,7 @@ UINT32_MAX		EQU		0ffffffffh
 INT32_MAX		EQU		07fffffffh
 UINT64_MAX		EQU		0ffffffffh
 INT64_MAX		EQU		0ffffffffh
+; End of file include\masm\h2inc.h
 ; Begin of file include\masm\..\EApi.h
 ; 
 ;  *<KHeader>
@@ -135,7 +177,16 @@ _EAPI_H_		TEXTEQU		<>
 ; *********************************************************************
 EAPI_CALLTYPE		TEXTEQU		<>
 ; ***********************************************************************
-;  * All version numbers are bits 31..24: major, 23..16: minor, 15..0 build#
+;  * All version numbers 
+;  * +=========+===============================+
+;  * | Bits    | Descriptions                  |
+;  * +=========+===============================+
+;  * | 24 - 31 | Version Number                |
+;  * +---------+-------------------------------+
+;  * | 16 - 23 | Revision Number               |
+;  * +---------+-------------------------------+
+;  * | 0  - 15 | Build Number                  |
+;  * +=========+===============================+
 ;  
 EAPI_VER_MASK_VER		EQU		0ff000000h
 EAPI_VER_MASK_REV		EQU		000ff0000h

@@ -131,7 +131,9 @@ IF /I "%~1"=="BUILD_LIB" GOTO Exit
   GOTO exit
 
 :BUILD_INC 
-  call :RunProg h2inc /C /WIN32 /Zu /Ht /Fa"include\masm\EApiConv.inc" "include\masm\EApiConv.h"
+  call :RunProg h2inc /Zu /C /Zp4 /WIN32 /Ht /zu /znCOM0 /Fa"include\masm\COM0EEPConv.inc" "include\masm\COM0EEPConv.h"
+  IF ERRORLEVEL 1 GOTO Error_Exit
+  call :RunProg h2inc /Zu /C /Zp4 /WIN32 /Ht /zu /znEApi /Fa"include\masm\EApiConv.inc" "include\masm\EApiConv.h"
   IF ERRORLEVEL 1 GOTO Error_Exit
   GOTO exit
 

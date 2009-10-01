@@ -102,7 +102,16 @@ extern "C" {
 #  define EAPI_UINT32_C(x) ((uint32_t)(x))
 #endif
 /************************************************************************
- * All version numbers are bits 31..24: major, 23..16: minor, 15..0 build#
+ * All version numbers 
+ * +=========+===============================+
+ * | Bits    | Descriptions                  |
+ * +=========+===============================+
+ * | 24 - 31 | Version Number                |
+ * +---------+-------------------------------+
+ * | 16 - 23 | Revision Number               |
+ * +---------+-------------------------------+
+ * | 0  - 15 | Build Number                  |
+ * +=========+===============================+
  */
 #define EAPI_VER_MASK_VER     EAPI_UINT32_C(0xFF000000)
 #define EAPI_VER_MASK_REV     EAPI_UINT32_C(0x00FF0000)
