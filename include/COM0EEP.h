@@ -127,11 +127,12 @@ typedef struct StdEep_s{
 #       define  COM0R20_R2_EEPROM_MARKER 0x304D4F43
     uint8_t     VendId[2]  ; /* 0x04 Compressed PNPID            */
     uint8_t     DeviceId[2]; /* 0x06 Vendor Specific Device ID   */
-    uint8_t     RevId      ; /* 0x08 Vendor Specific Revision ID */
-    uint8_t     BlkOffset  ; /* 0x09 Absolute Offset to
+    uint8_t     DeviceFlav ; /* 0x08 */
+    uint8_t     RevId      ; /* 0x09 Vendor Specific Revision ID */
+    uint8_t     BlkOffset  ; /* 0x0A Absolute Offset to
                               *      First Block
                               */
-    uint8_t     DeviceDesc ; /* 0x0A Device Descriptor
+    uint8_t     DeviceDesc ; /* 0x0B Device Descriptor
                               * +========+========================+
                               * | Bits   | Description            |
                               * +========+========================+
@@ -162,8 +163,8 @@ typedef struct StdEep_s{
  */
 typedef struct COM0R20_BP_s{
     StdEep_t    EepHdr   ; /* 0x00 EEprom Id         */
-    uint8_t     BPType   ; /* 0x0B Backplane Type    */
-    uint8_t     SpecRev  ; /* 0x0C COM0 Specification Revision
+    uint8_t     BPType   ; /* 0x0C Backplane Type    */
+    uint8_t     SpecRev  ; /* 0x0D COM0 Specification Revision
                             *      
                             *      +=======+==================+
                             *      | Bits  | Descriptions     |
@@ -173,7 +174,7 @@ typedef struct COM0R20_BP_s{
                             *      | 4 - 7 | Version          |
                             *      +=======+==================+
                             */
-    uint8_t     UsbDesc  ; /* 0x0D Bit Mask Macros for 
+    uint8_t     UsbDesc  ; /* 0x0E Bit Mask Macros for 
                             *      USB Descriptor Byte
                             *      
                             *      +=======+===============================+
@@ -191,7 +192,7 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_USB_PCNT_MASK         COM0_UINT8_C(0x0F)
 #       define COM0R20_USB_PCNT_OFFSET       COM0_UINT8_C(0x00)
 
-    uint8_t     SasDesc;   /* 0x0E BitMask Macros for 
+    uint8_t     SasDesc;   /* 0x0F BitMask Macros for 
                             *      LAN Descriptor Byte
                             *      
                             *      +=======+=================================+
@@ -251,7 +252,7 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_SAS_CHANNEL_2         COM0_UINT8_C(4)
 #       define COM0R20_SAS_CHANNEL_3         COM0_UINT8_C(6)
 
-    uint8_t     LanDesc;   /* 0x0F BitMask Macros for 
+    uint8_t     LanDesc;   /* 0x10 BitMask Macros for 
                             *      LAN Descriptor Byte
                             *      
                             *      +=======+===============================+
@@ -273,7 +274,7 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_GBE2_PRESENT          COM0_UINT8_C(1<<2)
 #       define COM0R20_GB1E0_PRESENT         COM0_UINT8_C(1<<3)
 
-    uint8_t     MiscIo1;   /* 0x10 BitMask Macros for 
+    uint8_t     MiscIo1;   /* 0x11 BitMask Macros for 
                             *      Miscellaneous I/O Descriptor Byte 1
                             *      
                             *      +======+===============================+
@@ -305,7 +306,7 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_WDT_PRESENT          COM0_UINT8_C(1<<6)
 #       define COM0R20_AC97_PRESENT         COM0_UINT8_C(1<<7)
 
-    uint8_t     MiscIo2;   /* 0x11 BitMask Macros for 
+    uint8_t     MiscIo2;   /* 0x12 BitMask Macros for 
                             *      Miscellaneous I/O Descriptor Byte 2
                             *      
                             *      +=======+===============================+
@@ -320,7 +321,7 @@ typedef struct COM0R20_BP_s{
                             */     
 #       define COM0R20_SSC_PRESENT          COM0_UINT8_C(1<<0)
 #       define COM0R20_SDIO_PRESENT         COM0_UINT8_C(1<<1)
-    uint8_t     DDIDesc;   /* 0x12 BitMask Macros for 
+    uint8_t     DDIDesc;   /* 0x13 BitMask Macros for 
                             *      Digital Display Interface Descriptor Byte
                             *      
                             *      +=======+=================================+
@@ -373,15 +374,15 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_DDI1_OFFSET           COM0_UINT8_C(0x0)
 #       define COM0R20_DDI2_OFFSET           COM0_UINT8_C(0x3)
 #       define COM0R20_DDI3_OFFSET           COM0_UINT8_C(0x6)
-     uint8_t     Reserved0; /* 0x13 */
-     uint8_t     Reserved1; /* 0x14 */
+     uint8_t     Reserved0; /* 0x14 */
+     uint8_t     Reserved1; /* 0x15 */
 #       define COM0R20_VGA_PRESENT           COM0_UINT8_C(1<<4)
 #       define COM0R20_LVDSCB_PRESENT        COM0_UINT8_C(1<<3)
 #       define COM0R20_LVDSCA_PRESENT        COM0_UINT8_C(1<<2)
 #       define COM0R20_SDVOCC_PRESENT        COM0_UINT8_C(1<<1)
 #       define COM0R20_SDVOCB_PRESENT        COM0_UINT8_C(1<<0)
 
-    uint8_t    LaneMap[16];/* 0x15 +=======+=================================+
+    uint8_t    LaneMap[16];/* 0x16 +=======+=================================+
                             *      | Bits  | Description                     |
                             *      +=======+=================================+
                             *      | Lane 0                                  |
@@ -499,8 +500,8 @@ typedef struct COM0R20_BP_s{
  */
 typedef struct COM0R20_M_s{
     StdEep_t    EepHdr   ; /* 0x00 EEprom Id          */
-    uint8_t     MType    ; /* 0x0B Module Type        */
-    uint8_t     SpecRev  ; /* 0x0C 
+    uint8_t     MType    ; /* 0x0C Module Type        */
+    uint8_t     SpecRev  ; /* 0x0D 
                             *      +=======+==================+
                             *      | Bits  | Descriptions     |
                             *      +=======+==================+
@@ -769,6 +770,89 @@ typedef struct ExtI2CDeviceDesc_s{
 }ExtI2CDeviceDesc_t;
 
 #pragma pack(pop)   // n = 2 , stack popped
+
+/*
+ * CPU Independent Multi Byte 
+ * Big Endian Memory Access
+ */
+void
+COM0R20_EEP_Set16BitValue_BE(
+    uint8_t  pBuffer,
+    uint16_t Value
+     )
+{
+  pBuffer[1]=(Value   )&0xFF;
+  pBuffer[0]=(Value>>8)&0xFF;
+}
+uint16_t
+COM0R20_EEP_Get16BitValue_BE(
+    uint8_t  pBuffer
+     )
+{
+  return (pBuffer[1]    ) |
+         (pBuffer[0]<< 8) ;
+}
+COM0R20_EEP_Set32BitValue_BE(
+    uint8_t  pBuffer,
+    uint32_t Value
+     )
+{
+  pBuffer[3]=(Value    )&0xFF;
+  pBuffer[2]=(Value>> 8)&0xFF;
+  pBuffer[1]=(Value>>16)&0xFF;
+  pBuffer[0]=(Value>>24)&0xFF;
+}
+uint32_t
+COM0R20_EEP_Get32BitValue_BE(
+    uint8_t  pBuffer
+     )
+{
+  return (pBuffer[3]    ) |
+         (pBuffer[2]<< 8) |
+         (pBuffer[1]<<16) |
+         (pBuffer[0]<<24) ;
+}
+/*
+ * CPU Independent Multi Byte 
+ * Little Endian Memory Access
+ */
+void
+COM0R20_EEP_Set16BitValue_LE(
+    uint8_t  pBuffer,
+    uint16_t Value
+     )
+{
+  pBuffer[0]=(Value   )&0xFF;
+  pBuffer[1]=(Value>>8)&0xFF;
+}
+uint16_t
+COM0R20_EEP_Get16BitValue_LE(
+    uint8_t  pBuffer
+     )
+{
+  return (pBuffer[0]    ) |
+         (pBuffer[1]<< 8) ;
+}
+COM0R20_EEP_Set32BitValue_LE(
+    uint8_t  pBuffer,
+    uint32_t Value
+     )
+{
+  pBuffer[0]=(Value    )&0xFF;
+  pBuffer[1]=(Value>> 8)&0xFF;
+  pBuffer[2]=(Value>>16)&0xFF;
+  pBuffer[3]=(Value>>24)&0xFF;
+}
+uint32_t
+COM0R20_EEP_Get32BitValue_LE(
+    uint8_t  pBuffer
+     )
+{
+  return (pBuffer[0]    ) |
+         (pBuffer[1]<< 8) |
+         (pBuffer[2]<<16) |
+         (pBuffer[3]<<24) ;
+}
 
 
 #endif /* _STDEEP_H_ */
