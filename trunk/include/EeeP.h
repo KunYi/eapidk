@@ -146,7 +146,16 @@ typedef struct StdEep_s{
                               * +--------+------------------------+
                               * | 4      | Std/Ext Index          |
                               * +--------+------------------------+
-                              * | 5 - 7  | Reserved               |
+                              * | 5 - 7  | Page Write Length/     |
+                              * |        | Alignment              |
+                              * |        | 0 = 1 Byte             |
+                              * |        | 1 = 8 Byte             |
+                              * |        | 2 = 16 Byte            |
+                              * |        | 3 = 32 Byte            |
+                              * |        | 4 = 64 Byte            |
+                              * |        | 5 = 128 Byte           |
+                              * |        | 6 = 256 Byte           |
+                              * |        | 7 = 512 Byte           |
                               * +========+========================+
                               */
     uint8_t     VendId[2]  ; /* 0x06 Compressed PNPID            */
