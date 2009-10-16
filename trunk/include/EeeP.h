@@ -49,54 +49,33 @@
 
 
 /* 
- * Detecting COM0 R2.0 EEPROM
+ * Detecting EeeP EEPROM
  *
  * High Level Check
  * if(!memcmp(
- *        &COM0EEP[0x00]            , 
- *        "COM0"                    , 
- *        0x04
+ *        &EeePEEP[0x01]            , 
+ *        "3P"                      , 
+ *        0x02
  *      )
  *   )
  * {
- *    // Found COM0R20 EEPROM
+ *    // Found EeeP EEPROM
  * }
  *
- * Sample I2C Transfer
- *  Device Address : 0xA8
+ * Sample I2C Transfers
+ *
+ *  Device Address : 0xAE(0x57)
  *  Index Type     : Standard
- *    Start<0xA8><W>Ack<0x00>Ack
- *    Start<0xA8><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'0'>Nak Stop
- *  Device Address : 0xA8
+ *    Start<0x57><W>Ack<0x00>Ack
+ *    Start<0x57><R>Ack<0x00>Ack<'3'>Ack<'P'>Ack<0x10>Nak Stop
+ *
+ *  Device Address : 0xAE(0x57)
  *  Index Type     : Extended
- *    Start<0xA8><W>Ack<0x00>Ack<0x00>Ack
- *    Start<0xA8><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'0'>Nak Stop
+ *    Start<0x57><W>Ack<0x00>Ack<0x00>Ack
+ *    Start<0x57><R>Ack<0x00>Ack<'3'>Ack<'P'>Ack<0x10>Nak Stop
  * 
  */
 
-/* 
- * Detecting COM0 R1.0 EEPROM
- *
- * High Level Check
- * if(!memcmp(
- *        &COM0EEP[0xE0]            , 
- *        "COMExpressConfig"        , 
- *        0x10
- *      )
- *   )
- * {
- *    // Found COM0R10 EEPROM
- * }
- *
- * Sample I2C Transfer
- *  Device Address : 0xA8
- *  Index Type     : Standard
- *    Start<0xA8><W>Ack<0xE0>Ack 
- *    Start<0xA8><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'E'>Ack<'x'>Ack<'p'>Ack
- *                     <'r'>Ack<'e'>Ack<'s'>Ack<'s'>Ack<'C'>Ack<'o'>Ack
- *                     <'n'>Ack<'f'>Ack<'i'>Ack<'g'>Nak Stop                                              
- * 
- */
 
 
 #define EEEP_VER_MASK_VER     EEEP_UINT8_C(0xF0)
@@ -110,7 +89,7 @@
                       )\
                     )
 
-/* COM0 R2.0 Standard Revision */
+/* EeeP Standard Revision */
 #define EEEP_VER      0
 #define EEEP_REVISION 5
 #define EEEP_VERSION EEEP_VER_CREATE(EEEP_VER, EEEP_REVISION)
@@ -122,11 +101,29 @@
  * EEPROM Common Header
  *
  */
-typedef struct StdEep_s{
-    uint8_t     EepId[4]   ; /* 0x00 COM0 */
-#       define  EEEP_R2_EEPROM_MARKER 0x304D4F43
+typedef struct EeePCmn_s{
+    uint8_t     Reserved0  ; /* 0x00 Don't Care Byte 
+                              *      The purpose of this
+                              *      Byte is to reduce the Damage
+                              *      Extended Index read access is
+                              *      used on a Standard Index Device
+                              *      
+                              */
+    uint8_t     EepId[2]   ; /* 0x01 3P   */
+#       define  EEEP_EEPROM_MARKER    "3P"
+    uint8_t     SpecRev    ; /* 0x03 EeeP Specification Revision
+                              *      +=======+==================+
+                              *      | Bits  | Descriptions     |
+                              *      +=======+==================+
+                              *      | 0 - 3 | Revision         |
+                              *      +-------+------------------+
+                              *      | 4 - 7 | Version          |
+                              *      +=======+==================+
+                              */
+
     uint8_t     BlkOffset  ; /* 0x04 Absolute Offset to
-                              *      First Block
+                              *      First Dynamic Block
+                              *      in words(2 bytes)
                               */
     uint8_t     DeviceDesc ; /* 0x05 Device Descriptor
                               * +========+========================+
@@ -158,21 +155,33 @@ typedef struct StdEep_s{
                               * |        | 7 = 512 Byte           |
                               * +========+========================+
                               */
-    uint8_t     VendId[2]  ; /* 0x06 Compressed PNPID            */
-    uint8_t     DeviceId[2]; /* 0x08 Vendor Specific Device ID   */
-    uint8_t     DeviceFlav ; /* 0x0A */
-    uint8_t     RevId      ; /* 0x0B Vendor Specific Revision ID */
-}StdEep_t;
-
+}EeePCmn_t;
 
 
 /*
- * COM R2.0
+ * EeeP    
+ * Universal Device Identifier
+ *
+ * Standardized Compact
+ * Mechanism to Uniquely 
+ * Identify Device Revisions
+ *
+ */
+typedef struct UDIdEep_s{
+    uint8_t     VendId[2]  ; /* 0x06 Vendor Unique PNPID         */
+    uint8_t     DeviceId[2]; /* 0x08 Vendor Specific Device ID   */
+    uint8_t     DeviceFlav ; /* 0x0A Device Specific Flavor ID   */
+    uint8_t     RevId      ; /* 0x0B Device Specific Revision ID */
+}UDIdEep_t; 
+
+/*
+ * EeeP
  * Expansion EEPROM Header
  *
  */
 typedef struct Exp_EEP_s{
-    StdEep_t    EepHdr     ; /* 0x00 EEprom Id       */
+    EeePCmn_t   EeePHdr  ; /* 0x00 EeeP Common Header */
+    UDIdEep_t   DevId    ; /* 0x06 Unique Device Id   */
 }Exp_EEP_t;
 
 
@@ -182,10 +191,13 @@ typedef struct Exp_EEP_s{
  * Block Common Header
  *
  */
-typedef struct BlockIdHdr_s{
-    uint8_t    BlockId       ; /* 0x00 Block Id       */
-    uint8_t    BlockLength[2]; /* 0x01 Block Length   */
-}BlockIdHdr_t;
+typedef struct DBlockIdHdr_s{
+    uint8_t   DBlockId       ; /* 0x00 Block Id       */
+    uint8_t   DBlockLength[2]; /* 0x01 Block Length/
+                                *      Offset to next Block
+                                *      in words (2 Bytes)
+                                */
+}DBlockIdHdr_t;
 
 /*
  *
@@ -226,7 +238,7 @@ typedef struct BlockIdHdr_s{
  *
  */
 typedef struct CRC16ChkBlock_s{
-    BlockIdHdr_t  cHdr          ; /* 0x00 Block Header */
+    DBlockIdHdr_t DBHdr         ; /* 0x00 Dynamic Block Header  */
     uint8_t       CrC16[2]      ; /* 0x03 CRC16 Checksum */
 }CRC16ChkBlock_t;
 
@@ -238,7 +250,7 @@ typedef struct CRC16ChkBlock_s{
  */
 
 typedef struct SystemInfo_s{
-    BlockIdHdr_t  cHdr    ; /* 0x00 Block Header */
+    DBlockIdHdr_t DBHdr   ; /* 0x00 Dynamic Block Header  */
     uint8_t Manufacturer  ; /* 0x03 Number of ASCIIZ String */
     uint8_t ProductName   ; /* 0x04 Number of ASCIIZ String */
     uint8_t Version       ; /* 0x05 Number of ASCIIZ String */
@@ -255,13 +267,13 @@ typedef struct SystemInfo_s{
  *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
  */
 typedef struct ChassisInfo_s{
-    BlockIdHdr_t  cHdr    ; /* 0x00 Block Header */
+    DBlockIdHdr_t DBHdr   ; /* 0x00 Dynamic Block Header  */
     uint8_t Manufacturer  ; /* 0x03 Number of ASCIIZ String */
     uint8_t ChassisType   ; /* 0x04 ENUM */
     uint8_t Version       ; /* 0x05 Number of ASCIIZ String */
     uint8_t SerialNumber  ; /* 0x05 Number of ASCIIZ String */
     uint8_t AssetTagNumber; /* 0x06 Number of ASCIIZ String */
-    char StringsBlock[1] ;  /* 0x07 String Block */
+    char  StringsBlock[1] ; /* 0x07 String Block */
 }ChassisInfo_t;
 
 /*
@@ -270,7 +282,7 @@ typedef struct ChassisInfo_s{
  *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
  */
 typedef struct ModuleInfo_s{
-    BlockIdHdr_t  cHdr   ; /* 0x00 Block Header */
+    DBlockIdHdr_t DBHdr  ; /* 0x00 Dynamic Block Header  */
     uint8_t Manufacturer ; /* 0x03 Number of ASCIIZ String */
     uint8_t Product      ; /* 0x04 Number of ASCIIZ String */
     uint8_t Version      ; /* 0x05 Number of ASCIIZ String */
@@ -326,11 +338,11 @@ typedef enum SMBIOS_BoardTypes_e{
  *
  */
 typedef struct LFPDataBlock_s{
-    BlockIdHdr_t  cHdr       ; /* 0x00 Block Header */
-    uint8_t	  Interface  ; /* 0x03 Display Interface */
-#	define 	  EEEP_DISP_INT_LVDS  EEEP_UINT8_C(0x02)
-#	define 	  EEEP_DISP_INT_SDVOB EEEP_UINT8_C(0x03)
-#	define 	  EEEP_DISP_INT_SDVOC EEEP_UINT8_C(0x04)
+    DBlockIdHdr_t DBHdr      ; /* 0x00 Dynamic Block Header  */
+    uint8_t	  Interface      ; /* 0x03 Display Interface */
+#	define 	  EEEP_DISP_INT_LVDS   EEEP_UINT8_C(0x02)
+#	define 	  EEEP_DISP_INT_SDVOB  EEEP_UINT8_C(0x03)
+#	define 	  EEEP_DISP_INT_SDVOC  EEEP_UINT8_C(0x04)
 #	define 	  EEEP_DISP_INT_DDI1	 EEEP_UINT8_C(0x05)
 #	define 	  EEEP_DISP_INT_DDI2	 EEEP_UINT8_C(0x06)
 #	define 	  EEEP_DISP_INT_DDI3	 EEEP_UINT8_C(0x07)
@@ -343,12 +355,12 @@ typedef struct LFPDataBlock_s{
 }LFPDataBlock_t;
 
 /*
- * Vendor Specific Block Header
+ * Vendor Specific Dynamic Block Header 
  *
  */
 typedef struct VendBlockHdr_s{
-    BlockIdHdr_t  cHdr       ; /* 0x00 Block Header */
-    uint8_t       VendId[2]  ; /* 0x03 Compressed PNPID  */
+    DBlockIdHdr_t DBHdr      ; /* 0x00 Dynamic Block Header  */
+    uint8_t       VendId[2]  ; /* 0x03 Compressed ASCII PNPID  */
     /* After This Point is only 
      * Suggested
      */
@@ -363,7 +375,7 @@ typedef struct VendBlockHdr_s{
  * I.E. For Chassis/System/Base Board EEPROMs
  */
 typedef struct ExtI2CDeviceDesc_s{
-    BlockIdHdr_t  cHdr         ; /* 0x00 Block Header */
+    DBlockIdHdr_t DBHdr        ; /* 0x00 Dynamic Block Header  */
     uint8_t       DeviceAddr[2]; /* 0x03 Encoded 7/10 Bit Device Address */
     uint8_t       DeviceBus    ; /* 0x05 Device Bus       */
 #	define 	  EEEP_I2CBuSID_I2C	   EEEP_UINT8_C(0x00)
@@ -393,7 +405,7 @@ typedef struct ExtI2CDeviceDesc_s{
                                 * | 5 - 7  | Reserved               |
                                 * +========+========================+
                                 */
-#   define EEEP_ExtEEP_EXT_INDX EEEP_UINT8_C(1<<4)
+#   define EEEP_EXT_INDX EEEP_UINT8_C(1<<4)
 }ExtI2CDeviceDesc_t;
 
 
