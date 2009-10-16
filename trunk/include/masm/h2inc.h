@@ -61,12 +61,12 @@ typedef   signed char   int8_t;
 typedef   int32_t       size_t;
 typedef   uint16_t      wchar_t;
 
-# define COM0_INT32_C 
-# define COM0_INT16_C 
-# define COM0_INT8_C  
-# define COM0_UINT32_C 
-# define COM0_UINT16_C 
-# define COM0_UINT8_C  
+# define EEEP_INT32_C 
+# define EEEP_INT16_C 
+# define EEEP_INT8_C  
+# define EEEP_UINT32_C 
+# define EEEP_UINT16_C 
+# define EEEP_UINT8_C  
 # define EAPI_INT32_C 
 # define EAPI_INT16_C 
 # define EAPI_INT8_C  

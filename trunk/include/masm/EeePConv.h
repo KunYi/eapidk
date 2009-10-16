@@ -35,5 +35,5 @@
  */
 
   #include "h2inc.h"
-  #include "..\COM0EEP.h"
+  #include "..\EeeP.h"
 
