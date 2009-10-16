@@ -31,9 +31,9 @@
 ;I
 ;+=========================================================================
 ;</KHeader>
-IFNDEF __COM0EEP_INC__
-__COM0EEP_INC__ TEXTEQU <>
+IFNDEF __EEEP_INC__
+__EEEP_INC__ TEXTEQU <>
 
-        include <COM0EEPConv.inc>
+        include <EeePConv.inc>
 
-ENDIF  __COM0EEP_INC__
+ENDIF  __EEEP_INC__

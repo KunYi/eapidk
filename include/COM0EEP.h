@@ -19,11 +19,11 @@
  *I              "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
  *I
- *I Description: Auto Created for STDEEP.h
+ *I Description: COM0 R2.0 Specific Structures and Data
  *I
  *+------------------------------------------------------------------------=
  *I
- *I  File Name            : STDEEP.h
+ *I  File Name            : COM0EEP.h
  *I  File Location        : include
  *I  Last committed       : $Revision$
  *I  Last changed by      : $Author$
@@ -35,125 +35,13 @@
  */
 
 /* Structures for COM0 STDEEP */
-#ifndef _STDEEP_H_    
-#define _STDEEP_H_
-
-#ifndef COM0_UINT32_C
-#  define COM0_UINT8_C(x)  ((uint8_t)(x))
-#  define COM0_UINT16_C(x) ((uint16_t)(x))
-#  define COM0_UINT32_C(x) ((uint32_t)(x))
-#endif
-
-//#pragma pack(push)
-#pragma pack(1)
-
-
-/* 
- * Detecting COM0 R2.0 EEPROM
- *
- * High Level Check
- * if(!memcmp(
- *        &COM0EEP[0x00]            , 
- *        "COM0"                    , 
- *        0x04
- *      )
- *   )
- * {
- *    // Found COM0R20 EEPROM
- * }
- *
- * Sample I2C Transfer
- *  Device Address : 0xA8
- *  Index Type     : Standard
- *    Start<0xA8><W>Ack<0x00>Ack
- *    Start<0xA8><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'0'>Nak Stop
- *  Device Address : 0xA8
- *  Index Type     : Extended
- *    Start<0xA8><W>Ack<0x00>Ack<0x00>Ack
- *    Start<0xA8><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'0'>Nak Stop
- * 
- */
-
-/* 
- * Detecting COM0 R1.0 EEPROM
- *
- * High Level Check
- * if(!memcmp(
- *        &COM0EEP[0xE0]            , 
- *        "COMExpressConfig"        , 
- *        0x10
- *      )
- *   )
- * {
- *    // Found COM0R10 EEPROM
- * }
- *
- * Sample I2C Transfer
- *  Device Address : 0xA8
- *  Index Type     : Standard
- *    Start<0xA8><W>Ack<0xE0>Ack 
- *    Start<0xA8><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'E'>Ack<'x'>Ack<'p'>Ack
- *                     <'r'>Ack<'e'>Ack<'s'>Ack<'s'>Ack<'C'>Ack<'o'>Ack
- *                     <'n'>Ack<'f'>Ack<'i'>Ack<'g'>Nak Stop                                              
- * 
- */
-
-
-#define COM0R20_VER_MASK_VER     COM0_UINT8_C(0xF0)
-#define COM0R20_VER_MASK_REV     COM0_UINT8_C(0x0F)
-#define COM0R20_VER_GET_VER(x)   COM0_UINT8_C (((x)>>4)&0x0F )
-#define COM0R20_VER_GET_REV(x)   COM0_UINT8_C (((x)>>0)&0x0F )
-#define COM0R20_VER_CREATE(Version,Revision) (\
-                      COM0_UINT8_C(\
-                        (((Version )&0x0F )<<4)|\
-                        (((Revision)&0x0F )<<0) \
-                      )\
-                    )
+#ifndef __COM0EEP_H__    
+#define __COM0EEP_H__
 
 /* COM0 R2.0 Standard Revision */
 #define COM0R20_VER      2
 #define COM0R20_REVISION 0
-#define COM0R20_VERSION COM0R20_VER_CREATE(COM0R20_VER, COM0R20_REVISION)
-
-
-
-
-/*
- * EEPROM Common Header
- *
- */
-typedef struct StdEep_s{
-    uint8_t     EepId[4]   ; /* 0x00 COM0 */
-#       define  COM0R20_R2_EEPROM_MARKER 0x304D4F43
-    uint8_t     VendId[2]  ; /* 0x04 Compressed PNPID            */
-    uint8_t     DeviceId[2]; /* 0x06 Vendor Specific Device ID   */
-    uint8_t     DeviceFlav ; /* 0x08 */
-    uint8_t     RevId      ; /* 0x09 Vendor Specific Revision ID */
-    uint8_t     BlkOffset  ; /* 0x0A Absolute Offset to
-                              *      First Block
-                              */
-    uint8_t     DeviceDesc ; /* 0x0B Device Descriptor
-                              * +========+========================+
-                              * | Bits   | Description            |
-                              * +========+========================+
-                              * | 0 - 3  | Size 2^(8+n) Bytes     |
-                              * |        | (256 << n) Bytes       |
-                              * |        |                        |
-                              * |        | Addressable Bytes      |
-                              * |        |   Standard Index       |
-                              * |        |     8bit - 11Bit       |
-                              * |        |   Extended Index       |
-                              * |        |     16bit - 19Bit      |
-                              * |        | 2048 KBit - 4096 MBit  |
-                              * |        | 256 Bytes - 512 KBytes |
-                              * |        |                        |
-                              * +--------+------------------------+
-                              * | 4      | Std/Ext Index          |
-                              * +--------+------------------------+
-                              * | 5 - 7  | Reserved               |
-                              * +========+========================+
-                              */
-}StdEep_t;
+#define COM0R20_VERSION EEEP_VER_CREATE(COM0R20_VER, COM0R20_REVISION)
 
 
 /*
@@ -187,10 +75,10 @@ typedef struct COM0R20_BP_s{
                             *      | 7     | Reserved                      |
                             *      +=======+===============================+
                             */
-#       define COM0R20_USB3_PCNT_MASK        COM0_UINT8_C(0x07)
-#       define COM0R20_USB3_PCNT_OFFSET      COM0_UINT8_C(0x04)
-#       define COM0R20_USB_PCNT_MASK         COM0_UINT8_C(0x0F)
-#       define COM0R20_USB_PCNT_OFFSET       COM0_UINT8_C(0x00)
+#       define COM0R20_USB3_PCNT_MASK        EEEP_UINT8_C(0x07)
+#       define COM0R20_USB3_PCNT_OFFSET      EEEP_UINT8_C(0x04)
+#       define COM0R20_USB_PCNT_MASK         EEEP_UINT8_C(0x0F)
+#       define COM0R20_USB_PCNT_OFFSET       EEEP_UINT8_C(0x00)
 
     uint8_t     SasDesc;   /* 0x0F BitMask Macros for 
                             *      LAN Descriptor Byte
@@ -244,13 +132,13 @@ typedef struct COM0R20_BP_s{
                             *      +=======+=================================+
                             */     
 
-#       define COM0R20_SAS_CONNECTOR_PRESENT COM0_UINT8_C(1<<0)
-#       define COM0R20_SATA_SAS_DEVICE       COM0_UINT8_C(1<<1)
+#       define COM0R20_SAS_CONNECTOR_PRESENT EEEP_UINT8_C(1<<0)
+#       define COM0R20_SATA_SAS_DEVICE       EEEP_UINT8_C(1<<1)
 
-#       define COM0R20_SAS_CHANNEL_0         COM0_UINT8_C(0)
-#       define COM0R20_SAS_CHANNEL_1         COM0_UINT8_C(2)
-#       define COM0R20_SAS_CHANNEL_2         COM0_UINT8_C(4)
-#       define COM0R20_SAS_CHANNEL_3         COM0_UINT8_C(6)
+#       define COM0R20_SAS_CHANNEL_0         EEEP_UINT8_C(0)
+#       define COM0R20_SAS_CHANNEL_1         EEEP_UINT8_C(2)
+#       define COM0R20_SAS_CHANNEL_2         EEEP_UINT8_C(4)
+#       define COM0R20_SAS_CHANNEL_3         EEEP_UINT8_C(6)
 
     uint8_t     LanDesc;   /* 0x10 BitMask Macros for 
                             *      LAN Descriptor Byte
@@ -269,10 +157,10 @@ typedef struct COM0R20_BP_s{
                             *      | 4 - 7 | Reserved                      |
                             *      +=======+===============================+
                             */     
-#       define COM0R20_GBE0_PRESENT          COM0_UINT8_C(1<<0)
-#       define COM0R20_GBE1_PRESENT          COM0_UINT8_C(1<<1)
-#       define COM0R20_GBE2_PRESENT          COM0_UINT8_C(1<<2)
-#       define COM0R20_GB1E0_PRESENT         COM0_UINT8_C(1<<3)
+#       define COM0R20_GBE0_PRESENT          EEEP_UINT8_C(1<<0)
+#       define COM0R20_GBE1_PRESENT          EEEP_UINT8_C(1<<1)
+#       define COM0R20_GBE2_PRESENT          EEEP_UINT8_C(1<<2)
+#       define COM0R20_GB1E0_PRESENT         EEEP_UINT8_C(1<<3)
 
     uint8_t     MiscIo1;   /* 0x11 BitMask Macros for 
                             *      Miscellaneous I/O Descriptor Byte 1
@@ -297,14 +185,14 @@ typedef struct COM0R20_BP_s{
                             *      | 7    | AC97 Implemented              |
                             *      +======+===============================+
                             */
-#       define COM0R20_WAKE0_PRESENT        COM0_UINT8_C(1<<0)
-#       define COM0R20_WAKE1_PRESENT        COM0_UINT8_C(1<<1)
-#       define COM0R20_SUS_PRESENT          COM0_UINT8_C(1<<2)
-#       define COM0R20_BATLOW_PRESENT       COM0_UINT8_C(1<<3)
-#       define COM0R20_THRMP_PRESENT        COM0_UINT8_C(1<<4)
-#       define COM0R20_EBROM_PRESENT        COM0_UINT8_C(1<<5)
-#       define COM0R20_WDT_PRESENT          COM0_UINT8_C(1<<6)
-#       define COM0R20_AC97_PRESENT         COM0_UINT8_C(1<<7)
+#       define COM0R20_WAKE0_PRESENT        EEEP_UINT8_C(1<<0)
+#       define COM0R20_WAKE1_PRESENT        EEEP_UINT8_C(1<<1)
+#       define COM0R20_SUS_PRESENT          EEEP_UINT8_C(1<<2)
+#       define COM0R20_BATLOW_PRESENT       EEEP_UINT8_C(1<<3)
+#       define COM0R20_THRMP_PRESENT        EEEP_UINT8_C(1<<4)
+#       define COM0R20_EBROM_PRESENT        EEEP_UINT8_C(1<<5)
+#       define COM0R20_WDT_PRESENT          EEEP_UINT8_C(1<<6)
+#       define COM0R20_AC97_PRESENT         EEEP_UINT8_C(1<<7)
 
     uint8_t     MiscIo2;   /* 0x12 BitMask Macros for 
                             *      Miscellaneous I/O Descriptor Byte 2
@@ -319,8 +207,8 @@ typedef struct COM0R20_BP_s{
                             *      | 2 - 7 | Reserved                      |
                             *      +=======+===============================+
                             */     
-#       define COM0R20_SSC_PRESENT          COM0_UINT8_C(1<<0)
-#       define COM0R20_SDIO_PRESENT         COM0_UINT8_C(1<<1)
+#       define COM0R20_SSC_PRESENT          EEEP_UINT8_C(1<<0)
+#       define COM0R20_SDIO_PRESENT         EEEP_UINT8_C(1<<1)
     uint8_t     DDIDesc;   /* 0x13 BitMask Macros for 
                             *      Digital Display Interface Descriptor Byte
                             *      
@@ -349,8 +237,9 @@ typedef struct COM0R20_BP_s{
                             *      |       | | 1      | eDisplay Port      | |
                             *      |       | | 2      | Display Port       | |
                             *      |       | | 3      | HDMI/DVI           | |
-                            *      |       | | 4-7    | Reserved           | |
                             *      |       | +========+====================+ |
+                            *      +-------+---------------------------------+
+                            *      | 5     | Reserved                        |
                             *      +-------+---------------------------------+
                             *      | 6 - 7 | DDI Port 3                      |
                             *      |       |                                 |
@@ -364,23 +253,23 @@ typedef struct COM0R20_BP_s{
                             *      |       | +========+====================+ |
                             *      +-------+---------------------------------+
                             */     
-#       define COM0R20_DDI_NOT_USED          COM0_UINT8_C(0x0)
-#       define COM0R20_DDI_eDispPort         COM0_UINT8_C(0x1)
-#       define COM0R20_DDI_DispPort          COM0_UINT8_C(0x2)
-#       define COM0R20_DDI_HDMI              COM0_UINT8_C(0x3)
-#       define COM0R20_DDI_SDVO              COM0_UINT8_C(0x4)
-#       define COM0R20_DDI_BITMASK           COM0_UINT8_C(0x3)
+#       define COM0R20_DDI_NOT_USED          EEEP_UINT8_C(0x0)
+#       define COM0R20_DDI_eDispPort         EEEP_UINT8_C(0x1)
+#       define COM0R20_DDI_DispPort          EEEP_UINT8_C(0x2)
+#       define COM0R20_DDI_HDMI              EEEP_UINT8_C(0x3)
+#       define COM0R20_DDI_SDVO              EEEP_UINT8_C(0x4)
+#       define COM0R20_DDI_BITMASK           EEEP_UINT8_C(0x3)
 
-#       define COM0R20_DDI1_OFFSET           COM0_UINT8_C(0x0)
-#       define COM0R20_DDI2_OFFSET           COM0_UINT8_C(0x3)
-#       define COM0R20_DDI3_OFFSET           COM0_UINT8_C(0x6)
+#       define COM0R20_DDI1_OFFSET           EEEP_UINT8_C(0x0)
+#       define COM0R20_DDI2_OFFSET           EEEP_UINT8_C(0x3)
+#       define COM0R20_DDI3_OFFSET           EEEP_UINT8_C(0x6)
      uint8_t     Reserved0; /* 0x14 */
      uint8_t     Reserved1; /* 0x15 */
-#       define COM0R20_VGA_PRESENT           COM0_UINT8_C(1<<4)
-#       define COM0R20_LVDSCB_PRESENT        COM0_UINT8_C(1<<3)
-#       define COM0R20_LVDSCA_PRESENT        COM0_UINT8_C(1<<2)
-#       define COM0R20_SDVOCC_PRESENT        COM0_UINT8_C(1<<1)
-#       define COM0R20_SDVOCB_PRESENT        COM0_UINT8_C(1<<0)
+#       define COM0R20_VGA_PRESENT           EEEP_UINT8_C(1<<4)
+#       define COM0R20_LVDSCB_PRESENT        EEEP_UINT8_C(1<<3)
+#       define COM0R20_LVDSCA_PRESENT        EEEP_UINT8_C(1<<2)
+#       define COM0R20_SDVOCC_PRESENT        EEEP_UINT8_C(1<<1)
+#       define COM0R20_SDVOCB_PRESENT        EEEP_UINT8_C(1<<0)
 
     uint8_t    LaneMap[16];/* 0x16 +=======+=================================+
                             *      | Bits  | Description                     |
@@ -516,63 +405,8 @@ typedef struct COM0R20_M_s{
     */
 }COM0R20_M_t;
 
-/*
- * COM R2.0
- * Expansion EEPROM Header
- *
- */
-typedef struct Exp_EEP_s{
-    StdEep_t    EepHdr     ; /* 0x00 EEprom Id       */
-}Exp_EEP_t;
+#define COM0R20_BLOCK_ID_EXP_CARD_DESC     EEEP_UINT8_C(0xE0)
 
-
-
-
-/*
- * Block Common Header
- *
- */
-typedef struct BlockIdHdr_s{
-    uint8_t    BlockId       ; /* 0x00 Block Id       */
-    uint8_t    BlockLength[2]; /* 0x01 Block Length   */
-}BlockIdHdr_t;
-
-/*
- *
- *
- *
- * Block Types
- *
- *
- *
- */
-
-/*
- * Block Ids
- *
- */
-#define COM0R20_BLOCK_ID_UNUSED            COM0_UINT8_C(0x00)
-#define COM0R20_BLOCK_ID_VENDOR_SPECIFIC   COM0_UINT8_C(0xF0)
-#define COM0R20_BLOCK_ID_EXP_EEPROM        COM0_UINT8_C(0xF1)
-#define COM0R20_BLOCK_ID_EXP_CARD_DESC     COM0_UINT8_C(0xE0)
-#define COM0R20_BLOCK_ID_SYSTEM_DESC       COM0_UINT8_C(0xD1)
-#define COM0R20_BLOCK_ID_MODULE_DESC       COM0_UINT8_C(0xD2)
-#define COM0R20_BLOCK_ID_CHASSIS_DESC      COM0_UINT8_C(0xD3)
-#define COM0R20_BLOCK_ID_CRC_CHK           COM0_UINT8_C(0xF2)
-#define COM0R20_BLOCK_ID_STD_SPECIFIC      COM0_UINT8_C(0xC0)
-#define COM0R20_BLOCK_ID_IGNORE            COM0_UINT8_C(0xFF)
-
-#define COM0R20_OFFSET_VALUE_EOL           COM0_UINT16_C(0x0000)
-#define COM0R20_OFFSET_VALUE_EOL_ALT       COM0_UINT16_C(0xFFFF)
-
-/*
- * CRC Checksum Block
- *
- */
-typedef struct CRC16ChkBlock_s{
-    BlockIdHdr_t  cHdr          ; /* 0x00 Block Header */
-    uint8_t       CrC16[2]      ; /* 0x03 CRC16 Checksum */
-}CRC16ChkBlock_t;
 
 /*
  * Express Card Slot Descriptor
@@ -600,260 +434,11 @@ typedef struct ExpCardBlock_s{
                                    *      numbers Terminated
                                    *      with 0x7F
                                    */
-#       define COM0R20_EXPCARD_MAP_EOL COM0_UINT8_C(0x7F)
+#       define COM0R20_EXPCARD_MAP_EOL EEEP_UINT8_C(0x7F)
 }ExpCardBlock_t;
 
 
-/*
- *      System Information
- *
- *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
- */
-
-typedef struct SystemInfo_s{
-    BlockIdHdr_t  cHdr    ; /* 0x00 Block Header */
-    uint8_t Manufacturer  ; /* 0x03 Number of ASCIIZ String */
-    uint8_t ProductName   ; /* 0x04 Number of ASCIIZ String */
-    uint8_t Version       ; /* 0x05 Number of ASCIIZ String */
-    uint8_t SerialNumber  ; /* 0x06 Number of ASCIIZ String */
-    uint8_t SKU_Number    ; /* 0x07 Number of ASCIIZ String */
-    uint8_t Family        ; /* 0x08 Number of ASCIIZ String */
-    uint8_t AssetTagNumber; /* 0x09 Number of ASCIIZ String */
-    char StringsBlock[1] ;  /* 0x0A String Block */
-}SystemInfo_t;
-
-/*
- *      Chassis Information
- *
- *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
- */
-typedef struct ChassisInfo_s{
-    BlockIdHdr_t  cHdr    ; /* 0x00 Block Header */
-    uint8_t Manufacturer  ; /* 0x03 Number of ASCIIZ String */
-    uint8_t ChassisType   ; /* 0x04 ENUM */
-    uint8_t Version       ; /* 0x05 Number of ASCIIZ String */
-    uint8_t SerialNumber  ; /* 0x05 Number of ASCIIZ String */
-    uint8_t AssetTagNumber; /* 0x06 Number of ASCIIZ String */
-    char StringsBlock[1] ;  /* 0x07 String Block */
-}ChassisInfo_t;
-
-/*
- *     Base Board (or Module) Information
- *
- *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
- */
-typedef struct ModuleInfo_s{
-    BlockIdHdr_t  cHdr   ; /* 0x00 Block Header */
-    uint8_t Manufacturer ; /* 0x03 Number of ASCIIZ String */
-    uint8_t Product      ; /* 0x04 Number of ASCIIZ String */
-    uint8_t Version      ; /* 0x05 Number of ASCIIZ String */
-    uint8_t SerialNumber ; /* 0x06 Number of ASCIIZ String */
-    uint8_t AssetTag     ; /* 0x07 Number of ASCIIZ String */
-    uint8_t FeatureFlag  ; /* 0x08 A collection of 
-                            *      flags that identify 
-                            *      features of this 
-                            *      baseboard.
-                            *      +=======+=========================+
-                            *      | Bits  | Descriptions            |
-                            *      +=======+=========================+
-                            *      | 0     | Is Motherboard          |
-                            *      +-------+-------------------------+
-                            *      | 1     | Requires Daughter Board |
-                            *      +-------+-------------------------+
-                            *      | 2     | Removable               |
-                            *      +-------+-------------------------+
-                            *      | 3     | Replaceable             |
-                            *      +-------+-------------------------+
-                            *      | 4     | Hot Swap Capable        |
-                            *      +-------+-------------------------+
-                            *      | 5 - 7 | Reserved                |
-                            *      +=======+=========================+
-                            */
-#       define SMBIOS_IS_Motherboard  COM0_UINT8_C(1 << 0)
-#       define SMBIOS_REQ_DAUGHTER    COM0_UINT8_C(1 << 1)
-#       define SMBIOS_REMOVABLE       COM0_UINT8_C(1 << 2)
-#       define SMBIOS_REPLACEABLE     COM0_UINT8_C(1 << 3)
-#       define SMBIOS_HOT_SWAP_CAP    COM0_UINT8_C(1 << 4)
-    uint8_t Location     ; /* 0x09 Number of ASCIIZ String */
-    uint8_t BoardType    ; /* 0x0A SMBIOS_BoardTypes_t */
-    char StringsBlock[1] ; /* 0x0B String Block */
-}ModuleInfo_t;
-typedef enum SMBIOS_BoardTypes_e{
-  SMBIOS_BoardType_Unknown=0,
-  SMBIOS_BoardType_Other,
-  SMBIOS_BoardType_ServerBlade,
-  SMBIOS_BoardType_ConnectivitySwitch,
-  SMBIOS_BoardType_SystemManagementModule,
-  SMBIOS_BoardType_ProcessorModule,
-  SMBIOS_BoardType_IO_Module,
-  SMBIOS_BoardType_Memory_Module,
-  SMBIOS_BoardType_DaughterBoard,
-  SMBIOS_BoardType_Motherboard,
-  SMBIOS_BoardType_ProcessorMemory_Module,
-  SMBIOS_BoardType_Interconnect_Board,
-}SMBIOS_BoardTypes_t;
 
 
-/*
- * Display Device Data Block
- *
- */
-typedef struct LFPDataBlock_s{
-    BlockIdHdr_t  cHdr       ; /* 0x00 Block Header */
-    uint8_t	  Interface  ; /* 0x03 Display Interface */
-#	define 	  COM0R20_DISP_INT_LVDS  COM0_UINT8_C(0x02)
-#	define 	  COM0R20_DISP_INT_SDVOB COM0_UINT8_C(0x03)
-#	define 	  COM0R20_DISP_INT_SDVOC COM0_UINT8_C(0x04)
-#	define 	  COM0R20_DISP_INT_DDI1	 COM0_UINT8_C(0x05)
-#	define 	  COM0R20_DISP_INT_DDI2	 COM0_UINT8_C(0x06)
-#	define 	  COM0R20_DISP_INT_DDI3	 COM0_UINT8_C(0x07)
-    uint8_t	  RawData[1]; /* 0x04 Display Raw Data
-			       *      DisplayID
-			       *      EDID
-			       *      UDS
-			       *      EPI
-    			       */
-}LFPDataBlock_t;
-
-/*
- * Vendor Specific Block Header
- *
- */
-typedef struct VendBlockHdr_s{
-    BlockIdHdr_t  cHdr       ; /* 0x00 Block Header */
-    uint8_t       VendId[2]  ; /* 0x03 Compressed PNPID  */
-    /* After This Point is only 
-     * Suggested
-     */
-    //uint8_t       VendBlockId; /* 0x04 Vendor Specific Block Id  */
-    //uint8_t       VendData[1]; /* 0x05 Vendor Data */
-}VendBlockHdr_t;
-
-
-/*
- * Descriptor for Additional EEPROMS
- *
- * I.E. For Chassis/System/Base Board EEPROMs
- */
-typedef struct ExtI2CDeviceDesc_s{
-    BlockIdHdr_t  cHdr         ; /* 0x00 Block Header */
-    uint8_t       DeviceAddr[2]; /* 0x03 Encoded 7/10 Bit Device Address */
-    uint8_t       DeviceBus    ; /* 0x05 Device Bus       */
-#	define 	  COM0R20_I2CBuSID_I2C	 COM0_UINT8_C(0x00)
-#	define 	  COM0R20_I2CBuSID_SMB	 COM0_UINT8_C(0x01)
-#	define 	  COM0R20_I2CBuSID_LVDS  COM0_UINT8_C(0x02)
-#	define 	  COM0R20_I2CBuSID_DDI1	 COM0_UINT8_C(0x03)
-#	define 	  COM0R20_I2CBuSID_DDI2	 COM0_UINT8_C(0x04)
-#	define 	  COM0R20_I2CBuSID_DDI3	 COM0_UINT8_C(0x05)
-    uint8_t       DeviceDesc   ; /* 0x06 Device Descriptor
-                                * +========+========================+
-                                * | Bits   | Description            |
-                                * +========+========================+
-                                * | 0 - 3  | Size 2^(8+n) Bytes     |
-                                * |        | (256 << n) Bytes       |
-                                * |        |                        |
-                                * |        | Addressable Bytes      |
-                                * |        |   Standard Index       |
-                                * |        |     8bit - 11Bit       |
-                                * |        |   Extended Index       |
-                                * |        |     16bit - 19Bit      |
-                                * |        | 2048 KBit - 4096 MBit  |
-                                * |        | 256 Bytes - 512 KBytes |
-                                * |        |                        |
-                                * +--------+------------------------+
-                                * | 4      | Std/Ext Index          |
-                                * +--------+------------------------+
-                                * | 5 - 7  | Reserved               |
-                                * +========+========================+
-                                */
-#   define COM0R20_ExtEEP_EXT_INDX COM0_UINT8_C(1<<4)
-}ExtI2CDeviceDesc_t;
-
-#pragma pack(pop)   // n = 2 , stack popped
-
-/*
- * CPU Independent Multi Byte 
- * Big Endian Memory Access
- */
-void
-COM0R20_EEP_Set16BitValue_BE(
-    uint8_t  pBuffer,
-    uint16_t Value
-     )
-{
-  pBuffer[1]=(Value   )&0xFF;
-  pBuffer[0]=(Value>>8)&0xFF;
-}
-uint16_t
-COM0R20_EEP_Get16BitValue_BE(
-    uint8_t  pBuffer
-     )
-{
-  return (pBuffer[1]    ) |
-         (pBuffer[0]<< 8) ;
-}
-COM0R20_EEP_Set32BitValue_BE(
-    uint8_t  pBuffer,
-    uint32_t Value
-     )
-{
-  pBuffer[3]=(Value    )&0xFF;
-  pBuffer[2]=(Value>> 8)&0xFF;
-  pBuffer[1]=(Value>>16)&0xFF;
-  pBuffer[0]=(Value>>24)&0xFF;
-}
-uint32_t
-COM0R20_EEP_Get32BitValue_BE(
-    uint8_t  pBuffer
-     )
-{
-  return (pBuffer[3]    ) |
-         (pBuffer[2]<< 8) |
-         (pBuffer[1]<<16) |
-         (pBuffer[0]<<24) ;
-}
-/*
- * CPU Independent Multi Byte 
- * Little Endian Memory Access
- */
-void
-COM0R20_EEP_Set16BitValue_LE(
-    uint8_t  pBuffer,
-    uint16_t Value
-     )
-{
-  pBuffer[0]=(Value   )&0xFF;
-  pBuffer[1]=(Value>>8)&0xFF;
-}
-uint16_t
-COM0R20_EEP_Get16BitValue_LE(
-    uint8_t  pBuffer
-     )
-{
-  return (pBuffer[0]    ) |
-         (pBuffer[1]<< 8) ;
-}
-COM0R20_EEP_Set32BitValue_LE(
-    uint8_t  pBuffer,
-    uint32_t Value
-     )
-{
-  pBuffer[0]=(Value    )&0xFF;
-  pBuffer[1]=(Value>> 8)&0xFF;
-  pBuffer[2]=(Value>>16)&0xFF;
-  pBuffer[3]=(Value>>24)&0xFF;
-}
-uint32_t
-COM0R20_EEP_Get32BitValue_LE(
-    uint8_t  pBuffer
-     )
-{
-  return (pBuffer[0]    ) |
-         (pBuffer[1]<< 8) |
-         (pBuffer[2]<<16) |
-         (pBuffer[3]<<24) ;
-}
-
-
-#endif /* _STDEEP_H_ */
+#endif /* __COM0EEP_H__ */
 
