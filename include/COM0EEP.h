@@ -70,14 +70,15 @@
 
 /*
  * COM R2.0
- * Backplane EEPROM Header
+ * Carrier Board EEPROM Header
  *
  */
-typedef struct COM0R20_BP_s{
+typedef struct COM0R20_CB_s{
     EeePCmn_t   EeePHdr  ; /* 0x00 EeeP Common Header */
-    UDIdEep_t   DevId    ; /* 0x06 Unique Device Id   */
-    uint8_t     BPType   ; /* 0x0C Backplane Type     */
-    uint8_t     SpecRev  ; /* 0x0D COM0 Specification Revision
+    uint8_t     GenId[4] ; /* 0x06 "COM0"   */
+    UDIdEep_t   DevId    ; /* 0x0C Unique Device Id   */
+    uint8_t     CBType   ; /* 0x10 Carrier Board Type     */
+    uint8_t     SpecRev  ; /* 0x11 COM0 Specification Revision
                             *      +=======+==================+
                             *      | Bits  | Descriptions     |
                             *      +=======+==================+
@@ -86,8 +87,7 @@ typedef struct COM0R20_BP_s{
                             *      | 4 - 7 | Version          |
                             *      +=======+==================+
                             */
-    uint8_t     UsbDesc  ; /* 0x0E Bit Mask Macros for 
-                            *      USB Descriptor Byte
+    uint8_t     UsbDesc  ; /* 0x12 USB Descriptor Byte
                             *      
                             *      +=======+===============================+
                             *      | Bits  | Descriptions                  |
@@ -104,8 +104,7 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_USB_PCNT_MASK         EEEP_UINT8_C(0x0F)
 #       define COM0R20_USB_PCNT_OFFSET       EEEP_UINT8_C(0x00)
 
-    uint8_t     SasDesc;   /* 0x0F BitMask Macros for 
-                            *      LAN Descriptor Byte
+    uint8_t     SasDesc;   /* 0x13 LAN Descriptor Byte
                             *      
                             *      +=======+=====+=======+===================+
                             *      | SAS/  | Bit | Value | Meaning           |
@@ -154,8 +153,7 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_SAS_CHANNEL_2         EEEP_UINT8_C(4)
 #       define COM0R20_SAS_CHANNEL_3         EEEP_UINT8_C(6)
 
-    uint8_t     LanDesc;   /* 0x10 BitMask Macros for 
-                            *      LAN Descriptor Byte
+    uint8_t     LanDesc;   /* 0x14 LAN Descriptor Byte
                             *      
                             *      +=======+=======+========================+
                             *      | Bits  | Value | Meaning                |
@@ -180,8 +178,7 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_GBE2_PRESENT          EEEP_UINT8_C(1<<2)
 #       define COM0R20_GB1E0_PRESENT         EEEP_UINT8_C(1<<3)
 
-    uint8_t     MiscIo1;   /* 0x11 BitMask Macros for 
-                            *      Miscellaneous I/O Descriptor Byte 1
+    uint8_t     MiscIo1;   /* 0x15 Miscellaneous I/O Descriptor Byte 1
                             *      
                             *      +=======+=======+========================+
                             *      | Bits  | Value | Meaning                |
@@ -228,8 +225,7 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_WDT_PRESENT          EEEP_UINT8_C(1<<6)
 #       define COM0R20_AC97_PRESENT         EEEP_UINT8_C(1<<7)
 
-    uint8_t     MiscIo2;   /* 0x12 BitMask Macros for 
-                            *      Miscellaneous I/O Descriptor Byte 2
+    uint8_t     MiscIo2;   /* 0x16 Miscellaneous I/O Descriptor Byte 2
                             *      
                             *      +=======+=======+========================+
                             *      | Bits  | Value | Meaning                |
@@ -247,8 +243,7 @@ typedef struct COM0R20_BP_s{
                             */     
 #       define COM0R20_SSC_PRESENT          EEEP_UINT8_C(1<<0)
 #       define COM0R20_SDIO_PRESENT         EEEP_UINT8_C(1<<1)
-    uint8_t     DDIDesc;   /* 0x13 BitMask Macros for 
-                            *      Digital Display Interface Descriptor Byte
+    uint8_t     DDIDesc;   /* 0x17 Digital Display Interface Descriptor Byte
                             *      
                             *      +=======+======+=======+==================+
                             *      | DDI   | Bits | Value | Meaning          |
@@ -295,27 +290,27 @@ typedef struct COM0R20_BP_s{
 #       define COM0R20_DDI1_OFFSET           EEEP_UINT8_C(0x0)
 #       define COM0R20_DDI2_OFFSET           EEEP_UINT8_C(0x3)
 #       define COM0R20_DDI3_OFFSET           EEEP_UINT8_C(0x6)
-     uint8_t     Reserved0; /* 0x14 */
-     uint8_t     Reserved1; /* 0x15 */
+     uint8_t     Reserved0; /* 0x18 Reserved */
+     uint8_t     Reserved1; /* 0x19 Reserved */
 #       define COM0R20_VGA_PRESENT           EEEP_UINT8_C(1<<4)
 #       define COM0R20_LVDSCB_PRESENT        EEEP_UINT8_C(1<<3)
 #       define COM0R20_LVDSCA_PRESENT        EEEP_UINT8_C(1<<2)
 #       define COM0R20_SDVOCC_PRESENT        EEEP_UINT8_C(1<<1)
 #       define COM0R20_SDVOCB_PRESENT        EEEP_UINT8_C(1<<0)
 
-    uint8_t    LaneMap[16];/* 0x16 Lane Information
+    uint8_t    LaneMap[16];/* 0x1A Lane Information
                             *      +=======+=======+======================+
                             *      | Bits  | Value | Meaning              |
                             *      +=======+=======+======================+
                             *      | 0 - 2 |  0    | Not Implemented      |
                             *      |       +-------+----------------------+
-                            *      |       |  1    | x1  Link Width       |
+                            *      |       |  1    |  x1 Link Width       |
                             *      |       +-------+----------------------+
-                            *      |       |  2    | x2  Link Width       |
+                            *      |       |  2    |  x2 Link Width       |
                             *      |       +-------+----------------------+
-                            *      |       |  3    | x4  Link Width       |
+                            *      |       |  3    |  x4 Link Width       |
                             *      |       +-------+----------------------+
-                            *      |       |  4    | x8  Link Width       |
+                            *      |       |  4    |  x8 Link Width       |
                             *      |       +-------+----------------------+
                             *      |       |  5    | x16 Link Width       |
                             *      |       +-------+----------------------+
@@ -330,7 +325,7 @@ typedef struct COM0R20_BP_s{
                             */
 #       define COM0R20_PCIEx_LANE_WIDTH_MASK EEEP_UINT8_C(0x07)
 #       define COM0R20_PCIEx_GEN2            EEEP_UINT8_C(1<<3)
-}COM0R20_BP_t;
+}COM0R20_CB_t;
 /* 
  * Pci Express Lane Mapping 
  *
@@ -422,9 +417,10 @@ typedef struct COM0R20_BP_s{
  */
 typedef struct COM0R20_M_s{
     EeePCmn_t   EeePHdr  ; /* 0x00 EeeP Common Header */
-    UDIdEep_t   DevId    ; /* 0x06 Unique Device Id   */
-    uint8_t     MType    ; /* 0x0C Module Type        */
-    uint8_t     SpecRev  ; /* 0x0D COM0 Specification Revision
+    uint8_t     GenId[4] ; /* 0x06 "COM0"   */
+    UDIdEep_t   DevId    ; /* 0x0A Unique Device Id   */
+    uint8_t     MType    ; /* 0x10 Module Type        */
+    uint8_t     SpecRev  ; /* 0x11 COM0 Specification Revision
                             *      +=======+==================+
                             *      | Bits  | Descriptions     |
                             *      +=======+==================+
