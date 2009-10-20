@@ -240,6 +240,7 @@ typedef struct DBlockIdHdr_s{
 typedef struct CRC16ChkBlock_s{
     DBlockIdHdr_t DBHdr         ; /* 0x00 Dynamic Block Header  */
     uint8_t       CrC16[2]      ; /* 0x03 CRC16 Checksum */
+    uint8_t       AlignmentByte ; /* 0x05 Alignment Byte */
 }CRC16ChkBlock_t;
 
 
