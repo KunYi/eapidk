@@ -104,7 +104,7 @@ typedef struct COM0R20_CB_s{
 #       define COM0R20_USB_PCNT_MASK         EEEP_UINT8_C(0x0F)
 #       define COM0R20_USB_PCNT_OFFSET       EEEP_UINT8_C(0x00)
 
-    uint8_t     SasDesc;   /* 0x13 LAN Descriptor Byte
+    uint8_t     SasDesc;   /* 0x13 SATA/SAS Descriptor Byte
                             *      
                             *      +=======+=====+=======+===================+
                             *      | SAS/  | Bit | Value | Meaning           |
