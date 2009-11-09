@@ -75,7 +75,8 @@
  */
 typedef struct COM0R20_CB_s{
     EeePCmn_t   EeePHdr  ; /* 0x00 EeeP Common Header */
-    uint8_t     GenId[4] ; /* 0x06 "COM0"   */
+    uint8_t     GenId[4] ; /* 0x06 "Com0"   */
+    #define COM0R20_CB_HEADER_ID "Com0"
     UDIdEep_t   DevId    ; /* 0x0C Unique Device Id   */
     uint8_t     CBType   ; /* 0x10 Carrier Board Type     */
     uint8_t     SpecRev  ; /* 0x11 COM0 Specification Revision
@@ -417,7 +418,8 @@ typedef struct COM0R20_CB_s{
  */
 typedef struct COM0R20_M_s{
     EeePCmn_t   EeePHdr  ; /* 0x00 EeeP Common Header */
-    uint8_t     GenId[4] ; /* 0x06 "COM0"   */
+    uint8_t     GenId[4] ; /* 0x06 "coM0"   */
+    #define COM0R20_M_HEADER_ID "coM0"
     UDIdEep_t   DevId    ; /* 0x0A Unique Device Id   */
     uint8_t     MType    ; /* 0x10 Module Type        */
     uint8_t     SpecRev  ; /* 0x11 COM0 Specification Revision
