@@ -224,9 +224,7 @@ typedef struct DBlockIdHdr_s{
  * 0xE0 -0xEF See Platform Specific Headers
  *
  */
-#define EEEP_BLOCK_ID_SYSTEM_DESC       EEEP_UINT8_C(0xD1)
-#define EEEP_BLOCK_ID_MODULE_DESC       EEEP_UINT8_C(0xD2)
-#define EEEP_BLOCK_ID_CHASSIS_DESC      EEEP_UINT8_C(0xD3)
+#define EEEP_BLOCK_ID_SYSTEM_DESC       EEEP_UINT8_C(0xD0)
 #define EEEP_BLOCK_ID_CRC_CHK           EEEP_UINT8_C(0xF2)
 #define EEEP_BLOCK_ID_IGNORE            EEEP_UINT8_C(0xFF)
 
@@ -238,85 +236,103 @@ typedef struct DBlockIdHdr_s{
  *
  */
 typedef struct CRC16ChkBlock_s{
-    DBlockIdHdr_t DBHdr         ; /* 0x00 Dynamic Block Header  */
+    DBlockIdHdr_t CDBHdr        ; /* 0x00 Dynamic Block Header  */
     uint8_t       CrC16[2]      ; /* 0x03 CRC16 Checksum */
-    uint8_t       AlignmentByte ; /* 0x05 Alignment Byte */
+    uint8_t       Reserved0     ; /* 0x05 Alignment Byte */
 }CRC16ChkBlock_t;
 
 
+typedef union SmbiosHandel_u{
+  uint8_t b[2];
+  uint16_t w;
+}SmbiosHandel_t;
+/*
+ *      DMI/SMBIOS Common Header Format
+ *
+ *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
+ */
+typedef struct SmbiosHdrDBlck_s{
+    DBlockIdHdr_t CDBHdr        ; /* 0x00 Dynamic Block Header  */
+    uint8_t       Type          ; /* 0x03 Structure Type        */
+    uint8_t       Length        ; /* 0x04 Specifies the length of
+                                   * the formatted area of the 
+                                   * structure, starting at the 
+                                   * Type field. The length of the 
+                                   * structure’s string-set is not
+                                   * included. 
+                                   */
+    SmbiosHandel_t Handel      ;  /* 0x05 Specifies the structure’s 
+                                   * handle, a unique 16-bit number 
+                                   * in the range 0 to 0FEFFh 
+                                   */
+}SmbiosHdrDBlck_t;
+#define EEEP_BLOCK_ID_SYSTEM_DESC       EEEP_UINT8_C(0x01)
+#define EEEP_BLOCK_ID_MODULE_DESC       EEEP_UINT8_C(0x02)
+#define EEEP_BLOCK_ID_CHASSIS_DESC      EEEP_UINT8_C(0x03)
 /*
  *      System Information
  *
  *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
+ *  Type 1 Block
  */
-
 typedef struct SystemInfo_s{
-    DBlockIdHdr_t DBHdr   ; /* 0x00 Dynamic Block Header  */
-    uint8_t Manufacturer  ; /* 0x03 Number of ASCIIZ String */
-    uint8_t ProductName   ; /* 0x04 Number of ASCIIZ String */
-    uint8_t Version       ; /* 0x05 Number of ASCIIZ String */
-    uint8_t SerialNumber  ; /* 0x06 Number of ASCIIZ String */
-    uint8_t SKU_Number    ; /* 0x07 Number of ASCIIZ String */
-    uint8_t Family        ; /* 0x08 Number of ASCIIZ String */
-    uint8_t AssetTagNumber; /* 0x09 Number of ASCIIZ String */
-    char StringsBlock[1] ;  /* 0x0A String Block */
+    SmbiosHdrDBlck_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
+    uint8_t Manufacturer   ; /* 0x06 Number of ASCIIZ String */
+    uint8_t ProductName    ; /* 0x07 Number of ASCIIZ String */
+    uint8_t Version        ; /* 0x08 Number of ASCIIZ String */
+    uint8_t SerialNumber   ; /* 0x09 Number of ASCIIZ String */
+    uint8_t UUID[16]       ; /* 0x0A Universal Unique ID number. */
+    uint8_t Reserved0      ; /* 0x1A Reserved Set to Zero    */
+    uint8_t SKU_Number     ; /* 0x1B Number of ASCIIZ String */
+    uint8_t Family         ; /* 0x1C Number of ASCIIZ String */
 }SystemInfo_t;
-
-/*
- *      Chassis Information
- *
- *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
- */
-typedef struct ChassisInfo_s{
-    DBlockIdHdr_t DBHdr   ; /* 0x00 Dynamic Block Header  */
-    uint8_t Manufacturer  ; /* 0x03 Number of ASCIIZ String */
-    uint8_t ChassisType   ; /* 0x04 ENUM */
-    uint8_t Version       ; /* 0x05 Number of ASCIIZ String */
-    uint8_t SerialNumber  ; /* 0x05 Number of ASCIIZ String */
-    uint8_t AssetTagNumber; /* 0x06 Number of ASCIIZ String */
-    char  StringsBlock[1] ; /* 0x07 String Block */
-}ChassisInfo_t;
 
 /*
  *     Base Board (or Module) Information
  *
  *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
+ *  Type 2 Block
  */
 typedef struct ModuleInfo_s{
-    DBlockIdHdr_t DBHdr  ; /* 0x00 Dynamic Block Header  */
-    uint8_t Manufacturer ; /* 0x03 Number of ASCIIZ String */
-    uint8_t Product      ; /* 0x04 Number of ASCIIZ String */
-    uint8_t Version      ; /* 0x05 Number of ASCIIZ String */
-    uint8_t SerialNumber ; /* 0x06 Number of ASCIIZ String */
-    uint8_t AssetTag     ; /* 0x07 Number of ASCIIZ String */
-    uint8_t FeatureFlag  ; /* 0x08 A collection of 
-                            *      flags that identify 
-                            *      features of this 
-                            *      baseboard.
-                            *      +=======+=========================+
-                            *      | Bits  | Descriptions            |
-                            *      +=======+=========================+
-                            *      | 0     | Is Motherboard          |
-                            *      +-------+-------------------------+
-                            *      | 1     | Requires Daughter Board |
-                            *      +-------+-------------------------+
-                            *      | 2     | Removable               |
-                            *      +-------+-------------------------+
-                            *      | 3     | Replaceable             |
-                            *      +-------+-------------------------+
-                            *      | 4     | Hot Swap Capable        |
-                            *      +-------+-------------------------+
-                            *      | 5 - 7 | Reserved                |
-                            *      +=======+=========================+
-                            */
+    SmbiosHdrDBlck_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
+    uint8_t Manufacturer   ; /* 0x06 Number of ASCIIZ String */
+    uint8_t Product        ; /* 0x07 Number of ASCIIZ String */
+    uint8_t Version        ; /* 0x08 Number of ASCIIZ String */
+    uint8_t SerialNumber   ; /* 0x09 Number of ASCIIZ String */
+    uint8_t AssetTag       ; /* 0x0A Number of ASCIIZ String */
+    uint8_t FeatureFlag    ; /* 0x0B A collection of 
+                              *      flags that identify 
+                              *      features of this 
+                              *      baseboard.
+                              *      +=======+=========================+
+                              *      | Bits  | Descriptions            |
+                              *      +=======+=========================+
+                              *      | 0     | Is Motherboard          |
+                              *      +-------+-------------------------+
+                              *      | 1     | Requires Daughter Board |
+                              *      +-------+-------------------------+
+                              *      | 2     | Removable               |
+                              *      +-------+-------------------------+
+                              *      | 3     | Replaceable             |
+                              *      +-------+-------------------------+
+                              *      | 4     | Hot Swap Capable        |
+                              *      +-------+-------------------------+
+                              *      | 5 - 7 | Reserved                |
+                              *      +=======+=========================+
+                              */
 #       define SMBIOS_IS_Motherboard  EEEP_UINT8_C(1 << 0)
 #       define SMBIOS_REQ_DAUGHTER    EEEP_UINT8_C(1 << 1)
 #       define SMBIOS_REMOVABLE       EEEP_UINT8_C(1 << 2)
 #       define SMBIOS_REPLACEABLE     EEEP_UINT8_C(1 << 3)
 #       define SMBIOS_HOT_SWAP_CAP    EEEP_UINT8_C(1 << 4)
-    uint8_t Location     ; /* 0x09 Number of ASCIIZ String */
-    uint8_t BoardType    ; /* 0x0A SMBIOS_BoardTypes_t */
-    char StringsBlock[1] ; /* 0x0B String Block */
+    uint8_t Location       ; /* 0x0C Number of ASCIIZ String */
+    SmbiosHandel_t LocHdl  ; /* 0x0D Chassis Handel */
+    uint8_t BoardType      ; /* 0x0F SMBIOS_BoardTypes_t */
+    uint8_t ContainedHndls ; /* 0x0C Number Of Contained 
+                              *      Object Handles That 
+                              *      Follow
+                              */
+    SmbiosHandel_t Handles[0] ; /* 0x10 Handles */
 }ModuleInfo_t;
 typedef enum SMBIOS_BoardTypes_e{
   SMBIOS_BoardType_Unknown=0,
@@ -334,12 +350,60 @@ typedef enum SMBIOS_BoardTypes_e{
 }SMBIOS_BoardTypes_t;
 
 
+
+/*
+ *      Chassis Information
+ *
+ *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
+ *  Type 3 Block
+ */
+typedef struct CCElement_s{
+  uint8_t ElementType     ; /* 0x00 Specifies the type of 
+                             *      element associated with 
+                             *      this record.
+                             */
+  uint8_t MinNum          ; /* 0x01 Specifies the minimum  
+                             *      number of the element  
+                             *      type that can be installed 
+                             *      in the chassis for the  
+                             *      chassis to properly operate.
+                             */
+  uint8_t MaxNum          ; /* 0x02 Specifies the maximum   
+                             *      number of the element   
+                             *      type that can be installed   
+                             *      in the chassis.
+                             */
+}CCElement_t;
+typedef struct ChassisInfo_s{
+    SmbiosHdrDBlck_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
+    uint8_t Manufacturer   ; /* 0x06 Number of ASCIIZ String */
+    uint8_t Type           ; /* 0x07 ENUM */
+    uint8_t Version        ; /* 0x08 Number of ASCIIZ String */
+    uint8_t SerialNumber   ; /* 0x09 Number of ASCIIZ String */
+    uint8_t AssetTagNumber ; /* 0x0A Number of ASCIIZ String */
+    uint8_t Reserved0[4]   ; /* 0x0B Reserved */
+    uint8_t OEM[4]         ; /* 0x0F Contains OEM- or BIOS 
+                              * vendor-specific information 
+                              */
+    uint8_t Height         ; /* 0x13 The height of the  
+                              * enclosure, in 'U's.  
+                              */
+    uint8_t NumPowerCords  ; /* 0x14 Identifies the number   
+                              * of power cords associated with  
+                              * the enclosure or chassis. 
+                              */
+    uint8_t CElementCnt    ; /* 0x15 Contained Element Count */   
+    uint8_t CElementSize   ; /* 0x16 Contained Element Size  */   
+    CCElement_t CElement[0]; /* 0x17 Contained Element(s) */   
+}ChassisInfo_t;
+
+
 /*
  * Display Device Data Block
  *
  */
 typedef struct LFPDataBlock_s{
-    DBlockIdHdr_t DBHdr      ; /* 0x00 Dynamic Block Header  */
+    DBlockIdHdr_t CDBHdr     ; /* 0x00 Dynamic Block Header  */
     uint8_t	  Interface      ; /* 0x03 Display Interface */
 #	define 	  EEEP_DISP_INT_LVDS   EEEP_UINT8_C(0x02)
 #	define 	  EEEP_DISP_INT_SDVOB  EEEP_UINT8_C(0x03)
@@ -360,7 +424,7 @@ typedef struct LFPDataBlock_s{
  *
  */
 typedef struct VendBlockHdr_s{
-    DBlockIdHdr_t DBHdr      ; /* 0x00 Dynamic Block Header  */
+    DBlockIdHdr_t CDBHdr     ; /* 0x00 Dynamic Block Header  */
     uint8_t       VendId[2]  ; /* 0x03 Compressed ASCII PNPID  */
     /* After This Point is only 
      * Suggested
@@ -376,7 +440,7 @@ typedef struct VendBlockHdr_s{
  * I.E. For Chassis/System/Base Board EEPROMs
  */
 typedef struct ExtI2CDeviceDesc_s{
-    DBlockIdHdr_t DBHdr        ; /* 0x00 Dynamic Block Header  */
+    DBlockIdHdr_t CDBHdr       ; /* 0x00 Dynamic Block Header  */
     uint8_t       DeviceAddr[2]; /* 0x03 Encoded 7/10 Bit Device Address */
     uint8_t       DeviceBus    ; /* 0x05 Device Bus       */
 #	define 	  EEEP_I2CBuSID_I2C	   EEEP_UINT8_C(0x00)
