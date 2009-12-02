@@ -5,7 +5,7 @@
  *+=========================================================================
  *I  $HeadURL$
  *+=========================================================================
- *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+ *I   Copyright: Copyright (c) 2009, PICMG
  *I      Author: John Kearney,                  John.Kearney@kontron.com
  *I
  *I     License: All rights reserved. This program and the accompanying 
@@ -23,7 +23,7 @@
  *I
  *+------------------------------------------------------------------------=
  *I
- *I  File Name            : STDEEP.h
+ *I  File Name            : EeeP.h
  *I  File Location        : include
  *I  Last committed       : $Revision$
  *I  Last changed by      : $Author$
@@ -44,8 +44,8 @@
 #  define EEEP_UINT32_C(x) ((uint32_t)(x))
 #endif
 
-//#pragma pack(push)
-#pragma pack(1)
+#pragma pack(push)  /* push current alignment to stack */
+#pragma pack(1)     /* set alignment to 1 byte boundary */
 
 
 /* 
@@ -102,7 +102,7 @@
  *
  */
 typedef struct EeePCmn_s{
-    uint8_t     Reserved0  ; /* 0x00 Don't Care Byte 
+    uint8_t     DontCareByte;/* 0x00 Don't Care Byte 
                               *      The purpose of this
                               *      Byte is to reduce the Damage
                               *      Extended Index read access is
@@ -242,10 +242,10 @@ typedef struct CRC16ChkBlock_s{
 }CRC16ChkBlock_t;
 
 
-typedef union SmbiosHandel_u{
+typedef union SmbiosHandle_u{
   uint8_t b[2];
   uint16_t w;
-}SmbiosHandel_t;
+}SmbiosHandle_t;
 /*
  *      DMI/SMBIOS Common Header Format
  *
@@ -261,7 +261,7 @@ typedef struct SmbiosHdrDBlck_s{
                                    * structure’s string-set is not
                                    * included. 
                                    */
-    SmbiosHandel_t Handel      ;  /* 0x05 Specifies the structure’s 
+    SmbiosHandle_t Handle      ;  /* 0x05 Specifies the structure’s 
                                    * handle, a unique 16-bit number 
                                    * in the range 0 to 0FEFFh 
                                    */
@@ -326,13 +326,13 @@ typedef struct ModuleInfo_s{
 #       define SMBIOS_REPLACEABLE     EEEP_UINT8_C(1 << 3)
 #       define SMBIOS_HOT_SWAP_CAP    EEEP_UINT8_C(1 << 4)
     uint8_t Location       ; /* 0x0C Number of ASCIIZ String */
-    SmbiosHandel_t LocHdl  ; /* 0x0D Chassis Handel */
+    SmbiosHandle_t LocHdl  ; /* 0x0D Chassis Handle */
     uint8_t BoardType      ; /* 0x0F SMBIOS_BoardTypes_t */
     uint8_t ContainedHndls ; /* 0x0C Number Of Contained 
                               *      Object Handles That 
                               *      Follow
                               */
-    SmbiosHandel_t Handles[0] ; /* 0x10 Handles */
+    SmbiosHandle_t Handles[0] ; /* 0x10 Handles */
 }ModuleInfo_t;
 typedef enum SMBIOS_BoardTypes_e{
   SMBIOS_BoardType_Unknown=0,
@@ -449,6 +449,9 @@ typedef struct ExtI2CDeviceDesc_s{
 #	define 	  EEEP_I2CBuSID_DDI1	 EEEP_UINT8_C(0x03)
 #	define 	  EEEP_I2CBuSID_DDI2	 EEEP_UINT8_C(0x04)
 #	define 	  EEEP_I2CBuSID_DDI3	 EEEP_UINT8_C(0x05)
+#	define 	  EEEP_I2CBuSID_SDVOB  EEEP_UINT8_C(0x06)
+#	define 	  EEEP_I2CBuSID_SDVOC	 EEEP_UINT8_C(0x07)
+#	define 	  EEEP_I2CBuSID_CRT  	 EEEP_UINT8_C(0x08)
     uint8_t       DeviceDesc   ; /* 0x06 Device Descriptor
                                 * +========+========================+
                                 * | Bits   | Description            |
@@ -481,7 +484,7 @@ typedef struct ExtI2CDeviceDesc_s{
 #include "COM0EEP.h"
 
 
-#pragma pack(pop)   // n = 2 , stack popped
+#pragma pack(pop)   /* restore original alignment from stack */
 
 /*
  * CPU Independent Multi Byte 

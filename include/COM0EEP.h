@@ -5,7 +5,7 @@
  *+=========================================================================
  *I  $HeadURL$
  *+=========================================================================
- *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+ *I   Copyright: Copyright (c) 2009, PICMG
  *I      Author: John Kearney,                  John.Kearney@kontron.com
  *I
  *I     License: All rights reserved. This program and the accompanying 
@@ -27,7 +27,7 @@
  *I  File Location        : include
  *I  Last committed       : $Revision$
  *I  Last changed by      : $Author$
- *I  Last changed date    : $Date$
+ *I  Last changed date    : 009-11-09 07:57:37 +0100 (Mo, 09 Nov 2009) $
  *I  ID                   : $Id$
  *I
  *+=========================================================================
@@ -59,6 +59,47 @@
  *    Start<0x57><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'E'>Ack<'x'>Ack<'p'>Ack
  *                     <'r'>Ack<'e'>Ack<'s'>Ack<'s'>Ack<'C'>Ack<'o'>Ack
  *                     <'n'>Ack<'f'>Ack<'i'>Ack<'g'>Nak Stop                                              
+ * 
+ */
+
+/* 
+ * Detecting COM0 R2.0 Carrier Board EEPROM
+ *
+ * High Level Check
+ * if(!memcmp(
+ *        &COM0EEP[0x06] , 
+ *        "Com0"         , 
+ *        0x04
+ *      )
+ *   )
+ * {
+ *    // Found COM0R20 Carrier Board EEPROM
+ * }
+ *
+ * Sample I2C Transfer
+ *  Device Address : 0xAE(0x57)
+ *  Index Type     : Extended
+ *    Start<0x57><W>Ack<0x00>Ack<0x06>Ack 
+ *    Start<0x57><R>Ack<'C'>Ack<'o'>Ack<'m'>Ack<'0'>Nak Stop
+ * 
+ * Detecting COM0 R2.0 Module EEPROM
+ *
+ * High Level Check
+ * if(!memcmp(
+ *        &COM0EEP[0x06] , 
+ *        "coM0"         , 
+ *        0x04
+ *      )
+ *   )
+ * {
+ *    // Found COM0R20 Module EEPROM
+ * }
+ *
+ * Sample I2C Transfer
+ *  Device Address : 0xAE(0x57)
+ *  Index Type     : Extended
+ *    Start<0x57><W>Ack<0x00>Ack<0x06>Ack 
+ *    Start<0x57><R>Ack<'c'>Ack<'o'>Ack<'M'>Ack<'0'>Nak Stop
  * 
  */
 
@@ -291,15 +332,21 @@ typedef struct COM0R20_CB_s{
 #       define COM0R20_DDI1_OFFSET           EEEP_UINT8_C(0x0)
 #       define COM0R20_DDI2_OFFSET           EEEP_UINT8_C(0x3)
 #       define COM0R20_DDI3_OFFSET           EEEP_UINT8_C(0x6)
-     uint8_t     Reserved0; /* 0x18 Reserved */
-     uint8_t     Reserved1; /* 0x19 Reserved */
-#       define COM0R20_VGA_PRESENT           EEEP_UINT8_C(1<<4)
-#       define COM0R20_LVDSCB_PRESENT        EEEP_UINT8_C(1<<3)
-#       define COM0R20_LVDSCA_PRESENT        EEEP_UINT8_C(1<<2)
-#       define COM0R20_SDVOCC_PRESENT        EEEP_UINT8_C(1<<1)
-#       define COM0R20_SDVOCB_PRESENT        EEEP_UINT8_C(1<<0)
-
-    uint8_t    LaneMap[16];/* 0x1A Lane Information
+     uint8_t    PCIeGen[8]; /* 0x18 PCI Express lane Generation.
+                            *       2 Bits Per lane
+                            *      +=======+=======+======================+
+                            *      | Bits  | Value | Meaning              |
+                            *      +=======+=======+======================+
+                            *      | 0 - 1 |  0    | Gen 1                |
+                            *      |       +-------+----------------------+
+                            *      |       |  1    | Gen 2                |
+                            *      |       +-------+----------------------+
+                            *      |       |  2    | Gen 3                |
+                            *      |       +-------+----------------------+
+                            *      |       |  3    | Reserved             |
+                            *      +-------+-------+----------------------+
+                            */
+     uint8_t    LaneMap[16];/* 0x20 Lane Information
                             *      +=======+=======+======================+
                             *      | Bits  | Value | Meaning              |
                             *      +=======+=======+======================+
@@ -319,16 +366,14 @@ typedef struct COM0R20_CB_s{
                             *      |       +-------+----------------------+
                             *      |       |  7    | Reserved             |
                             *      +-------+-------+----------------------+
-                            *      | 3     |  0    | Gen 1                |
-                            *      |       +-------+----------------------+
-                            *      |       |  1    | Gen 2                |
-                            *      +-------+-------+----------------------+
+                            *      | 3     |  Reserved set to 0           |
+                            *      +-------+------------------------------+
                             */
 #       define COM0R20_PCIEx_LANE_WIDTH_MASK EEEP_UINT8_C(0x07)
 #       define COM0R20_PCIEx_GEN2            EEEP_UINT8_C(1<<3)
 }COM0R20_CB_t;
 /* 
- * Pci Express Lane Mapping 
+ * PCI Express Lane Mapping 
  *
  * Example 1
  * Standard Type 2
@@ -461,12 +506,19 @@ typedef struct ExpCardBlock_s{
                                    *      |       | 0 - 7            |
                                    *      +=======+==================+
                                    */
-    uint8_t SwitchPortNumber[1] ; /* 0x05 An Array of
-                                   *      Port/Device
-                                   *      numbers Terminated
-                                   *      with 0x7F
+    uint8_t SwitchDevFuncAddr[1]; /* 0x05 An Array of Port
+                                   *      Device/Function
+                                   *      Addresses Terminated
+                                   *      with 0xFF
+                                   *      +=======+==================+
+                                   *      | Bits  | Descriptions     |
+                                   *      +=======+==================+
+                                   *      | 0 - 2 | Function Number  |
+                                   *      +-------+------------------+
+                                   *      | 3 - 7 | Device Number    |
+                                   *      +=======+==================+
                                    */
-#       define COM0R20_EXPCARD_MAP_EOL EEEP_UINT8_C(0x7F)
+#       define COM0R20_EXPCARD_MAP_EOL EEEP_UINT8_C(0xFF)
 }ExpCardBlock_t;
 
 
