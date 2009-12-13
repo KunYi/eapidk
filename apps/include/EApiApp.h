@@ -74,6 +74,7 @@
 #  endif
 #endif
 
+#define KUXE_VOID_RETURN
 
 #if (STRICT_VALIDATION>0)
 #define EAPI_FORMATED_MES(type, func, err, desc) \

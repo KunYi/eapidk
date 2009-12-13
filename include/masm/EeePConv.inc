@@ -177,56 +177,35 @@ INT64_MAX		EQU		0ffffffffh
 __EEEP_H__		TEXTEQU		<>
 ; #pragma pack(push)
 ;  
-;  * Detecting COM0 R2.0 EEPROM
+;  * Detecting EeeP EEPROM
 ;  *
 ;  * High Level Check
 ;  * if(!memcmp(
-;  *        &COM0EEP[0x00]            , 
-;  *        "COM0"                    , 
-;  *        0x04
+;  *        &EeePEEP[0x01]            , 
+;  *        "3P"                      , 
+;  *        0x02
 ;  *      )
 ;  *   )
 ;  * {
-;  *    // Found COM0R20 EEPROM
+;  *    // Found EeeP EEPROM
 ;  * }
 ;  *
-;  * Sample I2C Transfer
-;  *  Device Address : 0xA8
+;  * Sample I2C Transfers
+;  *
+;  *  Device Address : 0xAE(0x57)
 ;  *  Index Type     : Standard
-;  *    Start<0xA8><W>Ack<0x00>Ack
-;  *    Start<0xA8><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'0'>Nak Stop
-;  *  Device Address : 0xA8
+;  *    Start<0x57><W>Ack<0x00>Ack
+;  *    Start<0x57><R>Ack<0x00>Ack<'3'>Ack<'P'>Ack<0x10>Nak Stop
+;  *
+;  *  Device Address : 0xAE(0x57)
 ;  *  Index Type     : Extended
-;  *    Start<0xA8><W>Ack<0x00>Ack<0x00>Ack
-;  *    Start<0xA8><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'0'>Nak Stop
-;  * 
-;  
-;  
-;  * Detecting COM0 R1.0 EEPROM
-;  *
-;  * High Level Check
-;  * if(!memcmp(
-;  *        &COM0EEP[0xE0]            , 
-;  *        "COMExpressConfig"        , 
-;  *        0x10
-;  *      )
-;  *   )
-;  * {
-;  *    // Found COM0R10 EEPROM
-;  * }
-;  *
-;  * Sample I2C Transfer
-;  *  Device Address : 0xA8
-;  *  Index Type     : Standard
-;  *    Start<0xA8><W>Ack<0xE0>Ack 
-;  *    Start<0xA8><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'E'>Ack<'x'>Ack<'p'>Ack
-;  *                     <'r'>Ack<'e'>Ack<'s'>Ack<'s'>Ack<'C'>Ack<'o'>Ack
-;  *                     <'n'>Ack<'f'>Ack<'i'>Ack<'g'>Nak Stop                                              
+;  *    Start<0x57><W>Ack<0x00>Ack<0x00>Ack
+;  *    Start<0x57><R>Ack<0x00>Ack<'3'>Ack<'P'>Ack<0x10>Nak Stop
 ;  * 
 ;  
 EEEP_VER_MASK_VER		EQU		0000000f0h
 EEEP_VER_MASK_REV		EQU		00000000fh
-;  COM0 R2.0 Standard Revision 
+;  EeeP Standard Revision 
 EEEP_VER		EQU		0t
 EEEP_REVISION		EQU		5t
 EEEP_VERSION		EQU		000000005h
@@ -234,10 +213,27 @@ EEEP_VERSION		EQU		000000005h
 ;  * EEPROM Common Header
 ;  *
 ;  
-;  0x00 COM0 
-EEEP_R2_EEPROM_MARKER		EQU		0304d4f43h
+;  0x00 Don't Care Byte 
+;                               *      The purpose of this
+;                               *      Byte is to reduce the Damage
+;                               *      Extended Index read access is
+;                               *      used on a Standard Index Device
+;                               *      
+;                               
+;  0x01 3P   
+EEEP_EEPROM_MARKER		TEXTEQU		<"3P">
+;  0x03 EeeP Specification Revision
+;                               *      +=======+==================+
+;                               *      | Bits  | Descriptions     |
+;                               *      +=======+==================+
+;                               *      | 0 - 3 | Revision         |
+;                               *      +-------+------------------+
+;                               *      | 4 - 7 | Version          |
+;                               *      +=======+==================+
+;                               
 ;  0x04 Absolute Offset to
-;                               *      First Block
+;                               *      First Dynamic Block
+;                               *      in words(2 bytes)
 ;                               
 ;  0x05 Device Descriptor
 ;                               * +========+========================+
@@ -257,49 +253,79 @@ EEEP_R2_EEPROM_MARKER		EQU		0304d4f43h
 ;                               * +--------+------------------------+
 ;                               * | 4      | Std/Ext Index          |
 ;                               * +--------+------------------------+
-;                               * | 5 - 7  | Reserved               |
+;                               * | 5 - 7  | Page Write Length/     |
+;                               * |        | Alignment              |
+;                               * |        | 0 = 1 Byte             |
+;                               * |        | 1 = 8 Byte             |
+;                               * |        | 2 = 16 Byte            |
+;                               * |        | 3 = 32 Byte            |
+;                               * |        | 4 = 64 Byte            |
+;                               * |        | 5 = 128 Byte           |
+;                               * |        | 6 = 256 Byte           |
+;                               * |        | 7 = 512 Byte           |
 ;                               * +========+========================+
 ;                               
-;  0x06 Compressed PNPID            
-;  0x08 Vendor Specific Device ID   
-;  0x0A 
-;  0x0B Vendor Specific Revision ID 
-@tag_StdEep_s		STRUCT 1t
-EepId		uint8_t		4t DUP (?)
+@tag_EeePCmn_s		STRUCT 1t
+Reserved0		uint8_t		?
+EepId		uint8_t		2t DUP (?)
+SpecRev		uint8_t		?
 BlkOffset		uint8_t		?
 DeviceDesc		uint8_t		?
+@tag_EeePCmn_s		ENDS
+
+EeePCmn_t		TYPEDEF		@tag_EeePCmn_s
+
+; 
+;  * EeeP    
+;  * Universal Device Identifier
+;  *
+;  * Standardized Compact
+;  * Mechanism to Uniquely 
+;  * Identify Device Revisions
+;  *
+;  
+;  0x00 Vendor Unique PNPID         
+;  0x02 Vendor Specific Device ID   
+;  0x04 Device Specific Flavor ID   
+;  0x05 Device Specific Revision ID 
+@tag_UDIdEep_s		STRUCT 1t
 VendId		uint8_t		2t DUP (?)
 DeviceId		uint8_t		2t DUP (?)
 DeviceFlav		uint8_t		?
 RevId		uint8_t		?
-@tag_StdEep_s		ENDS
+@tag_UDIdEep_s		ENDS
 
-StdEep_t		TYPEDEF		@tag_StdEep_s
+UDIdEep_t		TYPEDEF		@tag_UDIdEep_s
 
 ; 
-;  * COM R2.0
+;  * EeeP
 ;  * Expansion EEPROM Header
 ;  *
 ;  
-;  0x00 EEprom Id       
+;  0x00 EeeP Common Header 
+;  0x06 Unique Device Id   
 @tag_Exp_EEP_s		STRUCT 1t
-EepHdr		StdEep_t		<>
+EeePHdr		EeePCmn_t		<>
+DevId		UDIdEep_t		<>
 @tag_Exp_EEP_s		ENDS
 
 Exp_EEP_t		TYPEDEF		@tag_Exp_EEP_s
 
 ; 
-;  * Block Common Header
+;  * Dynamic Block Common Header
 ;  *
 ;  
 ;  0x00 Block Id       
-;  0x01 Block Length   
-@tag_BlockIdHdr_s		STRUCT 1t
-BlockId		uint8_t		?
-BlockLength		uint8_t		2t DUP (?)
-@tag_BlockIdHdr_s		ENDS
+;  0x01 Block Length/
+;                                 *      Offset to next Block
+;                                 *      in words (2 Bytes)
+;                                 
+@tag_DBlockIdHdr_s		STRUCT 1t
+DBlockId		uint8_t		?
+DBlockLength		uint8_t		2t DUP (?)
+@tag_DBlockIdHdr_s		ENDS
 
-BlockIdHdr_t		TYPEDEF		@tag_BlockIdHdr_s
+DBlockIdHdr_t		TYPEDEF		@tag_DBlockIdHdr_s
 
 ; 
 ;  *
@@ -336,11 +362,13 @@ EEEP_OFFSET_VALUE_EOL_ALT		EQU		00000ffffh
 ;  * CRC Checksum Block
 ;  *
 ;  
-;  0x00 Block Header 
+;  0x00 Dynamic Block Header  
 ;  0x03 CRC16 Checksum 
+;  0x05 Alignment Byte 
 @tag_CRC16ChkBlock_s		STRUCT 1t
-cHdr		BlockIdHdr_t		<>
+DBHdr		DBlockIdHdr_t		<>
 CrC16		uint8_t		2t DUP (?)
+AlignmentByte		uint8_t		?
 @tag_CRC16ChkBlock_s		ENDS
 
 CRC16ChkBlock_t		TYPEDEF		@tag_CRC16ChkBlock_s
@@ -350,7 +378,7 @@ CRC16ChkBlock_t		TYPEDEF		@tag_CRC16ChkBlock_s
 ;  *
 ;  *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
 ;  
-;  0x00 Block Header 
+;  0x00 Dynamic Block Header  
 ;  0x03 Number of ASCIIZ String 
 ;  0x04 Number of ASCIIZ String 
 ;  0x05 Number of ASCIIZ String 
@@ -360,7 +388,7 @@ CRC16ChkBlock_t		TYPEDEF		@tag_CRC16ChkBlock_s
 ;  0x09 Number of ASCIIZ String 
 ;  0x0A String Block 
 @tag_SystemInfo_s		STRUCT 1t
-cHdr		BlockIdHdr_t		<>
+DBHdr		DBlockIdHdr_t		<>
 Manufacturer		uint8_t		?
 ProductName		uint8_t		?
 Version		uint8_t		?
@@ -378,7 +406,7 @@ SystemInfo_t		TYPEDEF		@tag_SystemInfo_s
 ;  *
 ;  *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
 ;  
-;  0x00 Block Header 
+;  0x00 Dynamic Block Header  
 ;  0x03 Number of ASCIIZ String 
 ;  0x04 ENUM 
 ;  0x05 Number of ASCIIZ String 
@@ -386,7 +414,7 @@ SystemInfo_t		TYPEDEF		@tag_SystemInfo_s
 ;  0x06 Number of ASCIIZ String 
 ;  0x07 String Block 
 @tag_ChassisInfo_s		STRUCT 1t
-cHdr		BlockIdHdr_t		<>
+DBHdr		DBlockIdHdr_t		<>
 Manufacturer		uint8_t		?
 ChassisType		uint8_t		?
 Version		uint8_t		?
@@ -402,7 +430,7 @@ ChassisInfo_t		TYPEDEF		@tag_ChassisInfo_s
 ;  *
 ;  *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
 ;  
-;  0x00 Block Header 
+;  0x00 Dynamic Block Header  
 ;  0x03 Number of ASCIIZ String 
 ;  0x04 Number of ASCIIZ String 
 ;  0x05 Number of ASCIIZ String 
@@ -437,7 +465,7 @@ SMBIOS_HOT_SWAP_CAP		EQU		000000010h
 ;  0x0A SMBIOS_BoardTypes_t 
 ;  0x0B String Block 
 @tag_ModuleInfo_s		STRUCT 1t
-cHdr		BlockIdHdr_t		<>
+DBHdr		DBlockIdHdr_t		<>
 Manufacturer		uint8_t		?
 Product		uint8_t		?
 Version		uint8_t		?
@@ -470,7 +498,7 @@ SMBIOS_BoardTypes_t		TYPEDEF		SDWORD
 ;  * Display Device Data Block
 ;  *
 ;  
-;  0x00 Block Header 
+;  0x00 Dynamic Block Header  
 ;  0x03 Display Interface 
 EEEP_DISP_INT_LVDS		EQU		000000002h
 EEEP_DISP_INT_SDVOB		EQU		000000003h
@@ -485,7 +513,7 @@ EEEP_DISP_INT_DDI3		EQU		000000007h
 ; 			       *      EPI
 ;     			       
 @tag_LFPDataBlock_s		STRUCT 1t
-cHdr		BlockIdHdr_t		<>
+DBHdr		DBlockIdHdr_t		<>
 Interface		uint8_t		?
 RawData		uint8_t		1t DUP (?)
 @tag_LFPDataBlock_s		ENDS
@@ -493,18 +521,18 @@ RawData		uint8_t		1t DUP (?)
 LFPDataBlock_t		TYPEDEF		@tag_LFPDataBlock_s
 
 ; 
-;  * Vendor Specific Block Header
+;  * Vendor Specific Dynamic Block Header 
 ;  *
 ;  
-;  0x00 Block Header 
-;  0x03 Compressed PNPID  
+;  0x00 Dynamic Block Header  
+;  0x03 Compressed ASCII PNPID  
 ;  After This Point is only 
 ;      * Suggested
 ;      
 ; uint8_t       VendBlockId; /* 0x04 Vendor Specific Block Id  */
 ; uint8_t       VendData[1]; /* 0x05 Vendor Data */
 @tag_VendBlockHdr_s		STRUCT 1t
-cHdr		BlockIdHdr_t		<>
+DBHdr		DBlockIdHdr_t		<>
 VendId		uint8_t		2t DUP (?)
 @tag_VendBlockHdr_s		ENDS
 
@@ -515,7 +543,7 @@ VendBlockHdr_t		TYPEDEF		@tag_VendBlockHdr_s
 ;  *
 ;  * I.E. For Chassis/System/Base Board EEPROMs
 ;  
-;  0x00 Block Header 
+;  0x00 Dynamic Block Header  
 ;  0x03 Encoded 7/10 Bit Device Address 
 ;  0x05 Device Bus       
 EEEP_I2CBuSID_I2C		EQU		000000000h
@@ -545,9 +573,9 @@ EEEP_I2CBuSID_DDI3		EQU		000000005h
 ;                                 * | 5 - 7  | Reserved               |
 ;                                 * +========+========================+
 ;                                 
-EEEP_ExtEEP_EXT_INDX		EQU		000000010h
+EEEP_EXT_INDX		EQU		000000010h
 @tag_ExtI2CDeviceDesc_s		STRUCT 1t
-cHdr		BlockIdHdr_t		<>
+DBHdr		DBlockIdHdr_t		<>
 DeviceAddr		uint8_t		2t DUP (?)
 DeviceBus		uint8_t		?
 DeviceDesc		uint8_t		?
@@ -597,19 +625,43 @@ ExtI2CDeviceDesc_t		TYPEDEF		@tag_ExtI2CDeviceDesc_s
 ;  
 ;  Structures for COM0 STDEEP 
 __COM0EEP_H__		TEXTEQU		<>
+;  
+;  * Detecting COM0 R1.0 EEPROM
+;  *
+;  * High Level Check
+;  * if(!memcmp(
+;  *        &COM0EEP[0xE0]            , 
+;  *        "COMExpressConfig"        , 
+;  *        0x10
+;  *      )
+;  *   )
+;  * {
+;  *    // Found COM0R10 EEPROM
+;  * }
+;  *
+;  * Sample I2C Transfer
+;  *  Device Address : 0xAE(0x57)
+;  *  Index Type     : Standard
+;  *    Start<0x57><W>Ack<0xE0>Ack 
+;  *    Start<0x57><R>Ack<'C'>Ack<'O'>Ack<'M'>Ack<'E'>Ack<'x'>Ack<'p'>Ack
+;  *                     <'r'>Ack<'e'>Ack<'s'>Ack<'s'>Ack<'C'>Ack<'o'>Ack
+;  *                     <'n'>Ack<'f'>Ack<'i'>Ack<'g'>Nak Stop                                              
+;  * 
+;  
 ;  COM0 R2.0 Standard Revision 
 COM0R20_VER		EQU		2t
 COM0R20_REVISION		EQU		0t
 COM0R20_VERSION		EQU		000000020h
 ; 
 ;  * COM R2.0
-;  * Backplane EEPROM Header
+;  * Carrier Board EEPROM Header
 ;  *
 ;  
-;  0x00 EEprom Id         
-;  0x0C Backplane Type    
-;  0x0D COM0 Specification Revision
-;                             *      
+;  0x00 EeeP Common Header 
+;  0x06 "COM0"   
+;  0x0C Unique Device Id   
+;  0x10 Carrier Board Type     
+;  0x11 COM0 Specification Revision
 ;                             *      +=======+==================+
 ;                             *      | Bits  | Descriptions     |
 ;                             *      +=======+==================+
@@ -618,8 +670,7 @@ COM0R20_VERSION		EQU		000000020h
 ;                             *      | 4 - 7 | Version          |
 ;                             *      +=======+==================+
 ;                             
-;  0x0E Bit Mask Macros for 
-;                             *      USB Descriptor Byte
+;  0x12 USB Descriptor Byte
 ;                             *      
 ;                             *      +=======+===============================+
 ;                             *      | Bits  | Descriptions                  |
@@ -635,56 +686,45 @@ COM0R20_USB3_PCNT_MASK		EQU		000000007h
 COM0R20_USB3_PCNT_OFFSET		EQU		000000004h
 COM0R20_USB_PCNT_MASK		EQU		00000000fh
 COM0R20_USB_PCNT_OFFSET		EQU		000000000h
-;  0x0F BitMask Macros for 
-;                             *      LAN Descriptor Byte
+;  0x13 SATA/SAS Descriptor Byte
 ;                             *      
-;                             *      +=======+=================================+
-;                             *      | Bits  | Descriptions                    |
-;                             *      +=======+=================================+
-;                             *      | 0 - 1 | SATA / SAS Channel 0            |
-;                             *      |       |                                 |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | Bit    | Description        | |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | 0      | Implemented        | |
-;                             *      |       | +--------+--------------------+ |
-;                             *      |       | | 1      | 0 SATA Device      | |
-;                             *      |       | |        | 1 SAS  Device      | |
-;                             *      |       | +========+====================+ |
-;                             *      +-------+---------------------------------+
-;                             *      | 2 - 3 | SATA / SAS Channel 1            |
-;                             *      |       |                                 |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | Bit    | Description        | |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | 2      | Implemented        | |
-;                             *      |       | +--------+--------------------+ |
-;                             *      |       | | 3      | 0 SATA Device      | |
-;                             *      |       | |        | 1 SAS  Device      | |
-;                             *      |       | +========+====================+ |
-;                             *      +-------+---------------------------------+
-;                             *      | 4 - 5 | SATA / SAS Channel 2            |
-;                             *      |       |                                 |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | Bit    | Description        | |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | 4      | Implemented        | |
-;                             *      |       | +--------+--------------------+ |
-;                             *      |       | | 5      | 0 SATA Device      | |
-;                             *      |       | |        | 1 SAS  Device      | |
-;                             *      |       | +========+====================+ |
-;                             *      +-------+---------------------------------+
-;                             *      | 6 - 7 | SATA / SAS Channel 3            |
-;                             *      |       |                                 |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | Bit    | Description        | |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | 6      | Implemented        | |
-;                             *      |       | +--------+--------------------+ |
-;                             *      |       | | 7      | 0 SATA Device      | |
-;                             *      |       | |        | 1 SAS  Device      | |
-;                             *      |       | +========+====================+ |
-;                             *      +=======+=================================+
+;                             *      +=======+=====+=======+===================+
+;                             *      | SAS/  | Bit | Value | Meaning           |
+;                             *      | SATA  |     |       |                   |
+;                             *      | Port  |     |       |                   |
+;                             *      +=======+=====+=======+===================+
+;                             *      | 0     | 0   | 0     | Not Implemented   |
+;                             *      |       |     +-------+-------------------+
+;                             *      |       |     | 1     | Implemented       |
+;                             *      |       +-----+-------+-------------------+
+;                             *      |       | 1   | 0     | SATA Device       |
+;                             *      |       |     +-------+-------------------+
+;                             *      |       |     | 1     | SAS  Device       |
+;                             *      +-------+-----+-------+-------------------+
+;                             *      | 1     | 2   | 0     | Not Implemented   |
+;                             *      |       |     +-------+-------------------+
+;                             *      |       |     | 1     | Implemented       |
+;                             *      |       +-----+-------+-------------------+
+;                             *      |       | 3   | 0     | SATA Device       |
+;                             *      |       |     +-------+-------------------+
+;                             *      |       |     | 1     | SAS  Device       |
+;                             *      +-------+-----+-------+-------------------+
+;                             *      | 2     | 4   | 0     | Not Implemented   |
+;                             *      |       |     +-------+-------------------+
+;                             *      |       |     | 1     | Implemented       |
+;                             *      |       +-----+-------+-------------------+
+;                             *      |       | 5   | 0     | SATA Device       |
+;                             *      |       |     +-------+-------------------+
+;                             *      |       |     | 1     | SAS  Device       |
+;                             *      +-------+-----+-------+-------------------+
+;                             *      | 3     | 6   | 0     | Not Implemented   |
+;                             *      |       |     +-------+-------------------+
+;                             *      |       |     | 1     | Implemented       |
+;                             *      |       +-----+-------+-------------------+
+;                             *      |       | 7   | 0     | SATA Device       |
+;                             *      |       |     +-------+-------------------+
+;                             *      |       |     | 1     | SAS  Device       |
+;                             *      +-------+-----+-------+-------------------+
 ;                             
 COM0R20_SAS_CONNECTOR_PRESENT		EQU		000000001h
 COM0R20_SATA_SAS_DEVICE		EQU		000000002h
@@ -692,49 +732,67 @@ COM0R20_SAS_CHANNEL_0		EQU		000000000h
 COM0R20_SAS_CHANNEL_1		EQU		000000002h
 COM0R20_SAS_CHANNEL_2		EQU		000000004h
 COM0R20_SAS_CHANNEL_3		EQU		000000006h
-;  0x10 BitMask Macros for 
-;                             *      LAN Descriptor Byte
+;  0x14 LAN Descriptor Byte
 ;                             *      
-;                             *      +=======+===============================+
-;                             *      | Bits  | Descriptions                  |
-;                             *      +=======+===============================+
-;                             *      | 0     | GBE0 Implemented              |
-;                             *      +-------+-------------------------------+
-;                             *      | 1     | GBE1 Implemented              |
-;                             *      +-------+-------------------------------+
-;                             *      | 2     | GBE2 Implemented              |
-;                             *      +-------+-------------------------------+
-;                             *      | 3     | GB1E0 Implemented             |
-;                             *      +-------+-------------------------------+
-;                             *      | 4 - 7 | Reserved                      |
-;                             *      +=======+===============================+
+;                             *      +=======+=======+========================+
+;                             *      | Bits  | Value | Meaning                |
+;                             *      +=======+=======+========================+
+;                             *      | 0     | 0     | GBE0 Not Implemented   |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | GBE0 Implemented       |
+;                             *      +-------+-------+------------------------+
+;                             *      | 1     | 0     | GBE1 Not Implemented   |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | GBE1 Implemented       |
+;                             *      +-------+-------+------------------------+
+;                             *      | 2     | 0     | GBE2 Not Implemented   |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | GBE2 Implemented       |
+;                             *      +-------+-------+------------------------+
+;                             *      | 4 - 7 | Reserved                       |
+;                             *      +=======+================================+
 ;                             
 COM0R20_GBE0_PRESENT		EQU		000000001h
 COM0R20_GBE1_PRESENT		EQU		000000002h
 COM0R20_GBE2_PRESENT		EQU		000000004h
 COM0R20_GB1E0_PRESENT		EQU		000000008h
-;  0x11 BitMask Macros for 
-;                             *      Miscellaneous I/O Descriptor Byte 1
+;  0x15 Miscellaneous I/O Descriptor Byte 1
 ;                             *      
-;                             *      +======+===============================+
-;                             *      | Bits | Descriptions                  |
-;                             *      +======+===============================+
-;                             *      | 0    | WAKE0 Implemented             |
-;                             *      +------+-------------------------------+
-;                             *      | 1    | WAKE1 Implemented             |
-;                             *      +------+-------------------------------+
-;                             *      | 2    | SUS Implemented               |
-;                             *      +------+-------------------------------+
-;                             *      | 3    | BATLOW Implemented            |
-;                             *      +------+-------------------------------+
-;                             *      | 4    | THRMP Implemented             |
-;                             *      +------+-------------------------------+
-;                             *      | 5    | EBROM Implemented             |
-;                             *      +------+-------------------------------+
-;                             *      | 6    | WDT Implemented               |
-;                             *      +------+-------------------------------+
-;                             *      | 7    | AC97 Implemented              |
-;                             *      +======+===============================+
+;                             *      +=======+=======+========================+
+;                             *      | Bits  | Value | Meaning                |
+;                             *      +=======+=======+========================+
+;                             *      | 0     | 0     | WAKE0 Not Implemented  |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | WAKE0 Implemented      |
+;                             *      +-------+-------+------------------------+
+;                             *      | 1     | 0     | WAKE1 Not Implemented  |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | WAKE1 Implemented      |
+;                             *      +-------+-------+------------------------+
+;                             *      | 2     | 0     | SUS Not Implemented    |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | SUS Implemented        |
+;                             *      +-------+-------+------------------------+
+;                             *      | 3     | 0     | BATLOW Not Implemented |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | BATLOW Implemented     |
+;                             *      +-------+-------+------------------------+
+;                             *      | 4     | 0     | THRMP Not Implemented  |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | THRMP Implemented      |
+;                             *      +-------+-------+------------------------+
+;                             *      | 5     | 0     | EBROM Not Implemented  |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | EBROM Implemented      |
+;                             *      +-------+-------+------------------------+
+;                             *      | 6     | 0     | WDT Not Implemented    |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | WDT Implemented        |
+;                             *      +-------+-------+------------------------+
+;                             *      | 7     | 0     | AC97 Not Implemented   |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | AC97 Implemented       |
+;                             *      +-------+-------+------------------------+
 ;                             
 COM0R20_WAKE0_PRESENT		EQU		000000001h
 COM0R20_WAKE1_PRESENT		EQU		000000002h
@@ -744,64 +802,60 @@ COM0R20_THRMP_PRESENT		EQU		000000010h
 COM0R20_EBROM_PRESENT		EQU		000000020h
 COM0R20_WDT_PRESENT		EQU		000000040h
 COM0R20_AC97_PRESENT		EQU		000000080h
-;  0x12 BitMask Macros for 
-;                             *      Miscellaneous I/O Descriptor Byte 2
+;  0x16 Miscellaneous I/O Descriptor Byte 2
 ;                             *      
-;                             *      +=======+===============================+
-;                             *      | Bits  | Descriptions                  |
-;                             *      +=======+===============================+
-;                             *      | 0     | SSC Present                   |
-;                             *      +-------+-------------------------------+
-;                             *      | 1     | SDIO Present                  |
-;                             *      +-------+-------------------------------+
-;                             *      | 2 - 7 | Reserved                      |
-;                             *      +=======+===============================+
+;                             *      +=======+=======+========================+
+;                             *      | Bits  | Value | Meaning                |
+;                             *      +=======+=======+========================+
+;                             *      | 0     | 0     | SSC Not Implemented    |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | SSC Implemented        |
+;                             *      +-------+-------+------------------------+
+;                             *      | 1     | 0     | SDIO Not Implemented   |
+;                             *      |       +-------+------------------------+
+;                             *      |       | 1     | SDIO Implemented       |
+;                             *      +-------+-------+------------------------+
+;                             *      | 2 - 7 | Reserved                       |
+;                             *      +=======+================================+
 ;                             
 COM0R20_SSC_PRESENT		EQU		000000001h
 COM0R20_SDIO_PRESENT		EQU		000000002h
-;  0x13 BitMask Macros for 
-;                             *      Digital Display Interface Descriptor Byte
+;  0x17 Digital Display Interface Descriptor Byte
 ;                             *      
-;                             *      +=======+=================================+
-;                             *      | Bits  | Description                     |
-;                             *      +=======+=================================+
-;                             *      | 0 - 2 | DDI Port 1                      |
-;                             *      |       |                                 |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | Value  | Description        | |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | 0      | Unused             | |
-;                             *      |       | | 1      | eDisplay Port      | |
-;                             *      |       | | 2      | Display Port       | |
-;                             *      |       | | 3      | HDMI/DVI           | |
-;                             *      |       | | 4      | SDVO               | |
-;                             *      |       | | 5-7    | Reserved           | |
-;                             *      |       | +========+====================+ |
-;                             *      +-------+---------------------------------+
-;                             *      | 3 - 5 | DDI Port 2                      |
-;                             *      |       |                                 |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | Value  | Description        | |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | 0      | Unused             | |
-;                             *      |       | | 1      | eDisplay Port      | |
-;                             *      |       | | 2      | Display Port       | |
-;                             *      |       | | 3      | HDMI/DVI           | |
-;                             *      |       | +========+====================+ |
-;                             *      +-------+---------------------------------+
-;                             *      | 5     | Reserved                        |
-;                             *      +-------+---------------------------------+
-;                             *      | 6 - 7 | DDI Port 3                      |
-;                             *      |       |                                 |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | Value  | Description        | |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | 0      | Unused             | |
-;                             *      |       | | 1      | eDisplay Port      | |
-;                             *      |       | | 2      | Display Port       | |
-;                             *      |       | | 3      | HDMI/DVI           | |
-;                             *      |       | +========+====================+ |
-;                             *      +-------+---------------------------------+
+;                             *      +=======+======+=======+==================+
+;                             *      | DDI   | Bits | Value | Meaning          |
+;                             *      | Port  |      |       |                  |
+;                             *      +=======+======+=======+==================+
+;                             *      | 1     | 0-2  | 0     | Not Implemented  |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 1     | eDisplay Port    |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 2     | Display Port     |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 3     | HDMI/DVI         |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 4     | SDVO             |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 5 - 7 | Reserved         |
+;                             *      +-------+------+-------+------------------+
+;                             *      | 2     | 3-4  | 0     | Not Implemented  |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 1     | eDisplay Port    |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 2     | Display Port     |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 3     | HDMI/DVI         |
+;                             *      +-------+------+-------+------------------+
+;                             *      |       | 5    | Reserved                 |
+;                             *      +-------+------+-------+------------------+
+;                             *      | 3     | 6-7  | 0     | Not Implemented  |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 1     | eDisplay Port    |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 2     | Display Port     |
+;                             *      |       |      +-------+------------------+
+;                             *      |       |      | 3     | HDMI/DVI         |
+;                             *      +-------+------+-------+------------------+
 ;                             
 COM0R20_DDI_NOT_USED		EQU		000000000h
 COM0R20_DDI_eDispPort		EQU		000000001h
@@ -812,42 +866,45 @@ COM0R20_DDI_BITMASK		EQU		000000003h
 COM0R20_DDI1_OFFSET		EQU		000000000h
 COM0R20_DDI2_OFFSET		EQU		000000003h
 COM0R20_DDI3_OFFSET		EQU		000000006h
-;  0x14 
-;  0x15 
+;  0x18 Reserved 
+;  0x19 Reserved 
 COM0R20_VGA_PRESENT		EQU		000000010h
 COM0R20_LVDSCB_PRESENT		EQU		000000008h
 COM0R20_LVDSCA_PRESENT		EQU		000000004h
 COM0R20_SDVOCC_PRESENT		EQU		000000002h
 COM0R20_SDVOCB_PRESENT		EQU		000000001h
-;  0x16 +=======+=================================+
-;                             *      | Bits  | Description                     |
-;                             *      +=======+=================================+
-;                             *      | Lane 0                                  |
-;                             *      +-------+---------------------------------+
-;                             *      | 0 - 2 | +========+====================+ |
-;                             *      |       | | Value  | Description        | |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | 0      | Unused             | |
-;                             *      |       | | 1      | 1  Lane            | |
-;                             *      |       | | 2      | 2  Lanes           | |
-;                             *      |       | | 3      | 4  Lanes           | |
-;                             *      |       | | 4      | 8  Lanes           | |
-;                             *      |       | | 5      | 16 Lanes           | |
-;                             *      |       | | 6      | 32 Lanes           | |
-;                             *      |       | | 7      | Reserved           | |
-;                             *      |       | +========+====================+ |
-;                             *      +-------+---------------------------------+
-;                             *      | 3     | +========+====================+ |
-;                             *      |       | | Value  | Description        | |
-;                             *      |       | +========+====================+ |
-;                             *      |       | | 0      | Gen 1              | |
-;                             *      |       | | 1      | Gen 2              | |
-;                             *      |       | +========+====================+ |
-;                             *      +-------+---------------------------------+
+;  0x1A Lane Information
+;                             *      +=======+=======+======================+
+;                             *      | Bits  | Value | Meaning              |
+;                             *      +=======+=======+======================+
+;                             *      | 0 - 2 |  0    | Not Implemented      |
+;                             *      |       +-------+----------------------+
+;                             *      |       |  1    |  x1 Link Width       |
+;                             *      |       +-------+----------------------+
+;                             *      |       |  2    |  x2 Link Width       |
+;                             *      |       +-------+----------------------+
+;                             *      |       |  3    |  x4 Link Width       |
+;                             *      |       +-------+----------------------+
+;                             *      |       |  4    |  x8 Link Width       |
+;                             *      |       +-------+----------------------+
+;                             *      |       |  5    | x16 Link Width       |
+;                             *      |       +-------+----------------------+
+;                             *      |       |  6    | x32 Link Width       |
+;                             *      |       +-------+----------------------+
+;                             *      |       |  7    | Reserved             |
+;                             *      +-------+-------+----------------------+
+;                             *      | 3     |  0    | Gen 1                |
+;                             *      |       +-------+----------------------+
+;                             *      |       |  1    | Gen 2                |
+;                             *      +-------+-------+----------------------+
 ;                             
-@tag_COM0R20_BP_s		STRUCT 1t
-EepHdr		StdEep_t		<>
-BPType		uint8_t		?
+COM0R20_PCIEx_LANE_WIDTH_MASK		EQU		000000007h
+COM0R20_PCIEx_GEN2		EQU		000000008h
+@tag_COM0R20_CB_s		STRUCT 1t
+EeePHdr		EeePCmn_t		<>
+GenId		uint8_t		4t DUP (?)
+DevId		UDIdEep_t		<>
+CBType		uint8_t		?
 SpecRev		uint8_t		?
 UsbDesc		uint8_t		?
 SasDesc		uint8_t		?
@@ -858,9 +915,9 @@ DDIDesc		uint8_t		?
 Reserved0		uint8_t		?
 Reserved1		uint8_t		?
 LaneMap		uint8_t		16t DUP (?)
-@tag_COM0R20_BP_s		ENDS
+@tag_COM0R20_CB_s		ENDS
 
-COM0R20_BP_t		TYPEDEF		@tag_COM0R20_BP_s
+COM0R20_CB_t		TYPEDEF		@tag_COM0R20_CB_s
 
 ;  
 ;  * Pci Express Lane Mapping 
@@ -950,9 +1007,11 @@ COM0R20_BP_t		TYPEDEF		@tag_COM0R20_BP_s
 ;  * Module EEPROM Header
 ;  *
 ;  
-;  0x00 EEprom Id          
-;  0x0C Module Type        
-;  0x0D 
+;  0x00 EeeP Common Header 
+;  0x06 "COM0"   
+;  0x0A Unique Device Id   
+;  0x10 Module Type        
+;  0x11 COM0 Specification Revision
 ;                             *      +=======+==================+
 ;                             *      | Bits  | Descriptions     |
 ;                             *      +=======+==================+
@@ -966,7 +1025,9 @@ COM0R20_BP_t		TYPEDEF		@tag_COM0R20_BP_s
 ;     * 
 ;     
 @tag_COM0R20_M_s		STRUCT 1t
-EepHdr		StdEep_t		<>
+EeePHdr		EeePCmn_t		<>
+GenId		uint8_t		4t DUP (?)
+DevId		UDIdEep_t		<>
 MType		uint8_t		?
 SpecRev		uint8_t		?
 @tag_COM0R20_M_s		ENDS
@@ -978,9 +1039,9 @@ COM0R20_BLOCK_ID_EXP_CARD_DESC		EQU		0000000e0h
 ;  * Express Card Slot Descriptor
 ;  *
 ;  
-;  0x00 Block Header 
+;  0x00 Dynamic Block Header 
 ;  0x03 0 - 1 
-;  0x04 0 - 31 
+;  0x04 
 ;                                    *      +=======+==================+
 ;                                    *      | Bits  | Descriptions     |
 ;                                    *      +=======+==================+
@@ -1001,7 +1062,7 @@ COM0R20_BLOCK_ID_EXP_CARD_DESC		EQU		0000000e0h
 ;                                    
 COM0R20_EXPCARD_MAP_EOL		EQU		00000007fh
 @tag_ExpCardBlock_s		STRUCT 1t
-cHdr		BlockIdHdr_t		<>
+DBHdr		DBlockIdHdr_t		<>
 ExpressCardNumber		uint8_t		?
 ComExpressPort		uint8_t		?
 SwitchPortNumber		uint8_t		1t DUP (?)
