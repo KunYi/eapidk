@@ -42,7 +42,7 @@
 extern "C" {
 #endif
 
-typedef enum EApiCmdTypes_e{
+enum EApiCmdTypes_e{
   EApiAPI2CStdIndex=1,
   EApiAPI2CExtIndex=2
 };

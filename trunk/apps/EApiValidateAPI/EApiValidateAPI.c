@@ -347,6 +347,19 @@ const EApiI2CType_t EApiI2CBuses[]={
   {EAPI_ID_I2C_LVDS_2  , TEXT("LVDS 2 I2C/DDC")},
   {0x00000F00          , TEXT("Unsupported"   )},
 };
+void printHex(
+	__IN void * pBuffer,
+	__IN size_t ByteCount
+	)
+{
+  	size_t i;
+  	for(i=0; i<ByteCount; i++){
+		EAPI_MSG_OUT(
+		  	TEXT("%02")TEXT(PRIX8), 
+			((uint8_t*)pBuffer)[i]
+		);
+	}
+}
 void EApiValidateI2CApi (void)
 {
   TCHAR TmpStrBuf[1024];
@@ -370,12 +383,12 @@ void EApiValidateI2CApi (void)
       if(ReturnValue==EAPI_STATUS_SUCCESS)
       {
         EAPI_MSG_OUT(
-          TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : %08")TEXT(PRIX32)TEXT("%08")TEXT(PRIX32)TEXT("\n"), 
+          TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : "), 
           EApiI2CBuses[i].Desc      , 
-          I2CDevices[i2].DeviceAddr , 
-          ((uint32_t*)TmpStrBuf)[0] , 
-          ((uint32_t*)TmpStrBuf)[1]
+          I2CDevices[i2].DeviceAddr
           );
+	printHex(TmpStrBuf, 8);
+        EAPI_MSG_OUT(TEXT("\n"));
 #if DESTRUCTIVE_ALLOWED
         ReturnValue=EApiAHI2CWriteEeprom(
           EApiI2CBuses[i].Id, 
@@ -387,12 +400,12 @@ void EApiValidateI2CApi (void)
         if(ReturnValue==EAPI_STATUS_SUCCESS)
         {
           EAPI_MSG_OUT(
-            TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : %08")TEXT(PRIX32)TEXT("%08")TEXT(PRIX32)TEXT("\n"), 
+            TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : "), 
             EApiI2CBuses[i].Desc      , 
-            I2CDevices[i2].DeviceAddr , 
-            ((uint32_t*)TmpStrBuf)[0] , 
-            ((uint32_t*)TmpStrBuf)[1]
+            I2CDevices[i2].DeviceAddr
             );
+          printHex(TmpStrBuf, 8);
+          EAPI_MSG_OUT(TEXT("\n"));
         }
         else
         {
@@ -547,11 +560,11 @@ void EApiValidateStorageApi(void)
       if(ReturnValue==EAPI_STATUS_SUCCESS)
       {
         EAPI_MSG_OUT(
-          TEXT("%-30s : %08")TEXT(PRIX32)TEXT("%08")TEXT(PRIX32)TEXT("\n"), 
-          EApiStorageDevices[i].Desc, 
-          ((uint32_t*)TmpStrBuf)[0] , 
-          ((uint32_t*)TmpStrBuf)[1]
+          TEXT("%-30s : "), 
+          EApiStorageDevices[i].Desc
           );
+	printHex(TmpStrBuf, 8);
+        EAPI_MSG_OUT(TEXT("\n"));
 #if DESTRUCTIVE_ALLOWED
         ReturnValue=EApiAHWriteStorage(
           EApiStorageDevices[i].Id      , 
@@ -562,11 +575,11 @@ void EApiValidateStorageApi(void)
         if(ReturnValue==EAPI_STATUS_SUCCESS)
         {
           EAPI_MSG_OUT(
-            TEXT("%-30s : %08")TEXT(PRIX32)TEXT("%08")TEXT(PRIX32)TEXT("\n"), 
-            EApiStorageDevices[i].Desc, 
-            ((uint32_t*)TmpStrBuf)[0] , 
-            ((uint32_t*)TmpStrBuf)[1]
+            TEXT("%-30s : "), 
+            EApiStorageDevices[i].Desc
             );
+	  printHex(TmpStrBuf, 8);
+          EAPI_MSG_OUT(TEXT("\n"));
         }
         else
         {

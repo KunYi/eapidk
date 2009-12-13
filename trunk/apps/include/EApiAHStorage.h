@@ -41,6 +41,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 uint32_t 
 EApiAHWriteStorage(
     __IN  uint32_t         Id          , 

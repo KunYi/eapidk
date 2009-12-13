@@ -129,13 +129,13 @@ EApiAHCreateErrorString(
 /* Dynamic pBuffer Allocation */
 
 
-void 
+uint32_t 
 EApiAHGetStringAlloc(
     __IN  uint32_t        StringID, /* EApi String ID */
     __OUT TCHAR * *const  pString   /* Pointer to where string pointer should be stored */
     );
 
-void 
+uint32_t 
 EApiAHCreateErrorStringAlloc(
     __IN  uint32_t        StatusCode  ,
     __OUT TCHAR * *const   pString  /* Pointer to where string pointer should be stored */
