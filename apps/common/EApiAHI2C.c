@@ -233,7 +233,7 @@ EApiAHI2CWriteEeprom(
       CurOffset+=BlockLength;
       BlockLength=BlockLengthStd; /* Restore Standard Block Length */
       if(pDDesc->WRecTimems)
-        EApiSleep((DWORD)pDDesc->WRecTimems); /* Allow Device Time to Recover */
+        EApiSleep((uint32_t)pDDesc->WRecTimems); /* Allow Device Time to Recover */
     }
     return ReturnValue;
 }

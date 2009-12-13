@@ -94,7 +94,8 @@ size_t EApiAHCreateErrorString(
   }
   return KUXE_INVALID_STRLEN;
 }
-void EApiAHCreateErrorStringAlloc(
+uint32_t
+EApiAHCreateErrorStringAlloc(
   __IN uint32_t         StatusCode  ,
   __OUT TCHAR * *const  pString 
   )
@@ -102,7 +103,7 @@ void EApiAHCreateErrorStringAlloc(
   unsigned i;
   size_t StrLen;
 
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateErrorStringAlloc, , pString);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateErrorStringAlloc, EAPI_STATUS_INVALID_PARAMETER, pString);
 
   for(i=0; i<ARRAY_SIZE(ErrorLookup);i++)
   {
@@ -111,7 +112,7 @@ void EApiAHCreateErrorStringAlloc(
       *pString=malloc(StrLen*sizeof(TCHAR));
       if(*pString!=NULL)
         EApiStrCpy(*pString, StrLen, ErrorLookup[i].ErrorString);
-      return;
+      return EAPI_STATUS_SUCCESS;
     }
   }
   *pString=malloc(UNKNOWN_ERR_LEN*sizeof(TCHAR));
@@ -121,7 +122,7 @@ void EApiAHCreateErrorStringAlloc(
       TEXT("UNKNOWN ERROR(0x%08")TEXT(PRIX32)TEXT(")"), 
       StatusCode
       );
-  return;
+  return StatusCode;
 }
 
 size_t 
@@ -160,7 +161,7 @@ EApiAHGetString(
   return StringLenLcl;
 }
 
-void 
+uint32_t 
 EApiAHGetStringAlloc(
     __IN  uint32_t        StringID, /* EApi String ID */
     __OUT TCHAR * *const  pString   /* Pointer to where string 
@@ -171,7 +172,7 @@ EApiAHGetStringAlloc(
   uint32_t StringLen=0;
   uint32_t StringBufferLenBck=0;
   uint32_t ReturnValue;
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHGetString, KUXE_VOID_RETURN, pString);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHGetString, EAPI_STATUS_INVALID_PARAMETER, pString);
   *pString=NULL;
   ReturnValue=EApiBoardGetString(StringID, *pString, &StringLen);
   switch(ReturnValue){
@@ -182,7 +183,7 @@ EApiAHGetStringAlloc(
       EAPI_APP_RETURN_ERROR_IF(
           EApiAHGetStringAlloc, 
           (*pString==NULL), 
-          , 
+          EAPI_STATUS_ALLOC_ERROR, 
           TEXT("Memory Allocation Error")
           );
 
@@ -191,14 +192,14 @@ EApiAHGetStringAlloc(
       EAPI_APP_RETURN_ERROR_IF(
           EApiAHGetStringAlloc, 
           (StringLen>StringBufferLenBck), 
-          , 
+          EAPI_STATUS_ERROR, 
           TEXT("Interface Returning Different String Lengths")
           );
       if(EApiStrLen(*pString, StringBufferLenBck)==StringBufferLenBck)
       {
         EAPI_FORMATED_MES(E, 
             EApiAHGetStringAlloc, 
-            , 
+            EAPI_STATUS_ERROR, 
             TEXT("Returned String Missing Terminating \\0 Character." )
             );
         (*pString)[StringBufferLenBck-1]=TEXT('\0');
@@ -209,7 +210,7 @@ EApiAHGetStringAlloc(
       EApiAHCreateErrorStringAlloc(ReturnValue, pString);
       break;
   }
-  return ;
+  return ReturnValue;
 }
 int
 EApiAHCreateDecimalString(

@@ -81,7 +81,7 @@ StaticLibFName:=$(LibName).a
 #DBGOPT:=-gstabs+
 DBGOPT:=-g
 RELOPT:=-O3
-INCLUDS=-I../../include/linux -I../ -I../include -I../../INCLUDE
+INCLUDS=-I../../include/linux -I../ -I../include -I../../include
 CFLAGS:=$(CFLAGS) -Wall -W -Werror -pedantic $(INCLUDS)
 ifneq ($(OS), Windows_NT)
 ifndef INTERPRETER
