@@ -80,7 +80,7 @@ EApiStrCpy(
     __IN size_t             StrBufLen    , 
     __IN const TCHAR *const StringSource
     );
-size_t 
+int 
 __cdecl 
 EApiSprintf ( 
     __IN TCHAR *const       pBuffer   ,
@@ -94,7 +94,7 @@ EApiSprintf (
 /* Common pBuffer usage Model */
 
 typedef 
-size_t 
+int 
 CreateStringFunction(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */

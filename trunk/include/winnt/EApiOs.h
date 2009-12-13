@@ -85,11 +85,12 @@ void EApiSleepus(unsigned long ms);
 #define         MSVC_2003       1300 /* .NET */
 #define         MSVC_2005       1400
 #define         MSVC_2008       1500
+#define         MSVC_2010       1600
 
 /* unreferenced formal parameter */
-#  if ( _MSC_VER >= MSVC1_5 )
+#  if ( _MSC_VER >= MSVC_1_5 )
 #    pragma warning(disable:4127) /* conditional expression is constant */
-#endif /* if ( _MSC_VER >= MSVC1_5 ) */
+#endif /* if ( _MSC_VER >= MSVC_1_5 ) */
 #endif /* _MSC_VER */
 
 #endif /* _EAPIOS_H_ */

@@ -39,6 +39,8 @@ typedef struct ErrorLookupTbl_S{
   const TCHAR *const  ErrorString;
 }ErrorLookupTbl_t;
 
+#define KUXE_INVALID_STRLEN ((size_t )-1)
+
 const ErrorLookupTbl_t ErrorLookup[]={
   {EAPI_STATUS_NOT_INITIALIZED        , TEXT("EAPI_STATUS_NOT_INITIALIZED"          )},
   {EAPI_STATUS_INITIALIZED            , TEXT("EAPI_STATUS_INITIALIZED"              )},
@@ -69,8 +71,8 @@ size_t EApiAHCreateErrorString(
 {
   unsigned i;
 
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateErrorString, ((size_t)-1), pString);
-  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateErrorString, ((size_t)-1), StrBufLen);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateErrorString, KUXE_INVALID_STRLEN, pString);
+  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateErrorString, KUXE_INVALID_STRLEN, StrBufLen);
 
   for(i=0; i<ARRAY_SIZE(ErrorLookup);i++)
   {
@@ -80,7 +82,7 @@ size_t EApiAHCreateErrorString(
         EApiStrCpy(pString, StrBufLen, ErrorLookup[i].ErrorString);
         return EAPI_strlen (pString);
       }
-      return ((size_t)-1);
+      return KUXE_INVALID_STRLEN;
     }
   }
   if(pString!=NULL){
@@ -90,7 +92,7 @@ size_t EApiAHCreateErrorString(
       );
     return EAPI_strlen (pString);
   }
-  return ((size_t)-1);
+  return KUXE_INVALID_STRLEN;
 }
 void EApiAHCreateErrorStringAlloc(
   __IN uint32_t         StatusCode  ,
@@ -132,8 +134,8 @@ EApiAHGetString(
   uint32_t ReturnValue;
   uint32_t StringLenLcl=(uint32_t)StrBufLen;
   size_t StringBufferLenBck=StrBufLen;
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHGetString, ((size_t)-1), pString);
-  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHGetString, ((size_t)-1), StrBufLen);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHGetString, KUXE_INVALID_STRLEN, pString);
+  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHGetString, KUXE_INVALID_STRLEN, StrBufLen);
 
   ReturnValue=EApiBoardGetString(StringID, pString, &StringLenLcl);
   if(ReturnValue!=EAPI_STATUS_SUCCESS)
@@ -142,14 +144,14 @@ EApiAHGetString(
   EAPI_APP_RETURN_ERROR_IF(
       EApiAHGetStringAlloc, 
       (StringLenLcl>StringBufferLenBck), 
-      ((size_t)-1), 
+      KUXE_INVALID_STRLEN, 
       TEXT("Interface Returning Different String Lengths")
       );
   if(EApiStrLen(pString, StringBufferLenBck)==StringBufferLenBck)
   {
      EAPI_FORMATED_MES(E, 
          EApiAHGetString, 
-         ((size_t)-1), 
+         KUXE_INVALID_STRLEN, 
          TEXT("Returned String Missing Terminating \\0 Character." )
          );
     pString[StringBufferLenBck-1]=TEXT('\0');
@@ -169,7 +171,7 @@ EApiAHGetStringAlloc(
   uint32_t StringLen=0;
   uint32_t StringBufferLenBck=0;
   uint32_t ReturnValue;
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHGetString, , pString);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHGetString, KUXE_VOID_RETURN, pString);
   *pString=NULL;
   ReturnValue=EApiBoardGetString(StringID, *pString, &StringLen);
   switch(ReturnValue){
@@ -209,73 +211,73 @@ EApiAHGetStringAlloc(
   }
   return ;
 }
-size_t
+int
 EApiAHCreateDecimalString(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */
     __IN  const uint32_t  StrBufLen   /* String pBuffer Length */
     )
 {
-    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, ((size_t)-1), pString);
-    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, ((size_t)-1), StrBufLen);
+    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
+    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
     return EApiSprintf(pString, StrBufLen, TEXT("%lu"), Value);
 }
-size_t
+int
 EApiAHCreateHexString(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */
     __IN  const uint32_t  StrBufLen   /* String pBuffer Length */
     )
 {
-    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, ((size_t)-1), pString);
-    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, ((size_t)-1), StrBufLen);
+    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
+    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
     return EApiSprintf(pString, StrBufLen, TEXT("0x%08")TEXT(PRIX32), Value);
 }
-size_t
+int
 EApiAHCreateVoltageString(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */
     __IN  const uint32_t  StrBufLen   /* String pBuffer Length */
     )
 {
-    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, ((size_t)-1), pString);
-    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, ((size_t)-1), StrBufLen);
+    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
+    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
     Value/=10;
     return EApiSprintf(pString, StrBufLen, TEXT("%lu.%02lu Volts"), Value/100, Value%100);
 }
-size_t
+int
 EApiAHCreateRotationsString(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */
     __IN  const uint32_t  StrBufLen   /* String pBuffer Length */
     )
 {
-    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, ((size_t)-1), pString);
-    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, ((size_t)-1), StrBufLen);
+    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
+    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
     return EApiSprintf(pString, StrBufLen, TEXT("%lu RPM"), Value);
 }
-size_t
+int
 EApiAHCreateTempString(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */
     __IN  const uint32_t  StrBufLen   /* String pBuffer Length */
     )
 {
-    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, ((size_t)-1), pString);
-    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, ((size_t)-1), StrBufLen);
+    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
+    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
     Value-=EAPI_KELVINS_OFFSET;
     return EApiSprintf(pString, StrBufLen, TEXT("% li.%lu Celcius"), ((int32_t)Value)/10, Value%10);
 }
-size_t
+int
 EApiAHCreateTimeString(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */
     __IN  const uint32_t  StrBufLen   /* String pBuffer Length */
     )
 {
-    size_t StrLength=0;
-    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateTimeString, ((size_t)-1), pString);
-    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateTimeString, ((size_t)-1), StrBufLen);
+    int StrLength=0;
+    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateTimeString, -1, pString);
+    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateTimeString, -1, StrBufLen);
     if(Value/365/24/60)
       StrLength+=EApiSprintf(&pString[StrLength], StrBufLen-StrLength, TEXT("%lu Years "), Value/365/24/60   );
     if(StrLength||((Value/24/60)%365))
@@ -287,7 +289,7 @@ EApiAHCreateTimeString(
 }
 
 
-size_t
+int
 EApiAHCreateSVersionString(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */
@@ -295,19 +297,20 @@ EApiAHCreateSVersionString(
     )
 {
     /* 255.255 */
-    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateSVersionString, ((size_t)-1), pString);
-    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateSVersionString, ((size_t)-1), StrBufLen);
+    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateSVersionString, -1, pString);
+    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateSVersionString, -1, StrBufLen);
     return EApiSprintf(pString, StrBufLen, TEXT("%u.%u"), EAPI_VER_GET_VER(Value), EAPI_VER_GET_REV(Value) );
 }
-size_t EApiAHCreateVersionString(
+int 
+EApiAHCreateVersionString(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */
     __IN  const uint32_t  StrBufLen   /* String pBuffer Length */
     )
 {
     /* 255.255.65535 */
-    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateVersionString, ((size_t)-1), pString);
-    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateVersionString, ((size_t)-1), StrBufLen);
+    EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateVersionString, -1, pString);
+    EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateVersionString, -1, StrBufLen);
     return EApiSprintf(pString, StrBufLen, TEXT("%u.%u.%u"), EAPI_VER_GET_VER(Value), EAPI_VER_GET_REV(Value), EAPI_VER_GET_BUILD(Value) );
 }
 
@@ -328,7 +331,7 @@ TCHAR CompressedAsciiLookup[]={
 #endif
 };
 
-size_t 
+int 
 EApiAHCreatePNPIDString(
     __IN  uint32_t        Value     , /* Input Value to be interpreted */ 
     __OUT TCHAR * const   pString   , /* Pointer To String pBuffer */
@@ -337,12 +340,12 @@ EApiAHCreatePNPIDString(
 {
   int cnt;
   unsigned short PNPID=(unsigned short)BYTE_SWAP_W(Value);
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreatePNPIDString, ((size_t)-1), pString);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreatePNPIDString, -1, pString);
   if(StrBufLen<4){
-    EAPI_APP_RETURN_ERROR(EApiAHCreatePNPIDString, ((size_t)-1), "pBuffer Too Short");
+    EAPI_APP_RETURN_ERROR(EApiAHCreatePNPIDString, -1, "pBuffer Too Short");
   }
   if(PNPID&(1<<15)){
-    return ((size_t)-1);
+    return -1;
   }
   for(cnt=0; cnt < 3; cnt++){
     pString[2 - cnt]=CompressedAsciiLookup[(PNPID>>(cnt*5))&0x1F];
@@ -433,7 +436,7 @@ EApiStrCpy(
   StringDest[StrBufLen-1]=TEXT('\0');
   return StringDest;
 }
-size_t 
+int 
 __cdecl 
 EApiSprintf ( 
     __IN TCHAR *const       pBuffer   ,
@@ -442,16 +445,16 @@ EApiSprintf (
     ...
     )
 {
-  size_t ReturnValue;
+  int ReturnValue;
   va_list arg;
 #if 0
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiSprintf, ((size_t)-1), pBuffer);
-  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiSprintf, ((size_t)-1), BufferLen);
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiSprintf, ((size_t)-1), fmt);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiSprintf, -1, pBuffer);
+  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiSprintf, -1, BufferLen);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiSprintf, -1, fmt);
 #else
-  if(pBuffer  ==NULL) return ((size_t)-1);
-  if(fmt      ==NULL) return ((size_t)-1);
-  if(BufferLen==0   ) return ((size_t)-1);
+  if(pBuffer  ==NULL) return -1;
+  if(fmt      ==NULL) return -1;
+  if(BufferLen==0   ) return -1;
 #endif
 
   va_start(arg, fmt);
