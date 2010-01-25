@@ -119,7 +119,7 @@ function BUILD_LIB {
   VariableInc "$EAPILIBBASE/LibVer.h" "LIB_BUILD"
   return $ReturnValue
 }
-function BUILD_APP {
+function BUILD_APP1 {
   cd $EAPIAPPSBASE/EApiValidateAPI/linux/
   echo \#
   echo \# Building $EAPIAPPSBASE/EApiValidateAPI/linux/
@@ -128,6 +128,22 @@ function BUILD_APP {
   local ReturnValue=$?
   cd $ScriptDir
   VariableInc "$EAPIAPPSBASE/EApiValidateAPI/AppVer.h" "APP_BUILD"
+  return $ReturnValue
+}
+function BUILD_APP2 {
+  cd $EAPIAPPSBASE/EeePProg/linux/
+  echo \#
+  echo \# Building $EAPIAPPSBASE/EeePProg/linux/
+  echo \#
+  RunProg make $2
+  local ReturnValue=$?
+  cd $ScriptDir
+  VariableInc "$EAPIAPPSBASE/EeePProg/AppVer.h" "APP_BUILD"
+  return $ReturnValue
+}
+function BUILD_APPS {
+  BUILD_APP1
+  BUILD_APP2
   return $ReturnValue
 }
 function INSTALL {
@@ -209,7 +225,7 @@ function Usage {
 	echo I    Please Enter a program description here
 	echo I  
 	echo I  Usage:
-	echo I    $(basename $0) [BUILD_APP\|BUILD_LIB\|PACK]
+	echo I    $(basename $0) [BUILD_APPS\|BUILD_APP1\|BUILD_APP2\|BUILD_LIB\|PACK]
 	echo I  
 	NormalExit 0
 }
@@ -229,6 +245,8 @@ done
 
 if [ "$1" != "" ]; then 
   if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APP" ]; then BUILD_APP $2; NormalExit $?; fi
+  if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APP1"]; then BUILD_APP1 $2; NormalExit $?; fi
+  if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APP2"]; then BUILD_APP2 $2; NormalExit $?; fi
   if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_LIB" ]; then BUILD_LIB $2; NormalExit $?; fi
   if [ `echo $1 | tr [:lower:] [:upper:]` = "PACK"      ]; then PACK $2;      NormalExit $?; fi
   if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_INC" ]; then BUILD_INC $2; NormalExit $?; fi
