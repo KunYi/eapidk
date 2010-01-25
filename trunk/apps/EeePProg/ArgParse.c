@@ -150,7 +150,7 @@ PrintUsage(
     
     pArgDesc=pCmdDesc->pArgs;
     for(stArgCount=0; stArgCount< pCmdDesc->stArgs; stArgCount++){
-      fprintf( OutStream, "|                                  Arg%u ", stArgCount);
+      fprintf( OutStream, "|                                  Arg%lu ", (unsigned long)stArgCount);
       PrintStringBlock(
           OutStream         ,
           pArgDesc->cszHelp , 
@@ -200,7 +200,7 @@ ParseArgs(
       if(pszCurArg[0][1]=='-'){
         while(stI --){
           if(!strcmp(pszCurArg[0]+2, pCurArgDesc->cszLong)){
-            printf("[%u][%u]--%s==--%s\n", siArgc, stI, pszCurArg[0]+2, pCurArgDesc->cszLong);
+            printf("[%u][%lu]--%s==--%s\n", siArgc, (unsigned long)stI, pszCurArg[0]+2, pCurArgDesc->cszLong);
             ++uiValid;
             stI=0;
             continue;
@@ -210,7 +210,7 @@ ParseArgs(
       }else{
         while(stI --){
           if(pszCurArg[0][1]==pCurArgDesc->cShort){
-            printf("[%u][%u]-%c==-%c\n", siArgc, stI, pszCurArg[0][1], pCurArgDesc->cShort);
+            printf("[%u][%lu]-%c==-%c\n", siArgc, (unsigned long)stI, pszCurArg[0][1], pCurArgDesc->cShort);
             ++uiValid;
             stI=0;
             continue;
