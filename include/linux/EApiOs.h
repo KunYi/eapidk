@@ -74,7 +74,7 @@
   #define __cdecl
 #endif
 
-void EApiSleepns(unsigned long long ns);
+void EApiSleepns(unsigned long ns);
 #define EAPI_EMUL_DELAY_NS(x) EApiSleepns(x)
 
 #ifndef EApiSleep
@@ -88,6 +88,7 @@ void EApiSleepns(unsigned long long ns);
 #  define EAPI_strncpy        wcsncpy
 #  define EAPI_vsnprintf      vsnwprintf
 #  define EAPI_fprintf        fwprintf
+#  define EAPI_printf         wprintf
 #  define EAPI_fopen          _wfopen
 #else
 #  define TEXT(x) x
@@ -97,6 +98,7 @@ void EApiSleepns(unsigned long long ns);
 #  define EAPI_vsnprintf      vsnprintf
 #  define EAPI_fprintf        fprintf
 #  define EAPI_fopen          fopen
+#  define EAPI_printf         printf
 #endif
 
 #endif /* _EAPIOS_H_ */

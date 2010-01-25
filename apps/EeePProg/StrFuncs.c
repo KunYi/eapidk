@@ -30,11 +30,25 @@
 #include <EeePApp.h>
 
 void 
-skipWhiteSpaces(
+skipWhiteSpacesc(
         const char **const pcszStr
         )
 {
   const char * pcszStart;
+  if(pcszStr==NULL) return ;
+  if(*pcszStr==NULL) return ;
+  pcszStart=*pcszStr;
+  while((!iseol(*pcszStart))&&iswhitespace(*pcszStart))
+    pcszStart++;
+  *pcszStr=pcszStart;
+}
+
+void 
+skipWhiteSpaces(
+        char **const pcszStr
+        )
+{
+  char * pcszStart;
   if(pcszStr==NULL) return ;
   if(*pcszStr==NULL) return ;
   pcszStart=*pcszStr;
@@ -81,9 +95,9 @@ ulConvertStr2Num(
     char *pcszDummy;
     if(pcszStr==NULL) return 0;
     if(pcszEnd==NULL) pcszEnd=&pcszDummy ;
-    skipWhiteSpaces(&pcszStr);
-    strtoul(pcszStr, &pcszEndH, 16);
-    strtoul(pcszStr, &pcszEndB,  2);
+    skipWhiteSpacesc(&pcszStr);
+    ulReturnVal=strtoul(pcszStr, &pcszEndH, 16);
+    ulReturnVal=strtoul(pcszStr, &pcszEndB,  2);
     /* 
      *  0xff
      */

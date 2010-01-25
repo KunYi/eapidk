@@ -139,11 +139,12 @@ SMBIOS_CE_Help(
 EApiStatusCode_t
 SMBIOS_CE_Element(
     struct  CfgElementDesc_s *pElementDesc, 
-    CCElement_t *pCurElement,
+    void        *pElement,
     char          *pszValue
   )
 { 
   EApiStatusCode_t EApiStatusCode;
+  CCElement_t *pCurElement=pElement;
   char *pszCEType, *pszMinCount, *pszMaxCount;
   unsigned long uiCEType, uiMinCount, uiMaxCount;
   pszCEType=pszValue;
@@ -174,7 +175,7 @@ SMBIOS_CE_Element(
     uiCEType|=0x80;
 
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
-    printf("SMBIOS_CE_Element = Unknown Token, %s\n", pElementDesc);
+    printf("SMBIOS_CE_Element = Unknown Token, %s\n", pszValue);
     return EApiStatusCode;
   }
 
@@ -252,7 +253,7 @@ COM0PCIe_Help(
 EApiStatusCode_t
 COM0PCIe_Element(
     struct  CfgElementDesc_s *pElementDesc, 
-    unsigned long *pCurElement,
+    void          *pCurElement,
     char          *pszValue
   )
 { 
@@ -301,7 +302,7 @@ COM0PCIe_Element(
     printf("COM0PCIe_Element = Invalid Starting Lane/Width, %s/%s\n", pszStartingLane, pszWidth);
     return EAPI_STATUS_ERROR;
   }
-  *pCurElement=(uiStartingLane<<16)|(uiWidth<<8)|(uiGen);
+  *(unsigned long*)pCurElement=(uiStartingLane<<16)|(uiWidth<<8)|(uiGen);
 #if TEST_EEPCFG
 /*   printf("COM0PCIe_Element = 0x%06lX, %s\n", *pCurElement, pszValue); */
 #endif
@@ -453,8 +454,8 @@ typedef struct SmbiosModule_s{
   unsigned long aulHandles        [20];
 }SmbiosModule_t;
 
-SmbiosModule_t COM0_SMBIOS_Module ={0xE000,};
-SmbiosModule_t COM0_SMBIOS_Carrier={0xE001,};
+SmbiosModule_t COM0_SMBIOS_Module ={{0xE000},{NULL},{NULL},{NULL},{NULL},{NULL},{0},{NULL},{0},{0},{0},{0}};
+SmbiosModule_t COM0_SMBIOS_Carrier={{0xE001},{NULL},{NULL},{NULL},{NULL},{NULL},{0},{NULL},{0},{0},{0},{0}};
 
 
 typedef struct SmbiosSystem_s{
@@ -469,7 +470,7 @@ typedef struct SmbiosSystem_s{
   char *        aszFamily         [1];
 }SmbiosSystem_t;
 
-SmbiosSystem_t COM0_SMBIOS_System={0xE002,};
+SmbiosSystem_t COM0_SMBIOS_System={{0xE002},{NULL},{NULL},{NULL},{NULL},{{0}},{NULL},{0},{NULL}};
 
 typedef struct SmbiosChassis_s{
   unsigned long aulHandle         [1];
@@ -485,7 +486,7 @@ typedef struct SmbiosChassis_s{
   CCElement_t   aCElements        [20];
 }SmbiosChassis_t;
 
-SmbiosChassis_t COM0_SMBIOS_Chassis={0xE003,};
+SmbiosChassis_t COM0_SMBIOS_Chassis={{0xE003},{NULL},{0},{NULL},{NULL},{NULL},{0},{0},{0},{0},{{0,0,0}}};
 
 typedef struct EeePLFP_s{
   unsigned long aulInterface   [1];
@@ -609,8 +610,8 @@ typedef struct COM0R20_ECard_s{
   unsigned long aulInsideCrc [1];
 }COM0R20_ECard_t;
 
-COM0R20_ECard_t COM0R20_ECard0_cgf={0,};
-COM0R20_ECard_t COM0R20_ECard1_cgf={1,};
+COM0R20_ECard_t COM0R20_ECard0_cgf={{0},{0},{0},{0},{0}};
+COM0R20_ECard_t COM0R20_ECard1_cgf={{1},{0},{0},{0},{0}};
 
 typedef struct COM0R20_SERIAL_s{
   unsigned long aulSER0_IOADDRESS        [1];
@@ -1023,13 +1024,13 @@ HandleCOM0R20CBHeaderBlock(
       uiEndPort =uiBasePort+(1<<(uiEncWidth-1));
       uiGen     =(*pulCurPort&UINT8_MAX);
       for(i2=uiBasePort;i2<uiEndPort;i2++){
-        //
-        //  4 PCIe Gen Per Byte
-        //
+        /*
+         *  4 PCIe Gen Per Byte
+         */
         pHeader->PCIeGen[i2/4]|=uiGen<<((i2%4)*2);
-        //
-        //  2 PCIe Lane Widths Per Byte
-        //
+        /*
+         *  2 PCIe Lane Widths Per Byte
+         */
         pHeader->LaneMap[i2/2]|=uiEncWidth<<((i2%2)*4);
       }
 
@@ -1665,34 +1666,34 @@ EeeP_CreateEEPROMImage(
         EAPI_STATUS_INVALID_PARAMETER,
         stHeaderSize
       );
-  //
-  //
-  //
+  /*
+   * 
+   */
   DO(ParseCfgFile(cszCfgFileName, pCfgBlockDesc, stCfgBlockCnt));
-  //
-  //
-  //
+  /*
+   * 
+   */
   DO(EeePCreateNewBuffer(pBHandel, 256<<*pulEEPSize, stHeaderSize, EEEP_INIT_INCLUDE_CRC));
-  //
-  //
-  //
+  /*
+   * 
+   */
   for(i=stCfgBlockCnt, pDesc=pCfgBlockDesc; i; i--, pDesc++){
     if(pDesc->uiFound&&(pDesc->Handler!=NULL))
       DO(pDesc->Handler(pDesc, *pBHandel));
   }
   DO(EeePSetCRC(*pBHandel));
-  //
-  //
-  //
+  /*
+   * 
+   */
 /*   PrintHexAsciiTable( */
 /*       *pBHandel,  */
 /*       256<<*pulEEPSize,  */
 /*       *pBHandel,  */
 /*       NULL */
 /*     ); */
-  //
-  //
-  //
+  /*
+   * 
+   */
   DO(CleanStruct(pCfgBlockDesc, stCfgBlockCnt));
 
   return EAPI_STATUS_SUCCESS;
@@ -1791,9 +1792,9 @@ EeeP_CreateEeePExtEEPCfg(
   if(!EAPI_STATUS_TEST_OK(EApiStatusCode)) \
     return EApiStatusCode
 
-//
-// Create Block Content
-//
+/*
+ * Create Block Content
+ */
 int 
 __cdecl 
 main(void)

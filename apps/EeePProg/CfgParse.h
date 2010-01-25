@@ -64,6 +64,7 @@ typedef struct CfgElementDesc_s{
   }Elements;
   void            *pExtraInfo;
 }CfgElementDesc_t;
+#define ELEMENT_DESC(Name, Array, Type, Tokens, Required) {Name, 0, Required, ARRAY_SIZE(Array), sizeof(Array[0]), Type, {Array} , Tokens},
 
 typedef struct Handlers_s Handlers_t;
 
@@ -129,10 +130,10 @@ extern TokenListDesc_t  InsideCrcTL;
 typedef struct CfgBlockDesc_s{
   char *              pszBlockName;
   unsigned int        uiFound;
-#define BLOCK_FOUND UINT_MAX
+#define BLOCK_FOUND (unsigned)-1
   const unsigned int  cuiRequired;
 #define BLOCK_OPTIONAL    0
-#define BLOCK_REQUIRED    UINT_MAX
+#define BLOCK_REQUIRED    (unsigned)-1
   size_t              stElementCount;
   CfgElementDesc_t   *pElementsDesc;
   void *              pDataContainer;
@@ -148,7 +149,6 @@ BlockHandler_t(
 
 #define BLOCK_DESC(Name, Array, DataContainer, Handler, Required) {Name, 0, Required, ARRAY_SIZE(Array), Array, DataContainer, Handler},
 
-#define ELEMENT_DESC(Name, Array, Type, Tokens, Required) {Name, 0, Required, ARRAY_SIZE(Array), sizeof(Array[0]), Type, Array , Tokens},
 
 ElementHandler_t String_Element;
 ElementHandler_t Number_Element;

@@ -52,6 +52,53 @@ extern "C" {
     return EApiStatusCode;\
   }
 
+/*
+ * CPU Independent Multi Byte 
+ * Big Endian Memory Access
+ */
+void
+EeeP_Set16BitValue_BE(
+    uint8_t *pBuffer,
+    uint16_t Value
+     );
+uint16_t
+EeeP_Get16BitValue_BE(
+    const uint8_t *pBuffer
+     );
+void
+EeeP_Set32BitValue_BE(
+    uint8_t *pBuffer,
+    uint32_t Value
+     );
+uint32_t
+EeeP_Get32BitValue_BE(
+    const uint8_t *pBuffer
+     );
+/*
+ * CPU Independent Multi Byte 
+ * Little Endian Memory Access
+ */
+void
+EeeP_Set16BitValue_LE(
+    uint8_t *pBuffer,
+    uint16_t Value
+     );
+uint16_t
+EeeP_Get16BitValue_LE(
+    const uint8_t *pBuffer
+     );
+void
+EeeP_Set32BitValue_LE(
+    uint8_t *pBuffer,
+    uint32_t Value
+     );
+uint32_t
+EeeP_Get32BitValue_LE(
+    const uint8_t *pBuffer
+     );
+
+
+
 #ifdef __cplusplus
 }
 #endif

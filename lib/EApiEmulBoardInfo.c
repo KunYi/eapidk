@@ -101,15 +101,28 @@ EApiBoardGetStringAEmul(
         {
           BufLenSav=*pBufLen;
         }
-        if(BufLenSav && (pBuffer!=NULL)){
+        if(BufLenSav && (pBuffer!=NULL))
+	{
           memcpy(pBuffer, StringLookup[i].StringPtr, BufLenSav);
           pBuffer[BufLenSav-1]='\0';
         }
-        EAPI_LIB_RETURN_ERROR_IF(EApiBoardGetStringAEmul, (ErrorCode==EAPI_STATUS_MORE_DATA), EAPI_STATUS_MORE_DATA  , "pBuffer Overrun Prevented")
-        EAPI_LIB_RETURN_SUCCESS(EApiBoardGetStringAEmul, "");
+        EAPI_LIB_RETURN_ERROR_IF(
+		EApiBoardGetStringAEmul, 
+		(ErrorCode==EAPI_STATUS_MORE_DATA), 
+		EAPI_STATUS_MORE_DATA  , 
+		"pBuffer Overrun Prevented"
+		);
+        EAPI_LIB_RETURN_SUCCESS(
+		EApiBoardGetStringAEmul, 
+		""
+		);
       }
   }
-  EAPI_LIB_RETURN_ERROR(EApiBoardGetStringAEmul, EAPI_STATUS_UNSUPPORTED  , "Unrecognised String ID");
+  EAPI_LIB_RETURN_ERROR(
+	EApiBoardGetStringAEmul, 
+	EAPI_STATUS_UNSUPPORTED  , 
+	"Unrecognised String ID"
+	);
 }
 
 /*
@@ -175,6 +188,10 @@ EApiBoardGetValueEmul(
         EAPI_LIB_RETURN_SUCCESS(EApiBoardGetValueEmul, "");
       }
   }
-  EAPI_LIB_RETURN_ERROR(EApiBoardGetValueEmul, EAPI_STATUS_UNSUPPORTED  , "Unrecognised Value ID");
+  EAPI_LIB_RETURN_ERROR(
+			EApiBoardGetValueEmul, 
+			EAPI_STATUS_UNSUPPORTED  , 
+			"Unrecognised Value ID"
+		);
 }
 
