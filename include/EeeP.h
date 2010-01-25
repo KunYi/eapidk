@@ -47,7 +47,7 @@
 #  define EEEP_LO_UINT32(x) EEEP_UINT32_C((x)&UINT32_MAX)
 #endif
 
-#pragma pack(push)  /* push current alignment to stack */
+#pragma pack(push, 1)  /* push current alignment to stack */
 #pragma pack(1)     /* set alignment to 1 byte boundary */
 
 
