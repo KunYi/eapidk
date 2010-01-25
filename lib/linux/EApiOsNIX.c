@@ -54,14 +54,14 @@ void fini (void)
 }
 
 
-void EApiSleepns(unsigned long long ns)  
+void EApiSleepns(unsigned long ns)  
 { 
 #if _POSIX_C_SOURCE >= 199309L
   struct timespec Request;
   struct timespec Remain;
   Request.tv_sec=ns/1000000000;
   Request.tv_nsec=ns%1000000000;
-  nanosleep(Request, &Remain);
+  nanosleep(&Request, &Remain);
 #else
   usleep(ns/1000000);
 #endif
