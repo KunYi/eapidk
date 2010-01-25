@@ -244,7 +244,7 @@ for ARG in "$@"; do
 done
 
 if [ "$1" != "" ]; then 
-  if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APP" ]; then BUILD_APPS $2; NormalExit $?; fi
+  if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APPS" ]; then BUILD_APPS $2; NormalExit $?; fi
   if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APP1" ]; then BUILD_APP1 $2; NormalExit $?; fi
   if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APP2" ]; then BUILD_APP2 $2; NormalExit $?; fi
   if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_LIB" ]; then BUILD_LIB $2; NormalExit $?; fi
@@ -258,7 +258,7 @@ fi
 # MAIN PROGRAM
 #########################################################################
 BUILD_LIB quick
-BUILD_APP quick
+BUILD_APPS quick
 
 NormalExit 0
 

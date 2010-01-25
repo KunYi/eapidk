@@ -175,6 +175,7 @@ ParseCfgFile(
   char *pszName;
   char *pszValue;
   size_t i;
+  unsigned long ulLineNum;
   CfgBlockDesc_t *pCurBlockDesc=NULL;
   CfgElementDesc_t *pCurElement;
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -199,8 +200,10 @@ ParseCfgFile(
       (pCfgFile==NULL),
       EAPI_STATUS_INVALID_PARAMETER
     );
+  ulLineNum=0;
   while(!feof(pCfgFile)){
     pszName=fgets(LineBuffer, ARRAY_SIZE(LineBuffer), pCfgFile);
+    ulLineNum++;
     /*
      * Remove Comments And New Lines etc..
      */
@@ -212,7 +215,14 @@ ParseCfgFile(
        * Check Last Block Required
        */
       if(pCurBlockDesc!=NULL){
-        for(i=pCurBlockDesc->stElementCount, pCurElement=pCurBlockDesc->pElementsDesc; i; i--, pCurElement++){
+        for(
+            i=pCurBlockDesc->stElementCount,
+            pCurElement=pCurBlockDesc->pElementsDesc; 
+            i; 
+            i--, 
+            pCurElement++
+          )
+        {
           if(pCurElement->cuiRequired>pCurElement->stElementCount){
             sprintf(ErrorBuffer, 
                 "ERROR: Missing Required Element '%s' in Block '%s'\n", 
@@ -250,13 +260,25 @@ ParseCfgFile(
         continue;
       }
       if(pCurBlockDesc==NULL){
-        sprintf(ErrorBuffer, "%-15s : %s", "Invalid Block", LineBuffer);
+        sprintf(
+            ErrorBuffer, 
+            "(%04lu)%-15s : %s", 
+            ulLineNum, 
+            "Invalid Block", 
+            LineBuffer
+          );
         EAPI_FORMATED_MES( W, ParseCfgFile, 0, ErrorBuffer);
         continue;
       }
       pszValue=strchr(pszName, '=');
       if(pszValue==NULL){
-        sprintf(ErrorBuffer, "%-15s : %s", "Invalid line", LineBuffer);
+        sprintf(
+            ErrorBuffer, 
+            "(%04lu)%-15s : %s", 
+            ulLineNum, 
+            "Invalid line", 
+            LineBuffer
+          );
         EAPI_FORMATED_MES( W, ParseCfgFile, 0, ErrorBuffer);
         continue;
       }
@@ -276,7 +298,11 @@ ParseCfgFile(
             );
           DO(pCurElement->pHandlers->Handler(
                 pCurElement, 
-                EAPI_CREATE_PTR(pCurElement->Elements.pv, pCurElement->cstElementSize*pCurElement->stElementCount, void*),
+                EAPI_CREATE_PTR(
+                    pCurElement->Elements.pv,
+                    pCurElement->cstElementSize*pCurElement->stElementCount, 
+                    void*
+                  ),
                 pszValue
               ));
           pCurElement->stElementCount++;
@@ -295,7 +321,11 @@ ParseCfgFile(
   for(i=stCfgBDescElements;i;i--){
     if(pCurBlockDesc->cuiRequired>pCurBlockDesc->uiFound){
       char ErrorBuffer[50];
-      sprintf(ErrorBuffer, "ERROR: Missing Required Block '%s'\n", pCurBlockDesc->pszBlockName);
+      sprintf(
+          ErrorBuffer, 
+          "ERROR: Missing Required Block '%s'\n", 
+          pCurBlockDesc->pszBlockName
+        );
       EAPI_APP_RETURN_ERROR(
           ParseCfgFile,
           EAPI_STATUS_ERROR,

@@ -282,7 +282,11 @@ WriteBinaryFile(
       EAPI_STATUS_WRITE_ERROR,
       LclFilePtr
     );
-  fwrite(pcvBuffer, stWriteBCnt, sizeof(uint8_t), LclFilePtr);
+  EAPI_APP_RETURN_ERROR_IF_S(
+      ReadBinaryFile,
+      (stWriteBCnt!=fwrite(pcvBuffer, sizeof(uint8_t), stWriteBCnt, LclFilePtr))*sizeof(uint8_t),
+      EAPI_STATUS_WRITE_ERROR
+    );
   fclose(LclFilePtr);
   return EAPI_STATUS_SUCCESS;
 }
@@ -329,10 +333,19 @@ ReadBinaryFile(
       *pvBuffer
     );
 
-  *pstReadBCnt=fread(*pvBuffer, stFileLen, sizeof(uint8_t), LclFilePtr);
+  if(stFileLen!=fread(*pvBuffer, sizeof(uint8_t), stFileLen, LclFilePtr)*sizeof(uint8_t)){
+    free(*pvBuffer);
+    *pvBuffer=NULL;
+    EAPI_APP_RETURN_ERROR(
+        ReadBinaryFile,
+        EAPI_STATUS_READ_ERROR,
+        TEXT("(stFileLen!=fread(*pvBuffer, sizeof(uint8_t), stFileLen, LclFilePtr)*sizeof(uint8_t))")
+      );
+  }
+  *pstReadBCnt=stFileLen;
   fclose(LclFilePtr);
 
-  return (*pstReadBCnt==stFileLen?EAPI_STATUS_SUCCESS:EAPI_STATUS_READ_ERROR);
+  return EAPI_STATUS_SUCCESS;
 }
 
 
