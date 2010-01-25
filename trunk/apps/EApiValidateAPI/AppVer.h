@@ -38,5 +38,5 @@
 /****************************************************************************/    
 #define APP_VERSION 0  
 #define APP_REVISION 5  
-#define APP_BUILD 588  
+#define APP_BUILD 589
 #endif    
