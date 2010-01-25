@@ -62,6 +62,7 @@ void EApiSleepus(unsigned long ms);
 #endif
 
 
+#define inline __inline
 
 #ifdef UNICODE
 #  define EAPI_strlen         wcslen
@@ -70,6 +71,7 @@ void EApiSleepus(unsigned long ms);
 #  define EAPI_vsnprintf      _vsnwprintf
 #  define EAPI_fprintf        fwprintf
 #  define EAPI_fopen          _wfopen
+#  define EAPI_printf         wprintf
 #else
 #  define EAPI_strlen         strlen
 #  define EAPI_strnlen        strnlen
@@ -77,6 +79,7 @@ void EApiSleepus(unsigned long ms);
 #  define EAPI_vsnprintf      _vsnprintf
 #  define EAPI_fprintf        fprintf
 #  define EAPI_fopen          fopen
+#  define EAPI_printf         printf
 #endif
 
 

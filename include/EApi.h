@@ -316,6 +316,8 @@ extern "C" {
  *   none.
  */
 #define EAPI_STATUS_SUCCESS           EAPI_UINT32_C(0)
+#define EAPI_STATUS_TEST_OK(x)        (!(x))
+#define EAPI_STATUS_TEST_NOK(x)       (!EAPI_STATUS_TEST_OK(x))
 
 /* Library */
 /* 
@@ -363,13 +365,13 @@ EApiLibUnInitialize(void) ; /* Should be called before
  * E.G.
  * EAPI_PMG_ID_BOARD_CUSTOMERID
  */
-#define BYTE_SWAP_W(a) EAPI_UINT16_C(\
+#define EAPI_BYTE_SWAP_W(a) EAPI_UINT16_C(\
       (((a)<<8)&0xFF00)|\
       (((a)>>8)&0x00FF) \
       )
 
 #define EAPI_CREATE_PNPID(a, b, c) \
-  BYTE_SWAP_W(((( a -'A'+1)&0x1F)<<10)|\
+  EAPI_BYTE_SWAP_W(((( a -'A'+1)&0x1F)<<10)|\
               ((( b -'A'+1)&0x1F)<< 5)|\
               ((( c -'A'+1)&0x1F)<< 0) \
              )

@@ -95,6 +95,12 @@
   {\
     EAPI_APP_RETURN_ERROR(func, err, desc );\
   }
+#define EAPI_APP_RETURN_ERROR_IF_S(func, exp, err)  \
+  if(exp)\
+  {\
+    EAPI_APP_RETURN_ERROR(func, err, TEXT(#exp) );\
+  }
+
 
 
 #if (STRICT_VALIDATION>0)
@@ -104,11 +110,14 @@
 #  define EAPI_APP_ASSERT_PARAMATER_CHECK(func, ret, exp, desc)
 #endif
 
+#define EAPI_APP_ASSERT_PARAMATER_CHECK_S(func, ret, exp)  \
+  EAPI_APP_ASSERT_PARAMATER_CHECK(func, ret, exp, TEXT(#exp))
+
 #define EAPI_APP_ASSERT_PARAMATER_ZERO(func, ret, val)  \
-  EAPI_APP_ASSERT_PARAMATER_CHECK(func, ret, (val==0), TEXT(#val) TEXT(" is ZERO"))
+  EAPI_APP_ASSERT_PARAMATER_CHECK_S(func, ret, (val==0))
 
 #define EAPI_APP_ASSERT_PARAMATER_NULL(func, ret, val)  \
-  EAPI_APP_ASSERT_PARAMATER_CHECK(func, ret, (val==NULL), TEXT(#val) TEXT(" is NULL"))
+  EAPI_APP_ASSERT_PARAMATER_CHECK_S(func, ret, (val==NULL))
 
 
 #define EAPI_APP_PREVENT_BUF_OVERFLOW(func, x, y)  \
@@ -117,6 +126,13 @@
     EAPI_FORMATED_MES(E, func,  EAPI_STATUS_MORE_DATA, TEXT(" pBuffer Overflow Prevented") TEXT(#x) TEXT(">") TEXT(#y));\
     x=y;\
   }
+
+#define EAPI_CREATE_PTR(Base, ByteOffset, PtrType) \
+  ((PtrType)(((uint8_t*)(Base))+(ByteOffset)))
+
+#define EAPI_GET_PTR_OFFSET(Ptr1, Ptr2) \
+  ((size_t)(((const uint8_t* const)(Ptr1))-((const uint8_t*const)(Ptr2))))
+
 
 #endif /* _EAPIAPP_H_ */
 

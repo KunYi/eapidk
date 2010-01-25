@@ -340,7 +340,7 @@ EApiAHCreatePNPIDString(
     )
 {
   int cnt;
-  unsigned short PNPID=(unsigned short)BYTE_SWAP_W(Value);
+  unsigned short PNPID=(unsigned short)EAPI_BYTE_SWAP_W(Value);
   EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreatePNPIDString, -1, pString);
   if(StrBufLen<4){
     EAPI_APP_RETURN_ERROR(EApiAHCreatePNPIDString, -1, "pBuffer Too Short");
