@@ -280,11 +280,39 @@ typedef struct COM0R20_CB_s{
                             *      |       +-------+------------------------+
                             *      |       | 1     | SDIO Implemented       |
                             *      +-------+-------+------------------------+
-                            *      | 2 - 7 | Reserved                       |
+                            *      | 2     | 0     | LID SW Not Implemented |
+                            *      |       +-------+------------------------+
+                            *      |       | 1     | LID SW Implemented     |
+                            *      +-------+-------+------------------------+
+                            *      | 3     | 0     | Sleep Not Implemented  |
+                            *      |       +-------+------------------------+
+                            *      |       | 1     | Sleep Implemented      |
+                            *      +-------+-------+------------------------+
+                            *      | 4     | 0     | FAN0 Not Implemented   |
+                            *      |       +-------+------------------------+
+                            *      |       | 1     | FAN0 Implemented       |
+                            *      +-------+-------+------------------------+
+                            *      | 5     | 0     | SER0 Not Implemented   |
+                            *      |       +-------+------------------------+
+                            *      |       | 1     | SER0 Implemented       |
+                            *      +-------+-------+------------------------+
+                            *      | 6     | 0     | SER1 Not Implemented   |
+                            *      |       +-------+------------------------+
+                            *      |       | 1     | SER1 Implemented       |
+                            *      +-------+-------+------------------------+
+                            *      | 7     | 0     | SER2 Not Implemented   |
+                            *      |       +-------+------------------------+
+                            *      |       | 1     | SER2 Implemented       |
                             *      +=======+================================+
                             */     
 #       define COM0R20_SSC_PRESENT          EEEP_UINT8_C(1<<0)
 #       define COM0R20_SDIO_PRESENT         EEEP_UINT8_C(1<<1)
+#       define COM0R20_LID_PRESENT          EEEP_UINT8_C(1<<2)
+#       define COM0R20_SLEEP_PRESENT        EEEP_UINT8_C(1<<3)
+#       define COM0R20_FAN0_PRESENT         EEEP_UINT8_C(1<<4)
+#       define COM0R20_SER0_PRESENT         EEEP_UINT8_C(1<<5)
+#       define COM0R20_SER1_PRESENT         EEEP_UINT8_C(1<<6)
+#       define COM0R20_SER2_PRESENT         EEEP_UINT8_C(1<<7)
     uint8_t     DDIDesc;   /* 0x17 Digital Display Interface Descriptor Byte
                             *      
                             *      +=======+======+=======+==================+
@@ -311,7 +339,7 @@ typedef struct COM0R20_CB_s{
                             *      |       |      +-------+------------------+
                             *      |       |      | 3     | HDMI/DVI         |
                             *      +-------+------+-------+------------------+
-                            *      |       | 5    | Reserved                 |
+                            *      |       | 5    | Reserved set to 0        |
                             *      +-------+------+-------+------------------+
                             *      | 3     | 6-7  | 0     | Not Implemented  |
                             *      |       |      +-------+------------------+
@@ -343,9 +371,12 @@ typedef struct COM0R20_CB_s{
                             *      |       +-------+----------------------+
                             *      |       |  2    | Gen 3                |
                             *      |       +-------+----------------------+
-                            *      |       |  3    | Reserved             |
+                            *      |       |  3    | Reserved Unused      |
                             *      +-------+-------+----------------------+
                             */
+#       define COM0R20_PCIe_GEN1            EEEP_UINT8_C(0)
+#       define COM0R20_PCIe_GEN2            EEEP_UINT8_C(1)
+#       define COM0R20_PCIe_GEN4            EEEP_UINT8_C(2)
      uint8_t    LaneMap[16];/* 0x20 Lane Information
                             *      +=======+=======+======================+
                             *      | Bits  | Value | Meaning              |
@@ -369,8 +400,7 @@ typedef struct COM0R20_CB_s{
                             *      | 3     |  Reserved set to 0           |
                             *      +-------+------------------------------+
                             */
-#       define COM0R20_PCIEx_LANE_WIDTH_MASK EEEP_UINT8_C(0x07)
-#       define COM0R20_PCIEx_GEN2            EEEP_UINT8_C(1<<3)
+#       define COM0R20_PCIe_LANE_WIDTH_MASK EEEP_UINT8_C(0x07)
 }COM0R20_CB_t;
 /* 
  * PCI Express Lane Mapping 
@@ -483,6 +513,7 @@ typedef struct COM0R20_M_s{
 }COM0R20_M_t;
 
 #define COM0R20_BLOCK_ID_EXP_CARD_DESC     EEEP_UINT8_C(0xE0)
+#define COM0R20_BLOCK_ID_SERIO_DESC        EEEP_UINT8_C(0xE1)
 
 
 /*
@@ -521,6 +552,115 @@ typedef struct ExpCardBlock_s{
 #       define COM0R20_EXPCARD_MAP_EOL EEEP_UINT8_C(0xFF)
 }ExpCardBlock_t;
 
+
+/*
+ * Serial/COM Port Descriptor
+ *
+ */
+typedef struct SerPortCfgBlock_s{
+    DBlockIdHdr_t  DBHdr        ; /* 0x00 Dynamic Block Header */
+    uint8_t SerIRQ[2]           ; /* 0x03 
+                                   *      +=======+=======+==================+
+                                   *      | Byte  | Bits  | Descriptions     |
+                                   *      +=======+=======+==================+
+                                   *      | 0     | 0 - 3 | Serial Port 0 IRQ|
+                                   *      |       |       |  0  Auto         |
+                                   *      |       |       |  1  No IRQ       |
+                                   *      |       |       |  2  Reserved     |
+                                   *      |       |       |  3  IRQ  3       |
+                                   *      |       |       |  4  IRQ  4       |
+                                   *      |       |       |  5  IRQ  5       |
+                                   *      |       |       |  6  IRQ  6       |
+                                   *      |       |       |  7  IRQ  7       |
+                                   *      |       |       |  8  IRQ  8       |
+                                   *      |       |       |  9  IRQ  9       |
+                                   *      |       |       | 10  IRQ 10       |
+                                   *      |       |       | 11  IRQ 11       |
+                                   *      |       |       | 12  IRQ 12       |
+                                   *      |       |       | 13  IRQ 13       |
+                                   *      |       |       | 14  IRQ 14       |
+                                   *      |       |       | 15  IRQ 15       |
+                                   *      +-------+-------+------------------+
+                                   *      | 0     | 4 - 7 | Serial Port 1 IRQ|
+                                   *      |       |       |  0  Auto         |
+                                   *      |       |       |  1  No IRQ       |
+                                   *      |       |       |  2  Reserved     |
+                                   *      |       |       |  3  IRQ  3       |
+                                   *      |       |       |  4  IRQ  4       |
+                                   *      |       |       |  5  IRQ  5       |
+                                   *      |       |       |  6  IRQ  6       |
+                                   *      |       |       |  7  IRQ  7       |
+                                   *      |       |       |  8  IRQ  8       |
+                                   *      |       |       |  9  IRQ  9       |
+                                   *      |       |       | 10  IRQ 10       |
+                                   *      |       |       | 11  IRQ 11       |
+                                   *      |       |       | 12  IRQ 12       |
+                                   *      |       |       | 13  IRQ 13       |
+                                   *      |       |       | 14  IRQ 14       |
+                                   *      |       |       | 15  IRQ 15       |
+                                   *      +-------+-------+------------------+
+                                   *      | 1     | 0 - 3 | Serial Port 2 IRQ|
+                                   *      |       |       |  0  Auto         |
+                                   *      |       |       |  1  No IRQ       |
+                                   *      |       |       |  2  Reserved     |
+                                   *      |       |       |  3  IRQ  3       |
+                                   *      |       |       |  4  IRQ  4       |
+                                   *      |       |       |  5  IRQ  5       |
+                                   *      |       |       |  6  IRQ  6       |
+                                   *      |       |       |  7  IRQ  7       |
+                                   *      |       |       |  8  IRQ  8       |
+                                   *      |       |       |  9  IRQ  9       |
+                                   *      |       |       | 10  IRQ 10       |
+                                   *      |       |       | 11  IRQ 11       |
+                                   *      |       |       | 12  IRQ 12       |
+                                   *      |       |       | 13  IRQ 13       |
+                                   *      |       |       | 14  IRQ 14       |
+                                   *      |       |       | 15  IRQ 15       |
+                                   *      +-------+-------+------------------+
+                                   *      | 1     | 4 - 7 | Reserved Set to 0|
+                                   *      +=======+=======+==================+
+                                   */
+    uint8_t Ser0BaseAddr[2]     ; /* 0x05 Serial Port 0
+                                   *      +=======+=======+==================+
+                                   *      | Byte  | Bits  | Descriptions     |
+                                   *      +=======+=======+==================+
+                                   *      | 0     | 0 - 7 | Bits 8-15 of     |
+                                   *      |       |       | Base Address     |
+                                   *      +-------+-------+------------------+
+                                   *      | 1     | 0 - 2 | Reserved set to 0|
+                                   *      +-------+-------+------------------+
+                                   *      | 1     | 3 - 7 | Bits 3-7 of      |
+                                   *      |       |       | Base Address     |
+                                   *      +=======+=======+==================+
+                                   */
+    uint8_t Ser1BaseAddr[2]     ; /* 0x07 Serial Port 1
+                                   *      +=======+=======+==================+
+                                   *      | Byte  | Bits  | Descriptions     |
+                                   *      +=======+=======+==================+
+                                   *      | 0     | 0 - 7 | Bits 8-15 of     |
+                                   *      |       |       | Base Address     |
+                                   *      +-------+-------+------------------+
+                                   *      | 1     | 0 - 2 | Reserved set to 0|
+                                   *      +-------+-------+------------------+
+                                   *      | 1     | 3 - 7 | Bits 3-7 of      |
+                                   *      |       |       | Base Address     |
+                                   *      +=======+=======+==================+
+                                   */
+    uint8_t Ser2BaseAddr[2]     ; /* 0x09 Serial Port 2
+                                   *      +=======+=======+==================+
+                                   *      | Byte  | Bits  | Descriptions     |
+                                   *      +=======+=======+==================+
+                                   *      | 0     | 0 - 7 | Bits 8-15 of     |
+                                   *      |       |       | Base Address     |
+                                   *      +-------+-------+------------------+
+                                   *      | 1     | 0 - 2 | Reserved set to 0|
+                                   *      +-------+-------+------------------+
+                                   *      | 1     | 3 - 7 | Bits 3-7 of      |
+                                   *      |       |       | Base Address     |
+                                   *      +=======+=======+==================+
+                                   */
+    uint8_t       Reserved0     ; /* 0x05 Alignment Byte */
+}SerPortCfgBlock_t;
 
 
 

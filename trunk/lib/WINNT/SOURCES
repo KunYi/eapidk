@@ -44,7 +44,7 @@ STL_VER=70
 USE_NATIVE_EH=1
 
 # Exception handling on stack
-USER_C_FLAGS=$(USER_C_FLAGS) /FAs
+USER_C_FLAGS=$(USER_C_FLAGS) /FAs /Fa"$(O)\\"
 #
 # Select Platform 
 # Emulation Type

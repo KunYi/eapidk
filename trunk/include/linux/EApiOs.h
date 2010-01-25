@@ -74,8 +74,8 @@
   #define __cdecl
 #endif
 
-/* int usleep( long   usec); */
-#define EAPI_EMUL_DELAY_NS(x) usleep(x/1000)
+void EApiSleepns(unsigned long long ns);
+#define EAPI_EMUL_DELAY_NS(x) EApiSleepns(x)
 
 #ifndef EApiSleep
 #  define EApiSleep(x) sleep(x)

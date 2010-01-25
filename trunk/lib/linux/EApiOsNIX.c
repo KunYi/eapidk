@@ -35,6 +35,8 @@
  */
   #include <EApiLib.h>
   #include <stdio.h>
+  #include <time.h>
+  
 
 
 static void init (void) __attribute__ ((constructor));
@@ -49,6 +51,21 @@ void fini (void)
 { 
   printf("finishing\n");
 	return ;
+}
+
+
+void EApiSleepns(unsigned long long ns)  
+{ 
+#if _POSIX_C_SOURCE >= 199309L
+  struct timespec Request;
+  struct timespec Remain;
+  Request.tv_sec=ns/1000000000;
+  Request.tv_nsec=ns%1000000000;
+  nanosleep(Request, &Remain);
+#else
+  usleep(ns/1000000);
+#endif
+  return ;
 }
 
 

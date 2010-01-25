@@ -42,6 +42,9 @@
 #  define EEEP_UINT8_C(x)  ((uint8_t)(x))
 #  define EEEP_UINT16_C(x) ((uint16_t)(x))
 #  define EEEP_UINT32_C(x) ((uint32_t)(x))
+#  define EEEP_LO_UINT8(x)  EEEP_UINT8_C( (x)&UINT8_MAX )
+#  define EEEP_LO_UINT16(x) EEEP_UINT16_C((x)&UINT16_MAX)
+#  define EEEP_LO_UINT32(x) EEEP_UINT32_C((x)&UINT32_MAX)
 #endif
 
 #pragma pack(push)  /* push current alignment to stack */
@@ -155,6 +158,11 @@ typedef struct EeePCmn_s{
                               * |        | 7 = 512 Byte           |
                               * +========+========================+
                               */
+#define EEEP_DEVICE_SIZE_MASK           0x0F
+#define EEEP_DEVICE_TYPE_OFFSET         4
+#define EEEP_DEVICE_EXT_INDEX           (1 << EEEP_DEVICE_TYPE_OFFSET)
+#define EEEP_DEVICE_WRITE_LEN_OFFSET     5
+#define EEEP_DEVICE_WRITE_LEN_MASK      (0x7 << EEEP_DEVICE_WRITE_LEN_OFFSET)
 }EeePCmn_t;
 
 
@@ -181,6 +189,8 @@ typedef struct UDIdEep_s{
  */
 typedef struct Exp_EEP_s{
     EeePCmn_t   EeePHdr  ; /* 0x00 EeeP Common Header */
+    uint8_t     GenId[4] ; /* 0x06 "EXP1"   */
+    #define EEEP_EXP_HEADER_ID "EXP1"
     UDIdEep_t   DevId    ; /* 0x06 Unique Device Id   */
 }Exp_EEP_t;
 
@@ -224,7 +234,8 @@ typedef struct DBlockIdHdr_s{
  * 0xE0 -0xEF See Platform Specific Headers
  *
  */
-#define EEEP_BLOCK_ID_SYSTEM_DESC       EEEP_UINT8_C(0xD0)
+#define EEEP_BLOCK_ID_SMBIOS            EEEP_UINT8_C(0xD0)
+#define EEEP_BLOCK_ID_LFP               EEEP_UINT8_C(0xD1)
 #define EEEP_BLOCK_ID_CRC_CHK           EEEP_UINT8_C(0xF2)
 #define EEEP_BLOCK_ID_IGNORE            EEEP_UINT8_C(0xFF)
 
@@ -249,30 +260,34 @@ typedef union SmbiosHandle_u{
 /*
  *      DMI/SMBIOS Common Header Format
  *
- *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
+ *  see http://www.dmtf.org/standards/published_documents/DSP0134_2.6.1.pdf
  */
+enum SMBIOS_BlockId_e{
+  SMBIOS_TypeSystemDesc=1,
+  SMBIOS_TypeModuleDesc=2,
+  SMBIOS_TypeChassisDesc=3,
+};
+typedef uint8_t SMBIOS_BlockId_t;
+
 typedef struct SmbiosHdrDBlck_s{
-    DBlockIdHdr_t CDBHdr        ; /* 0x00 Dynamic Block Header  */
-    uint8_t       Type          ; /* 0x03 Structure Type        */
-    uint8_t       Length        ; /* 0x04 Specifies the length of
+    DBlockIdHdr_t    CDBHdr     ; /* 0x00 Dynamic Block Header  */
+    SMBIOS_BlockId_t Type       ; /* 0x03 Structure Type        */
+    uint8_t          Length     ; /* 0x04 Specifies the length of
                                    * the formatted area of the 
                                    * structure, starting at the 
                                    * Type field. The length of the 
                                    * structure’s string-set is not
                                    * included. 
                                    */
-    SmbiosHandle_t Handle      ;  /* 0x05 Specifies the structure’s 
+    SmbiosHandle_t   Handle     ; /* 0x05 Specifies the structure’s 
                                    * handle, a unique 16-bit number 
                                    * in the range 0 to 0FEFFh 
                                    */
 }SmbiosHdrDBlck_t;
-#define EEEP_BLOCK_ID_SYSTEM_DESC       EEEP_UINT8_C(0x01)
-#define EEEP_BLOCK_ID_MODULE_DESC       EEEP_UINT8_C(0x02)
-#define EEEP_BLOCK_ID_CHASSIS_DESC      EEEP_UINT8_C(0x03)
 /*
  *      System Information
  *
- *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
+ *  see http://www.dmtf.org/standards/published_documents/DSP0134_2.6.1.pdf
  *  Type 1 Block
  */
 typedef struct SystemInfo_s{
@@ -290,9 +305,24 @@ typedef struct SystemInfo_s{
 /*
  *     Base Board (or Module) Information
  *
- *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
+ *  see http://www.dmtf.org/standards/published_documents/DSP0134_2.6.1.pdf
  *  Type 2 Block
  */
+enum SMBIOS_BoardTypes_e{
+  SMBIOS_BoardType_Unknown=0,
+  SMBIOS_BoardType_Other,
+  SMBIOS_BoardType_ServerBlade,
+  SMBIOS_BoardType_ConnectivitySwitch,
+  SMBIOS_BoardType_SystemManagementModule,
+  SMBIOS_BoardType_ProcessorModule,
+  SMBIOS_BoardType_IO_Module,
+  SMBIOS_BoardType_Memory_Module,
+  SMBIOS_BoardType_DaughterBoard,
+  SMBIOS_BoardType_Motherboard,
+  SMBIOS_BoardType_ProcessorMemory_Module,
+  SMBIOS_BoardType_Interconnect_Board,
+};
+typedef uint8_t SMBIOS_BoardTypes_t;
 typedef struct ModuleInfo_s{
     SmbiosHdrDBlck_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
     uint8_t Manufacturer   ; /* 0x06 Number of ASCIIZ String */
@@ -327,34 +357,20 @@ typedef struct ModuleInfo_s{
 #       define SMBIOS_HOT_SWAP_CAP    EEEP_UINT8_C(1 << 4)
     uint8_t Location       ; /* 0x0C Number of ASCIIZ String */
     SmbiosHandle_t LocHdl  ; /* 0x0D Chassis Handle */
-    uint8_t BoardType      ; /* 0x0F SMBIOS_BoardTypes_t */
+    SMBIOS_BoardTypes_t BoardType ; /* 0x0F SMBIOS_BoardTypes_t */
     uint8_t ContainedHndls ; /* 0x0C Number Of Contained 
                               *      Object Handles That 
                               *      Follow
                               */
-    SmbiosHandle_t Handles[0] ; /* 0x10 Handles */
+    SmbiosHandle_t Handles[1] ; /* 0x10 Handles */
 }ModuleInfo_t;
-typedef enum SMBIOS_BoardTypes_e{
-  SMBIOS_BoardType_Unknown=0,
-  SMBIOS_BoardType_Other,
-  SMBIOS_BoardType_ServerBlade,
-  SMBIOS_BoardType_ConnectivitySwitch,
-  SMBIOS_BoardType_SystemManagementModule,
-  SMBIOS_BoardType_ProcessorModule,
-  SMBIOS_BoardType_IO_Module,
-  SMBIOS_BoardType_Memory_Module,
-  SMBIOS_BoardType_DaughterBoard,
-  SMBIOS_BoardType_Motherboard,
-  SMBIOS_BoardType_ProcessorMemory_Module,
-  SMBIOS_BoardType_Interconnect_Board,
-}SMBIOS_BoardTypes_t;
 
 
 
 /*
  *      Chassis Information
  *
- *  see http://www.dmtf.org/standards/documents/SMBIOS/DSP0134.pdf
+ *  see http://www.dmtf.org/standards/published_documents/DSP0134_2.6.1.pdf
  *  Type 3 Block
  */
 typedef struct CCElement_s{
@@ -374,10 +390,38 @@ typedef struct CCElement_s{
                              *      in the chassis.
                              */
 }CCElement_t;
+enum ChassisTypes_e{
+    SMBIOS_ChassisType_Other                         =0x01, 
+    SMBIOS_ChassisType_Unknown                       =0x02, 
+    SMBIOS_ChassisType_Desktop                       =0x03, 
+    SMBIOS_ChassisType_Low_Profile_Desktop           =0x04, 
+    SMBIOS_ChassisType_Pizza_Box                     =0x05, 
+    SMBIOS_ChassisType_Mini_Tower                    =0x06, 
+    SMBIOS_ChassisType_Tower                         =0x07, 
+    SMBIOS_ChassisType_Portable                      =0x08, 
+    SMBIOS_ChassisType_Laptop                        =0x09, 
+    SMBIOS_ChassisType_Notebook                      =0x0A, 
+    SMBIOS_ChassisType_Hand_Held                     =0x0B, 
+    SMBIOS_ChassisType_Docking_Station               =0x0C, 
+    SMBIOS_ChassisType_All_In_One                    =0x0D, 
+    SMBIOS_ChassisType_Sub_Notebook                  =0x0E, 
+    SMBIOS_ChassisType_Space_saving_Lunch_Box        =0x0F, 
+    SMBIOS_ChassisType_Main_Server_Chassis           =0x11, 
+    SMBIOS_ChassisType_Expansion_Chassis             =0x12, 
+    SMBIOS_ChassisType_SubChassis                    =0x13, 
+    SMBIOS_ChassisType_Bus_Expansion_Chassis         =0x14, 
+    SMBIOS_ChassisType_Peripheral_Chassis            =0x15, 
+    SMBIOS_ChassisType_RAID_Chassis                  =0x16, 
+    SMBIOS_ChassisType_Rack_Mount_Chassis            =0x17, 
+    SMBIOS_ChassisType_Sealed_case_PC                =0x18, 
+    SMBIOS_ChassisType_Multi_system_chassis          =0x19, 
+};
+typedef uint8_t ChassisTypes_t;
+
 typedef struct ChassisInfo_s{
     SmbiosHdrDBlck_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
     uint8_t Manufacturer   ; /* 0x06 Number of ASCIIZ String */
-    uint8_t Type           ; /* 0x07 ENUM */
+    ChassisTypes_t Type    ; /* 0x07 ENUM */
     uint8_t Version        ; /* 0x08 Number of ASCIIZ String */
     uint8_t SerialNumber   ; /* 0x09 Number of ASCIIZ String */
     uint8_t AssetTagNumber ; /* 0x0A Number of ASCIIZ String */
@@ -394,12 +438,12 @@ typedef struct ChassisInfo_s{
                               */
     uint8_t CElementCnt    ; /* 0x15 Contained Element Count */   
     uint8_t CElementSize   ; /* 0x16 Contained Element Size  */   
-    CCElement_t CElement[0]; /* 0x17 Contained Element(s) */   
+    CCElement_t CElement[1]; /* 0x17 Contained Element(s) */   
 }ChassisInfo_t;
 
 
 /*
- * Display Device Data Block
+ * Local Flat Panel(LFP) Data Block
  *
  */
 typedef struct LFPDataBlock_s{
@@ -412,11 +456,11 @@ typedef struct LFPDataBlock_s{
 #	define 	  EEEP_DISP_INT_DDI2	 EEEP_UINT8_C(0x06)
 #	define 	  EEEP_DISP_INT_DDI3	 EEEP_UINT8_C(0x07)
     uint8_t	  RawData[1]; /* 0x04 Display Raw Data
-			       *      DisplayID
-			       *      EDID
-			       *      UDS
-			       *      EPI
-    			       */
+			                     *      DisplayID
+			                     *      EDID
+			                     *      UDS
+			                     *      EPI
+    			                 */
 }LFPDataBlock_t;
 
 /*
@@ -491,83 +535,93 @@ typedef struct ExtI2CDeviceDesc_s{
  * Big Endian Memory Access
  */
 void
+inline
 EeeP_Set16BitValue_BE(
     uint8_t *pBuffer,
     uint16_t Value
      )
 {
-  pBuffer[1]=(Value   )&0xFF;
-  pBuffer[0]=(Value>>8)&0xFF;
-}
+  pBuffer[1]=EEEP_LO_UINT8(Value   );
+  pBuffer[0]=EEEP_LO_UINT8(Value>>8);
+};
 uint16_t
+inline
 EeeP_Get16BitValue_BE(
-    uint8_t *pBuffer
+    const uint8_t *pBuffer
      )
 {
   return (pBuffer[1]    ) |
          (pBuffer[0]<< 8) ;
-}
+};
+void
+inline
 EeeP_Set32BitValue_BE(
     uint8_t *pBuffer,
     uint32_t Value
      )
 {
-  pBuffer[3]=(Value    )&0xFF;
-  pBuffer[2]=(Value>> 8)&0xFF;
-  pBuffer[1]=(Value>>16)&0xFF;
-  pBuffer[0]=(Value>>24)&0xFF;
-}
+  pBuffer[3]=EEEP_LO_UINT8(Value    );
+  pBuffer[2]=EEEP_LO_UINT8(Value>> 8);
+  pBuffer[1]=EEEP_LO_UINT8(Value>>16);
+  pBuffer[0]=EEEP_LO_UINT8(Value>>24);
+};
 uint32_t
+inline
 EeeP_Get32BitValue_BE(
-    uint8_t *pBuffer
+    const uint8_t *pBuffer
      )
 {
   return (pBuffer[3]    ) |
          (pBuffer[2]<< 8) |
          (pBuffer[1]<<16) |
          (pBuffer[0]<<24) ;
-}
+};
 /*
  * CPU Independent Multi Byte 
  * Little Endian Memory Access
  */
 void
+inline
 EeeP_Set16BitValue_LE(
     uint8_t *pBuffer,
     uint16_t Value
      )
 {
-  pBuffer[0]=(Value   )&0xFF;
-  pBuffer[1]=(Value>>8)&0xFF;
-}
+  pBuffer[0]=EEEP_LO_UINT8(Value   );
+  pBuffer[1]=EEEP_LO_UINT8(Value>>8);
+};
 uint16_t
+inline
 EeeP_Get16BitValue_LE(
-    uint8_t *pBuffer
+    const uint8_t *pBuffer
      )
 {
   return (pBuffer[0]    ) |
          (pBuffer[1]<< 8) ;
-}
+};
+void
+inline
 EeeP_Set32BitValue_LE(
     uint8_t *pBuffer,
     uint32_t Value
      )
 {
-  pBuffer[0]=(Value    )&0xFF;
-  pBuffer[1]=(Value>> 8)&0xFF;
-  pBuffer[2]=(Value>>16)&0xFF;
-  pBuffer[3]=(Value>>24)&0xFF;
-}
+  pBuffer[0]=EEEP_LO_UINT8(Value    );
+  pBuffer[1]=EEEP_LO_UINT8(Value>> 8);
+  pBuffer[2]=EEEP_LO_UINT8(Value>>16);
+  pBuffer[3]=EEEP_LO_UINT8(Value>>24);
+};
 uint32_t
+inline
 EeeP_Get32BitValue_LE(
-    uint8_t *pBuffer
+    const uint8_t *pBuffer
      )
 {
   return (pBuffer[0]    ) |
          (pBuffer[1]<< 8) |
          (pBuffer[2]<<16) |
          (pBuffer[3]<<24) ;
-}
+};
 
 
 #endif /* __EEEP_H__ */
