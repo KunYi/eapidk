@@ -138,9 +138,9 @@ SetDynBlockHeader(
 }
 EApiStatusCode_t
 ReduceBlockLength(
-    __IN     void         **pvCurBlock,
+    __IN     DBlockIdHdr_t**pvCurBlock,
     __IN     size_t         stReduceBy, 
-    __OUTOPT void         **pvNewBlock,
+    __OUTOPT DBlockIdHdr_t**pvNewBlock,
     __IN     unsigned int   uiFlags
     )
 {
@@ -189,9 +189,9 @@ ReduceBlockLength(
   return EApiStatusCode;
 }
 
-//
-// Create and Handle Blocks 
-//
+/*
+ * Create and Handle Blocks 
+ */
 EApiStatusCode_t
 EeePCreateNewBuffer(
     EeePHandel_t *pBHandel,
@@ -224,9 +224,9 @@ EeePCreateNewBuffer(
       *pBHandel
     );
   memset(pEeePCmnHdr, 0x00, stBufferSize);
-  //
-  // Initialize Header
-  //
+  /*
+   * Initialize Header
+   */
   pEeePCmnHdr->DontCareByte=0;
   memcpy(
       pEeePCmnHdr->EepId        ,
@@ -236,9 +236,9 @@ EeePCreateNewBuffer(
   pEeePCmnHdr->SpecRev=EEEP_VERSION;
   pEeePCmnHdr->BlkOffset=(uint8_t)EeePAdjLength(stHeaderSize);
   pEeePCmnHdr->DeviceDesc=0;
-  //
-  // Initialize Free Block
-  //
+  /*
+   * Initialize Free Block
+   */
   DO(EeePGetFirstDB(*pBHandel, &pEeePEmptyBlock));
 
   DO(SetDynBlockHeader(
@@ -246,9 +246,9 @@ EeePCreateNewBuffer(
         EEEP_BLOCK_ID_UNUSED, 
         stBufferSize - (pEeePCmnHdr->BlkOffset*EEEP_SIZE_UNITS)
       ));
-  //
-  // Termination Block
-  //
+  /*
+   * Termination Block
+   */
   DO(ReduceBlockLength(
         &pEeePEmptyBlock        ,
         sizeof(*pEeePTBlock)    ,
@@ -256,32 +256,34 @@ EeePCreateNewBuffer(
         EEEP_RBL_REDUCE_TOP_DOWN
       ));
 
-  //
-  // Initialise Termination Block Values
-  //
+  /*
+   * Initialise Termination Block Values
+   */
   DO(SetDynBlockHeader(
         pEeePTBlock, 
         EEEP_BLOCK_ID_UNUSED, 
         EEEP_OFFSET_VALUE_EOL
       ));
-  //
-  // Optional Create CRC Block
-  //
+  /*
+   * Optional Create CRC Block
+   */
   if(u32Flags&EEEP_INIT_INCLUDE_CRC){
+    DBlockIdHdr_t   *plclEeePBlock; 
     CRC16ChkBlock_t *pEeePCRCBlock;
-    //
-    // Allocate CRC BLOCK
-    //
+    /*
+     * Allocate CRC BLOCK
+     */
     DO(ReduceBlockLength(
           &pEeePEmptyBlock      ,
           sizeof(*pEeePCRCBlock),
-          &pEeePCRCBlock        ,
+          &plclEeePBlock,
           0
         ));
+   pEeePCRCBlock=(CRC16ChkBlock_t*)plclEeePBlock;
 
-    //
-    // Initialise CRC Block Values
-    //
+    /*
+     * Initialise CRC Block Values
+     */
     DO(SetDynBlockHeader(
           pEeePCRCBlock         ,
           EEEP_BLOCK_ID_CRC_CHK ,
@@ -310,7 +312,7 @@ EeePFreeBuffer(
 EApiStatusCode_t
 EeePGetFirstDB(
     EeePHandel_t     BHandel,
-    void **          pFirstDB
+    DBlockIdHdr_t ** pFirstDB
     )
 {
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -338,9 +340,9 @@ EeePGetFirstDB(
     );
 
 
-  //
-  // Check If Dynamic Blocks Present
-  //
+  /*
+   * Check If Dynamic Blocks Present
+   */
   if(!((EeePCmn_t*)BHandel)->BlkOffset) 
     return EAPI_STATUS_SUCCESS;
 
@@ -513,7 +515,7 @@ EeePAddBlock(
   EApiStatusCode_t EApiStatusCode;
   size_t RequestBlockSize;
   DBlockIdHdr_t    *pTmpBlock   ;
-  void   *pvTmpBlock; 
+  DBlockIdHdr_t    *pvTmpBlock; 
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePAddBlock,
@@ -547,14 +549,14 @@ EeePAddBlock(
     );
 
   if(cuiFlags&EEEP_ADDBLK_IN_CRC){
-    //
-    // Adjust Empty Block length
-    //
-    pvTmpBlock=BufferMap.pEeePCRCBlock;
+    /*
+     * Adjust Empty Block length
+     */
+    pvTmpBlock=(DBlockIdHdr_t*)BufferMap.pEeePCRCBlock;
     DO(ReduceBlockLength(&BufferMap.pEmptyBlock, RequestBlockSize, NULL, 0));
-    //
-    // Move CRC Up
-    //
+    /*
+     * Move CRC Up
+     */
     pTmpBlock=EAPI_CREATE_PTR(BufferMap.pEmptyBlock, -(signed)GetBlockLength(BufferMap.pEeePCRCBlock), void *);
 #if TEST_EEEPDB
     EAPI_printf(TEXT("%08X - %08X - %08X - %08x \n")  ,
@@ -566,17 +568,17 @@ EeePAddBlock(
 #endif
     memmove(pTmpBlock, BufferMap.pEeePCRCBlock, GetBlockLength(BufferMap.pEeePCRCBlock));
     memset(pvTmpBlock, 0x00, RequestBlockSize);
-    //
-    // Reset CRC Pointer
-    //
+    /*
+     * Reset CRC Pointer
+     */
     BufferMap.pEmptyBlock=pTmpBlock;
 
   }else{
     DO(ReduceBlockLength(&BufferMap.pEmptyBlock, RequestBlockSize, &pvTmpBlock, EEEP_RBL_REDUCE_TOP_DOWN));
   }
-  //
-  // Copy Content
-  //
+  /*
+   * Copy Content
+   */
   memcpy(pvTmpBlock, pcvBlock, RequestBlockSize);
   if(pvIBlock!=NULL) *pvIBlock=pvTmpBlock;
 
@@ -707,9 +709,9 @@ EeePWriteBufferToEEP(
   if(!EAPI_STATUS_TEST_OK(EApiStatusCode)) \
     return EApiStatusCode
 
-//
-// Create Block Content
-//
+/*
+ * Create Block Content
+ */
 int 
 __cdecl 
 main(void)
@@ -719,9 +721,9 @@ main(void)
   EApiStatusCode_t EApiStatusCode;
   unsigned int i;
   uint8_t DummyBlock[]={0xF0,0x00,0x04,0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B};
-  //
-  // Create Block Content
-  //
+  /*
+   * Create Block Content
+   */
   DO_MAIN(EeePCreateNewBuffer(&BHandel, 256, sizeof(EeePCmn_t), EEEP_INIT_INCLUDE_CRC));
   PrintHexAsciiTable(
       BHandel, 
@@ -755,9 +757,9 @@ main(void)
     );
   DO_MAIN(EeePFreeBuffer(&BHandel));
 
-  //
-  // Test With NO CRC
-  //
+  /* 
+   * Test With NO CRC
+   */
   DO_MAIN(EeePCreateNewBuffer(&BHandel, 256, sizeof(EeePCmn_t), 0));
   PrintHexAsciiTable(
       BHandel, 

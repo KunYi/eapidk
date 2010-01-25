@@ -42,19 +42,16 @@ extern "C" {
 #endif
 
 uint32_t 
-__stdcall
 u32ChecksumBlock(
     const void *pcvBuffer, 
     size_t      stLength
   );
 uint16_t 
-__stdcall
 u16ChecksumBlock(
     const void *pcvBuffer, 
     size_t      stLength
   );
 uint8_t  
-__stdcall
 u8ChecksumBlock (
     const void *pcvBuffer, 
     size_t      stLength
@@ -92,12 +89,10 @@ u16CRC_CCITT (
 #define HEXTBL_NORM32_ATTRIB  (HEXTBL_NORMAL_ATTRIB|HEXTBL_32BIT_ELEMENT|4)
 #define HEXTBL_NORM64_ATTRIB  (HEXTBL_NORMAL_ATTRIB|HEXTBL_64BIT_ELEMENT|2)
 TCHAR
-__stdcall
 cBin2Ascii_c(
     __IN  unsigned  uiValue
   );
 int
-__stdcall
 siBin2Ascii_s(
     __OUT TCHAR           *szString   ,
     __IN  size_t          stBufLength ,
@@ -108,7 +103,6 @@ siBin2Ascii_s(
 
 
 void 
-__stdcall
 PrintHexAsciiTableEx(
 	__IN    const void *   pcvBuffer	,
 	__IN    const size_t   stBufSize	,
@@ -118,7 +112,6 @@ PrintHexAsciiTableEx(
 	);
 
 void 
-__stdcall
 PrintHexAsciiTable(
 	__IN    const void *const pcvBuffer	    ,
 	__IN    const size_t      cu16BufSize		,

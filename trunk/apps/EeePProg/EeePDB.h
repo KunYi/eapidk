@@ -85,16 +85,16 @@ SetDynBlockHeader(
 #define EEEP_RBL_REDUCE_TOP_DOWN  (1<<0)
 EApiStatusCode_t
 ReduceBlockLength(
-    __IN     void          *pvCurBlock,
+    __IN     DBlockIdHdr_t**pvCurBlock,
     __IN     size_t         stReduceBy, 
-    __OUTOPT void          *pvNewBlock,
+    __OUTOPT DBlockIdHdr_t**pvNewBlock,
     __IN     unsigned int   uiFlags
     );
 
 EApiStatusCode_t
 EeePGetFirstDB(
     EeePHandel_t     BHandel,
-    void **          pFirstDB
+    DBlockIdHdr_t ** pFirstDB
     );
 
 EApiStatusCode_t

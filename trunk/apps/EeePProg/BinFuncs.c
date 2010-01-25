@@ -30,7 +30,6 @@
 #include <EeePApp.h>
 
 uint32_t 
-__stdcall
 u32ChecksumBlock(
 	const void *pcvBuffer, 
 	size_t  	  stLength
@@ -44,7 +43,6 @@ u32ChecksumBlock(
   return ChkSum;
 }
 uint16_t 
-__stdcall
 u16ChecksumBlock(
 	const void * pcvBuffer, 
 	size_t   	   stLength
@@ -53,7 +51,6 @@ u16ChecksumBlock(
   return EEEP_LO_UINT16(u32ChecksumBlock(pcvBuffer, stLength));
 }
 uint8_t  
-__stdcall
 u8ChecksumBlock (
 	const void * pcvBuffer, 
 	size_t   	   stLength
@@ -87,7 +84,6 @@ u16CRC_CCITT (
 
 
 TCHAR
-__stdcall
 cBin2Ascii(
     __IN  unsigned int uiValue
   )
@@ -99,7 +95,6 @@ cBin2Ascii(
   }
 }
 signed int
-__stdcall
 siBin2Ascii(
     __OUT TCHAR          *pszString ,
     __IN  size_t          BufLength ,
@@ -131,7 +126,6 @@ siBin2Ascii(
 }
 
 void 
-__stdcall
 PrintHexAsciiTableEx(
 	const void *   pcvBuffer	,
 	const size_t   stBufSize	,
@@ -201,7 +195,7 @@ PrintHexAsciiTableEx(
         stOffset=pcu8Mem - (uint8_t*)pcvBase;
       }
       if(cuiFlags&HEXTBL_OFFSEt_BAR)
-        EAPI_printf(TEXT("%08lX ") , stOffset);
+        EAPI_printf(TEXT("%08X ") , stOffset);
 
         /*
          * Print Binary Hex Data
@@ -240,7 +234,6 @@ PrintHexAsciiTableEx(
 }
 
 void 
-__stdcall
 PrintHexAsciiTable(
 	const void *const pcvBuffer	,
 	const size_t stBufSize		,
@@ -336,12 +329,98 @@ ReadBinaryFile(
       *pvBuffer
     );
 
-  fread(*pvBuffer, stFileLen, sizeof(uint8_t), LclFilePtr);
+  *pstReadBCnt=fread(*pvBuffer, stFileLen, sizeof(uint8_t), LclFilePtr);
   fclose(LclFilePtr);
-  *pstReadBCnt=stFileLen;
 
-  return EAPI_STATUS_SUCCESS;
+  return (*pstReadBCnt==stFileLen?EAPI_STATUS_SUCCESS:EAPI_STATUS_READ_ERROR);
 }
+
+
+/*
+ * CPU Independent Multi Byte 
+ * Big Endian Memory Access
+ */
+void
+EeeP_Set16BitValue_BE(
+    uint8_t *pBuffer,
+    uint16_t Value
+     )
+{
+  pBuffer[1]=EEEP_LO_UINT8(Value   );
+  pBuffer[0]=EEEP_LO_UINT8(Value>>8);
+}
+uint16_t
+EeeP_Get16BitValue_BE(
+    const uint8_t *pBuffer
+     )
+{
+  return (pBuffer[1]    ) |
+         (pBuffer[0]<< 8) ;
+}
+void
+EeeP_Set32BitValue_BE(
+    uint8_t *pBuffer,
+    uint32_t Value
+     )
+{
+  pBuffer[3]=EEEP_LO_UINT8(Value    );
+  pBuffer[2]=EEEP_LO_UINT8(Value>> 8);
+  pBuffer[1]=EEEP_LO_UINT8(Value>>16);
+  pBuffer[0]=EEEP_LO_UINT8(Value>>24);
+}
+uint32_t
+EeeP_Get32BitValue_BE(
+    const uint8_t *pBuffer
+     )
+{
+  return (pBuffer[3]    ) |
+         (pBuffer[2]<< 8) |
+         (pBuffer[1]<<16) |
+         (pBuffer[0]<<24) ;
+}
+/*
+ * CPU Independent Multi Byte 
+ * Little Endian Memory Access
+ */
+void
+EeeP_Set16BitValue_LE(
+    uint8_t *pBuffer,
+    uint16_t Value
+     )
+{
+  pBuffer[0]=EEEP_LO_UINT8(Value   );
+  pBuffer[1]=EEEP_LO_UINT8(Value>>8);
+}
+uint16_t
+EeeP_Get16BitValue_LE(
+    const uint8_t *pBuffer
+     )
+{
+  return (pBuffer[0]    ) |
+         (pBuffer[1]<< 8) ;
+}
+void
+EeeP_Set32BitValue_LE(
+    uint8_t *pBuffer,
+    uint32_t Value
+     )
+{
+  pBuffer[0]=EEEP_LO_UINT8(Value    );
+  pBuffer[1]=EEEP_LO_UINT8(Value>> 8);
+  pBuffer[2]=EEEP_LO_UINT8(Value>>16);
+  pBuffer[3]=EEEP_LO_UINT8(Value>>24);
+}
+uint32_t
+EeeP_Get32BitValue_LE(
+    const uint8_t *pBuffer
+     )
+{
+  return (pBuffer[0]    ) |
+         (pBuffer[1]<< 8) |
+         (pBuffer[2]<<16) |
+         (pBuffer[3]<<24) ;
+}
+
 
 
 

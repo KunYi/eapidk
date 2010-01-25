@@ -265,7 +265,7 @@ typedef union SmbiosHandle_u{
 enum SMBIOS_BlockId_e{
   SMBIOS_TypeSystemDesc=1,
   SMBIOS_TypeModuleDesc=2,
-  SMBIOS_TypeChassisDesc=3,
+  SMBIOS_TypeChassisDesc=3
 };
 typedef uint8_t SMBIOS_BlockId_t;
 
@@ -320,7 +320,7 @@ enum SMBIOS_BoardTypes_e{
   SMBIOS_BoardType_DaughterBoard,
   SMBIOS_BoardType_Motherboard,
   SMBIOS_BoardType_ProcessorMemory_Module,
-  SMBIOS_BoardType_Interconnect_Board,
+  SMBIOS_BoardType_Interconnect_Board
 };
 typedef uint8_t SMBIOS_BoardTypes_t;
 typedef struct ModuleInfo_s{
@@ -414,7 +414,7 @@ enum ChassisTypes_e{
     SMBIOS_ChassisType_RAID_Chassis                  =0x16, 
     SMBIOS_ChassisType_Rack_Mount_Chassis            =0x17, 
     SMBIOS_ChassisType_Sealed_case_PC                =0x18, 
-    SMBIOS_ChassisType_Multi_system_chassis          =0x19, 
+    SMBIOS_ChassisType_Multi_system_chassis          =0x19 
 };
 typedef uint8_t ChassisTypes_t;
 
@@ -473,8 +473,8 @@ typedef struct VendBlockHdr_s{
     /* After This Point is only 
      * Suggested
      */
-    //uint8_t       VendBlockId; /* 0x04 Vendor Specific Block Id  */
-    //uint8_t       VendData[1]; /* 0x05 Vendor Data */
+    /*uint8_t       VendBlockId; * 0x04 Vendor Specific Block Id  */
+    /*uint8_t       VendData[1]; * 0x05 Vendor Data */
 }VendBlockHdr_t;
 
 
@@ -529,100 +529,5 @@ typedef struct ExtI2CDeviceDesc_s{
 
 
 #pragma pack(pop)   /* restore original alignment from stack */
-
-/*
- * CPU Independent Multi Byte 
- * Big Endian Memory Access
- */
-void
-inline
-EeeP_Set16BitValue_BE(
-    uint8_t *pBuffer,
-    uint16_t Value
-     )
-{
-  pBuffer[1]=EEEP_LO_UINT8(Value   );
-  pBuffer[0]=EEEP_LO_UINT8(Value>>8);
-};
-uint16_t
-inline
-EeeP_Get16BitValue_BE(
-    const uint8_t *pBuffer
-     )
-{
-  return (pBuffer[1]    ) |
-         (pBuffer[0]<< 8) ;
-};
-void
-inline
-EeeP_Set32BitValue_BE(
-    uint8_t *pBuffer,
-    uint32_t Value
-     )
-{
-  pBuffer[3]=EEEP_LO_UINT8(Value    );
-  pBuffer[2]=EEEP_LO_UINT8(Value>> 8);
-  pBuffer[1]=EEEP_LO_UINT8(Value>>16);
-  pBuffer[0]=EEEP_LO_UINT8(Value>>24);
-};
-uint32_t
-inline
-EeeP_Get32BitValue_BE(
-    const uint8_t *pBuffer
-     )
-{
-  return (pBuffer[3]    ) |
-         (pBuffer[2]<< 8) |
-         (pBuffer[1]<<16) |
-         (pBuffer[0]<<24) ;
-};
-/*
- * CPU Independent Multi Byte 
- * Little Endian Memory Access
- */
-void
-inline
-EeeP_Set16BitValue_LE(
-    uint8_t *pBuffer,
-    uint16_t Value
-     )
-{
-  pBuffer[0]=EEEP_LO_UINT8(Value   );
-  pBuffer[1]=EEEP_LO_UINT8(Value>>8);
-};
-uint16_t
-inline
-EeeP_Get16BitValue_LE(
-    const uint8_t *pBuffer
-     )
-{
-  return (pBuffer[0]    ) |
-         (pBuffer[1]<< 8) ;
-};
-void
-inline
-EeeP_Set32BitValue_LE(
-    uint8_t *pBuffer,
-    uint32_t Value
-     )
-{
-  pBuffer[0]=EEEP_LO_UINT8(Value    );
-  pBuffer[1]=EEEP_LO_UINT8(Value>> 8);
-  pBuffer[2]=EEEP_LO_UINT8(Value>>16);
-  pBuffer[3]=EEEP_LO_UINT8(Value>>24);
-};
-uint32_t
-inline
-EeeP_Get32BitValue_LE(
-    const uint8_t *pBuffer
-     )
-{
-  return (pBuffer[0]    ) |
-         (pBuffer[1]<< 8) |
-         (pBuffer[2]<<16) |
-         (pBuffer[3]<<24) ;
-};
-
-
 #endif /* __EEEP_H__ */
 

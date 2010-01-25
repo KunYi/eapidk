@@ -42,17 +42,13 @@ extern "C" {
 
 void 
 skipWhiteSpaces(
-        const char **const pcszStr
+        char **const pcszStr
         );
 
 void 
 stripWhiteSpaces(
         char *const pszStr
         );
-
-// char *_strdup(
-//     __IN const char *pcszStr
-//     );
 
 unsigned long 
 ulConvertStr2Num(

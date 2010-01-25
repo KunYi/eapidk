@@ -200,17 +200,17 @@ ParseCfgFile(
       EAPI_STATUS_INVALID_PARAMETER
     );
   while(!feof(pCfgFile)){
-    fgets(LineBuffer, ARRAY_SIZE(LineBuffer), pCfgFile);
-    //
-    // Remove Comments And New Lines etc..
-    //
+    pszName=fgets(LineBuffer, ARRAY_SIZE(LineBuffer), pCfgFile);
+    /*
+     * Remove Comments And New Lines etc..
+     */
     i=strcspn(LineBuffer, "#\n\r");
     LineBuffer[i]='\0';
     if(LineBuffer[0]=='['){
       size_t stTokenLen;
-      //
-      // Check Last Block Required
-      //
+      /*
+       * Check Last Block Required
+       */
       if(pCurBlockDesc!=NULL){
         for(i=pCurBlockDesc->stElementCount, pCurElement=pCurBlockDesc->pElementsDesc; i; i--, pCurElement++){
           if(pCurElement->cuiRequired>pCurElement->stElementCount){
@@ -246,7 +246,7 @@ ParseCfgFile(
       pszName=LineBuffer;
       skipWhiteSpaces(&pszName);
       if(!strlen(pszName)){
-        //Skip Empty Blank Lines
+        /*Skip Empty Blank Lines */
         continue;
       }
       if(pCurBlockDesc==NULL){
