@@ -129,20 +129,20 @@
 #define VER_FILEFLAGS               (VER_PRERELEASE|VER_DEBUG|VER_PRIVATE)
 
 #define VER_COMPANYNAME_STR         "Kontron Embedded Modules GmbH"
-#define VER_PRODUCTNAME_STR         "EApi API Validation Tool"
+#define VER_PRODUCTNAME_STR         "EeeP Embedded EEPROM Programming Tool"
 #define VER_LEGALTRADEMARKS_STR     \
-"\251 2009 Kontron Embedded Modules GmbH"
-#define VER_LEGALCOPYRIGHT_YEARS "2009"
+"\251 2010 Kontron Embedded Modules GmbH"
+#define VER_LEGALCOPYRIGHT_YEARS "2010"
 #define VER_LEGALCOPYRIGHT_STR \
 "Copyright \251 Kontron Embedded Modules GmbH." VER_LEGALCOPYRIGHT_YEARS
 
 
 
-#define VER_FILETYPE                VFT_DLL
+#define VER_FILETYPE                VFT_APP
 #define VER_FILESUBTYPE             VFT2_UNKNOWN
-#define VER_FILEDESCRIPTION_STR     "EApi API Validation Tool"
-#define VER_INTERNALNAME_STR        "EApiValidateAPI.exe"
-#define VER_ORIGINALFILENAME_STR    "EApiValidateAPI.exe"
+#define VER_FILEDESCRIPTION_STR     "EeeP Embedded EEPROM Programming Tool"
+#define VER_INTERNALNAME_STR        "EeePProg.exe"
+#define VER_ORIGINALFILENAME_STR    "EeePProg.exe"
 
 #include "common.ver"
 
