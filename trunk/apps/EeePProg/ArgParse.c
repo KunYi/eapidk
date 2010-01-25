@@ -43,7 +43,7 @@ StringArg(
     )
 {
   pArgs=pArgs;
-  *(void**)cszCurArg=strdup(cszArg);
+  *(void**)cszCurArg=EAPI_strdup(cszArg);
   printf("StringArg: %s\n", *(char**)cszCurArg);
   return EAPI_STATUS_SUCCESS;
 }

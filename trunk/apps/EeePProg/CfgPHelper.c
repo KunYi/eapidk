@@ -271,7 +271,7 @@ String_Element(
   )
 { 
   pElementDesc=pElementDesc;
-  *(char **)pCurElement=strdup(pszValue);
+  *(char **)pCurElement=EAPI_strdup(pszValue);
 #if TEST_EEPCFG
 /*   printf("\tString_Element = %s, %s\n", *(char**)pCurElement, pszValue); */
 #endif
