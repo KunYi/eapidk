@@ -1463,6 +1463,7 @@ HandleVendorBlock(
 
   DO(EeePAddBlock(BHandel, pHeader, NULL, pVendorBlock->aulInsideCrc[0]));
   free(pvFileBuffer);
+  pvFileBuffer=NULL;
   free(pHeader);
   pHeader=NULL;
 
