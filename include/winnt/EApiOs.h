@@ -82,6 +82,7 @@ void EApiSleepus(unsigned long ms);
 #  define EAPI_printf         printf
 #endif
 
+#define EAPI_strdup         _strdup
 
 #define         MSVC_1_5         800
 #define         MSVC_98         1200

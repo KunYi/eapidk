@@ -81,6 +81,9 @@ void EApiSleepns(unsigned long ns);
 #  define EApiSleep(x) sleep(x)
 #endif
 
+#define EAPI_strdup         strdup
+
+
 #ifdef UNICODE
 #  define TEXT(x) Lx
 #  define EAPI_strlen         wcslen
