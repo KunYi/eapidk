@@ -74,8 +74,8 @@ PrintCfgFile(
           (pCurElement->cuiRequired?"Required Element":"Optional Element")
         );
       fprintf(OutStream, 
-          "#\t\t Allowed Maximum of %u times in block\n", 
-          pCurElement->cstElementMax
+          "#\t\t Allowed Maximum of %lu times in block\n", 
+          (unsigned long)pCurElement->cstElementMax
         );
       DO(pCurElement->pHandlers->Help(
             pCurElement, 
