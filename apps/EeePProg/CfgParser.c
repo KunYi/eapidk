@@ -170,7 +170,7 @@ ParseCfgFile(
 {
   FILE *pCfgFile;
   char LineBuffer[1024];
-  char ErrorBuffer[1324];
+  TCHAR ErrorBuffer[1324];
   EApiStatusCode_t EApiStatusCode;
   char *pszName;
   char *pszValue;
@@ -224,8 +224,10 @@ ParseCfgFile(
           )
         {
           if(pCurElement->cuiRequired>pCurElement->stElementCount){
-            sprintf(ErrorBuffer, 
-                "ERROR: Missing Required Element '%s' in Block '%s'\n", 
+            EApiSprintf(
+                ErrorBuffer, 
+                ARRAY_SIZE(ErrorBuffer), 
+                TEXT("ERROR: Missing Required Element '%hs' in Block '%hs'"), 
                 pCurElement->pcszElementName, 
                 pCurBlockDesc->pszBlockName
               );
@@ -260,11 +262,12 @@ ParseCfgFile(
         continue;
       }
       if(pCurBlockDesc==NULL){
-        sprintf(
+        EApiSprintf(
             ErrorBuffer, 
-            "(%04lu)%-15s : %s", 
+            ARRAY_SIZE(ErrorBuffer),
+            TEXT("(%04lu)%-15s : %hs"), 
             ulLineNum, 
-            "Invalid Block", 
+            TEXT("Invalid Block"), 
             LineBuffer
           );
         EAPI_FORMATED_MES( W, ParseCfgFile, 0, ErrorBuffer);
@@ -272,11 +275,12 @@ ParseCfgFile(
       }
       pszValue=strchr(pszName, '=');
       if(pszValue==NULL){
-        sprintf(
+        EApiSprintf(
             ErrorBuffer, 
-            "(%04lu)%-15s : %s", 
+            ARRAY_SIZE(ErrorBuffer), 
+            TEXT("(%04lu)%-15s : %hs"), 
             ulLineNum, 
-            "Invalid line", 
+            TEXT("Invalid line"), 
             LineBuffer
           );
         EAPI_FORMATED_MES( W, ParseCfgFile, 0, ErrorBuffer);
@@ -320,10 +324,11 @@ ParseCfgFile(
   pCurBlockDesc=pCfgBDesc;
   for(i=stCfgBDescElements;i;i--){
     if(pCurBlockDesc->cuiRequired>pCurBlockDesc->uiFound){
-      char ErrorBuffer[50];
-      sprintf(
+      TCHAR ErrorBuffer[50];
+        EApiSprintf(
           ErrorBuffer, 
-          "ERROR: Missing Required Block '%s'\n", 
+          ARRAY_SIZE(ErrorBuffer), 
+          TEXT("ERROR: Missing Required Block '%hs'\n"), 
           pCurBlockDesc->pszBlockName
         );
       EAPI_APP_RETURN_ERROR(

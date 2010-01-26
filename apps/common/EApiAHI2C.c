@@ -131,6 +131,24 @@ EApiAHI2CWriteEeprom(
       ByteCnt=pDDesc->DevSize-ByteOffset;
     }
 #endif
+#if 0
+    printf(
+        "DeviceAddr = %04"PRIX16"\n"
+        "PageSize   = %04"PRIX16"\n"
+        "ExtIndx    = %04"PRIX16"\n"
+        "WRecTimems = %04"PRIX16"\n"
+        "DevSize    = %04"PRIX16"\n"
+        "ByteCnt    = %04lX\n"
+        "ByteOffset = %04lX\n",
+        pDDesc->DeviceAddr,
+        pDDesc->PageSize,
+        pDDesc->ExtIndx,
+        pDDesc->WRecTimems,
+        pDDesc->DevSize ,
+        (unsigned long)ByteCnt ,
+        (unsigned long)ByteOffset
+      );
+#endif
     
     /* Get Storage Capabilities */
     ReturnValue=EApiI2CGetBusCap(Id, &IntMaxBlckLen);

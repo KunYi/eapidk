@@ -77,7 +77,7 @@ StringBlock(
   *pstLastPos=stMaxBlockLen;
   while(stMaxBlockLen --){
     if(*cszLastPos==' '||*cszLastPos=='\t'){
-      *pstLastPos=cszLastPos - cszStr+1;
+      *pstLastPos=cszLastPos - cszStr;
       return EAPI_STATUS_MORE_DATA;
     }
     cszLastPos --;
@@ -98,7 +98,9 @@ PrintStringBlock(
   StringBlock(cszStr, stMaxBlockLen, &stCurStrPos);
   fprintf(OutStream, cszLine1, stCurStrPos, cszStr );
   while(stCurStrPos){
-    cszStr+=stCurStrPos  ;
+    cszStr+=stCurStrPos;
+    if(*cszStr!='\0')
+      cszStr++;
     StringBlock(cszStr, stMaxBlockLen, &stCurStrPos);
     if(stCurStrPos)
       fprintf( OutStream, cszOLines, stCurStrPos, cszStr );
@@ -135,7 +137,10 @@ PrintUsage(
     /*
      *
      */
-    fprintf(OutStream, " --%-25s ", pCmdDesc->cszLong );
+    if(pCmdDesc->cszLong!=NULL)
+      fprintf(OutStream, " --%-25s ", pCmdDesc->cszLong );
+    else
+      fprintf(OutStream, "                             ");
     /*
      *
      */
@@ -186,11 +191,12 @@ ParseArgs(
   const char **pszCurArg=pszArgv;
   CmdDesc_t *pCurArgDesc;
   size_t stI;
-  unsigned int uiValid;
+  unsigned int uiValid,uiSyntaxError;
   ArgDesc_t *pArgDesc;
   size_t     stArgCount;
   siArgc --;
   pszCurArg ++;
+  uiSyntaxError=0;
   while(siArgc --){
     uiValid=0;
 /*     printf("DEBUG: Arg[%u] (%s)\n", siArgc, *pszCurArg); */
@@ -199,7 +205,11 @@ ParseArgs(
     if(pszCurArg[0][0]=='-'){
       if(pszCurArg[0][1]=='-'){
         while(stI --){
-          if(!strcmp(pszCurArg[0]+2, pCurArgDesc->cszLong)){
+          if( 
+              pCurArgDesc->cszLong!=NULL&&
+              !strcmp(pszCurArg[0]+2, pCurArgDesc->cszLong)
+              )
+          {
 /*             printf("[%u][%lu]--%s==--%s\n", siArgc, (unsigned long)stI, pszCurArg[0]+2, pCurArgDesc->cszLong); */
             ++uiValid;
             stI=0;
@@ -220,6 +230,7 @@ ParseArgs(
       }
     }
     if(!uiValid){
+      uiSyntaxError++;
       printf("ERROR: Unknown Arg (%s)\n", *pszCurArg);
     }else{
       ++*pCurArgDesc->puiResult;
@@ -237,7 +248,8 @@ ParseArgs(
     }
     ++pszCurArg;
   }
-  return EAPI_STATUS_SUCCESS;
+
+  return (uiSyntaxError?EAPI_STATUS_INVALID_PARAMETER:EAPI_STATUS_SUCCESS);
 }
 #if TEST_EEPARG
 

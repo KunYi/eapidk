@@ -163,6 +163,12 @@ EeePWriteBufferToEEP(
     __IN  uint16_t       u16DeviceAddr 
     );
 
+EApiStatusCode_t
+EeePReadBufferFromFile(
+    __OUT EeePHandel_t  *pBHandel,
+    __IN  char          *pszFilename
+    );
+
 #ifdef __cplusplus
 }
 #endif
