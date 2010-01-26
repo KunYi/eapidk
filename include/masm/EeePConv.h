@@ -1,7 +1,7 @@
 /*
  *<KHeader>
  *+=========================================================================
- *I               EApiDK Embedded Application Development Kit
+ *I  Project Name: EApiDK Embedded Application Development Kit
  *+=========================================================================
  *I  $HeadURL$
  *+=========================================================================
@@ -21,9 +21,9 @@
  *I
  *I Description: Auto Created for EApiConv.h
  *I
- *+------------------------------------------------------------------------=
+ *+-------------------------------------------------------------------------
  *I
- *I  File Name            : EApiConv.h
+ *I  File Name            : EeePConv.h
  *I  File Location        : include\masm
  *I  Last committed       : $Revision$
  *I  Last changed by      : $Author$

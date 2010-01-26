@@ -1,12 +1,12 @@
 /*
  *<KHeader>
  *+=========================================================================
- *I               EApiDK Embedded Application Development Kit
+ *I  Project Name: EApiDK Embedded Application Development Kit
  *+=========================================================================
  *I  $HeadURL$
  *+=========================================================================
- *I              
- *I              
+ *I   Copyright: Copyright (c) 2002-2010, Kontron Embedded Modules GmbH
+ *I      Author: John Kearney,                  John.Kearney@kontron.com
  *I
  *I     License: All rights reserved. This program and the accompanying 
  *I              materials are licensed and made available under the 
@@ -21,7 +21,7 @@
  *I
  *I Description: Auto Created for stdint.h
  *I
- *+------------------------------------------------------------------------=
+ *+-------------------------------------------------------------------------
  *I
  *I  File Name            : stdint.h
  *I  File Location        : include\winnt

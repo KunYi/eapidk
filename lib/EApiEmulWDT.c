@@ -1,7 +1,7 @@
 /*
  *<KHeader>
  *+=========================================================================
- *I               EApiDK Embedded Application Development Kit
+ *I  Project Name: EApiDK Embedded Application Development Kit
  *+=========================================================================
  *I  $HeadURL$
  *+=========================================================================
@@ -21,7 +21,7 @@
  *I
  *I Description: Auto Created for EApiEmulWDT.c
  *I
- *+------------------------------------------------------------------------=
+ *+-------------------------------------------------------------------------
  *I
  *I  File Name            : EApiEmulWDT.c
  *I  File Location        : lib

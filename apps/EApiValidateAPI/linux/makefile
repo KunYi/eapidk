@@ -1,6 +1,6 @@
 #<KHeader>
 #+=========================================================================
-#I               EApiDK Embedded Application Development Kit
+#I  Project Name: EApiDK Embedded Application Development Kit
 #+=========================================================================
 #I  $HeadURL$
 #+=========================================================================
@@ -20,7 +20,7 @@
 #I
 #I Description: Auto Created for makefile
 #I
-#+------------------------------------------------------------------------=
+#+-------------------------------------------------------------------------
 #I
 #I  File Name            : makefile
 #I  File Location        : apps\EApiValidateAPI\linux
