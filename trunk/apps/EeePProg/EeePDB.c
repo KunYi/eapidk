@@ -661,15 +661,61 @@ EeePWriteBufferToFile(
       );
 }
 
-unsigned WriteSizes[]={ 1,8,16,32,64,128,256,512 };
+
 EApiStatusCode_t
-EeePWriteBufferToEEP(
-    __IN  EeePHandel_t   BHandel,
-    __IN  unsigned       u16DeviceBus ,
-    __IN  uint16_t       u16DeviceAddr 
+EeePReadBufferFromFile(
+    __OUT EeePHandel_t  *pBHandel,
+    __IN  char          *pszFilename
     )
 {
-  I2CDeviceDesc_t DDesc;
+  EApiStatusCode_t EApiStatusCode;
+  size_t stFileSize;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      EeePReadBufferFromFile,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pBHandel
+    );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      EeePReadBufferFromFile,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pszFilename
+    );
+  DO(ReadBinaryFile(
+          pszFilename, 
+          pBHandel, 
+          &stFileSize
+      ));
+
+    EAPI_APP_RETURN_ERROR_IF_S(
+        EeePReadBufferFromFile,
+        (stFileSize!=(size_t)(256<<(((EeePCmn_t*)*pBHandel)->DeviceDesc&EEEP_DEVICE_SIZE_MASK))),
+        EAPI_STATUS_ERROR
+      );
+  if(memcmp(
+          ((EeePCmn_t*)*pBHandel)->EepId, 
+          EEEP_EEPROM_MARKER, 
+          sizeof(EEEP_EEPROM_MARKER)-1
+        ))
+  {
+    EAPI_APP_RETURN_ERROR(
+        EeePReadBufferFromFile,
+        EAPI_STATUS_ERROR,
+        TEXT("Invalid EeeP Buffer")
+      );
+  }
+
+  return EAPI_STATUS_SUCCESS;
+}
+
+unsigned WriteSizes[]={ 1,8,16,32,64,128,256,512 };
+EApiStatusCode_t
+EeePSetI2CDeviceDesc(
+    __OUT I2CDeviceDesc_t *pDDesc,
+    __IN  EeePHandel_t     BHandel,
+    __IN  uint16_t         WRecTimems ,
+    __IN  uint16_t         u16DeviceAddr
+    )
+{
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePWriteBufferToEEP,
       EAPI_STATUS_INVALID_PARAMETER,
@@ -685,12 +731,24 @@ EeePWriteBufferToEEP(
       EAPI_STATUS_ERROR,
       TEXT("Invalid EeeP Buffer")
     );
-  DDesc.DeviceAddr=u16DeviceAddr;
-  DDesc.PageSize  =(uint16_t)WriteSizes[(((EeePCmn_t*)BHandel)->DeviceDesc>>EEEP_DEVICE_WRITE_LEN_OFFSET)];
-  DDesc.ExtIndx   =(uint16_t)((((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_EXT_INDEX)?EApiAPI2CExtIndex:EApiAPI2CStdIndex);
-  DDesc.WRecTimems=5000;
-  DDesc.DevSize   =256<<(((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_SIZE_MASK);
+  pDDesc->DeviceAddr=u16DeviceAddr;
+  pDDesc->WRecTimems=WRecTimems;
+  pDDesc->PageSize  =(uint16_t)WriteSizes[(((EeePCmn_t*)BHandel)->DeviceDesc>>EEEP_DEVICE_WRITE_LEN_OFFSET)];
+  pDDesc->ExtIndx   =(uint16_t)((((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_EXT_INDEX)?EApiAPI2CExtIndex:EApiAPI2CStdIndex);
+  pDDesc->DevSize   =256<<(((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_SIZE_MASK);
 
+  return EAPI_STATUS_SUCCESS;
+}
+EApiStatusCode_t
+EeePWriteBufferToEEP(
+    __IN  EeePHandel_t   BHandel,
+    __IN  unsigned       u16DeviceBus ,
+    __IN  uint16_t       u16DeviceAddr 
+    )
+{
+  EApiStatusCode_t EApiStatusCode;
+  I2CDeviceDesc_t DDesc;
+  DO(EeePSetI2CDeviceDesc(&DDesc, BHandel, 5, u16DeviceAddr));
   return EApiAHI2CWriteEeprom(
           u16DeviceBus, 
           &DDesc, 

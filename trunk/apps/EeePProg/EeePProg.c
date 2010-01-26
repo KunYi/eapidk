@@ -42,6 +42,7 @@ const char cszTitle[]=
   "\n"
 ;
 
+const char syntaxErrMes[]  = "Syntax error / Use -h for info";
 
 
 Options_t CurOptions;
@@ -148,6 +149,42 @@ ArgDesc_t  EeePExpEEP_EEP[]={
   NumberArg
   },
 };
+ArgDesc_t  EeePExpEEP_PEEP[]={
+  {
+  &CurOptions.szEeePExpEEP_SBIN_File        ,
+  sizeof(CurOptions.szEeePExpEEP_SBIN_File) ,
+  "<Filename>  Binary Image Filename"       ,
+  StringArg
+  },
+  {
+  &CurOptions.ulEeePExpEEP_Bin_EApiBus     ,
+  sizeof(CurOptions.ulEeePExpEEP_Bin_EApiBus),
+  "<EApi Id>      EApi Bus Id"             ,
+  NumberArg
+  },
+  {
+  &CurOptions.ulEeePExpEEP_Bin_DevAddr     ,
+  sizeof(CurOptions.ulEeePExpEEP_Bin_DevAddr),
+  "<I2C Address>  EEPROM Device Address"   ,
+  NumberArg
+  },
+};
+ArgDesc_t  COM0R20CB_PEEP[]={
+  {
+  &CurOptions.szCOM0R20CB_SBIN_File        ,
+  sizeof(CurOptions.szCOM0R20CB_SBIN_File) ,
+  "<Filename>  Binary Image Filename"       ,
+  StringArg
+  },
+};
+ArgDesc_t  COM0R20M_PEEP[]={
+  {
+  &CurOptions.szCOM0R20M_SBIN_File        ,
+  sizeof(CurOptions.szCOM0R20M_SBIN_File) ,
+  "<Filename>  Binary Image Filename"       ,
+  StringArg
+  },
+};
 
 CmdDesc_t ArgsDesc[]={
   {
@@ -161,6 +198,14 @@ CmdDesc_t ArgsDesc[]={
   {
     'h'                                             , 
     "help"                                          , 
+    &CurOptions.uiHelp                              , 
+    "Print this usage message"                      , 
+    NULL                                            ,
+    0                          
+  },
+  {
+    '?'                                             , 
+    NULL                                            , 
     &CurOptions.uiHelp                              , 
     "Print this usage message"                      , 
     NULL                                            ,
@@ -246,21 +291,63 @@ CmdDesc_t ArgsDesc[]={
     EeePExpEEP_EEP                                  ,
     ARRAY_SIZE(EeePExpEEP_EEP)
   },
+  {
+    0x00                                            , 
+    "PROGRAM-EeePExpEEP-EEP"                        , 
+    &CurOptions.uiProgramEeePExpEEP_EEP             , 
+    "Program EeeP Expansion EEP Image file over EApi", 
+    EeePExpEEP_PEEP                                  ,
+    ARRAY_SIZE(EeePExpEEP_PEEP)
+  },
+  {
+    0x00                                            , 
+    "PROGRAM-COM0R20CB-EEP"                         , 
+    &CurOptions.uiProgramCOM0R20CB_EEP              , 
+    "Program COM0 R2.0 Carrier Board EEP Image file over EApi", 
+    COM0R20CB_PEEP                                  ,
+    ARRAY_SIZE(COM0R20CB_PEEP)
+  },
+  {
+    0x00                                            , 
+    "PROGRAM-COM0R20M-EEP"                          , 
+    &CurOptions.uiProgramCOM0R20M_EEP               , 
+    "Program COM0 R2.0 Module EEP Image file over EApi", 
+    COM0R20M_PEEP                                   ,
+    ARRAY_SIZE(COM0R20M_PEEP)
+  },
 };
 
 EApiStatusCode_t
 CreateTxtFilePtr(
-    const char *Source  , 
+    const char *Destination,
     FILE **     FilePtr
     )
 {
-  if(!strcmp(Source, "stdout")){
+  if(!strcmp(Destination, "stdout")){
      *FilePtr=stdout;
-     return EAPI_STATUS_SUCCESS;
+  }else if(!strcmp(Destination, "stderr")){
+     *FilePtr=stderr;
   }else {
-     *FilePtr=fopen(Source, "w");
-     return ((FilePtr==NULL)?EAPI_STATUS_ERROR:EAPI_STATUS_SUCCESS);
+    *FilePtr=fopen(Destination, "w");
+    EAPI_APP_RETURN_ERROR_IF_S(
+         CreateTxtFilePtr,
+         (FilePtr==NULL),
+         EAPI_STATUS_WRITE_ERROR
+      );
   }
+  return EAPI_STATUS_SUCCESS;
+}
+EApiStatusCode_t
+FreeFilePtr(
+    FILE **     FilePtr
+    )
+{
+  FILE *     LclFilePtr=*FilePtr;
+  if(LclFilePtr!=stdout&&LclFilePtr!=stderr&&LclFilePtr!=NULL){
+    fclose(LclFilePtr);
+  };
+  *FilePtr=NULL;
+  return EAPI_STATUS_SUCCESS;
 }
 #define FREE_BUFFER(x) \
       if(x!=NULL){\
@@ -268,21 +355,19 @@ CreateTxtFilePtr(
           x=NULL;\
       }
 #define FREE_STREAM(x) \
-      if(x!=stdout)\
-          fclose(x);\
-      x=NULL;
+          FreeFilePtr(&x)
 
   
 
 
 
-/*   EAPI_printf(TEXT("#####\n")TEXT("#\t%s\n")TEXT("#####\n"), TEXT(#x));\ */
 
 #define DO_MAIN(x) \
   EApiStatusCode=x;\
   if(!EAPI_STATUS_TEST_OK(EApiStatusCode)){ \
-    EAPI_printf(TEXT("ERROR: %s\n"), TEXT(#x));\
-    return EApiStatusCode \
+    EApiAHCreateErrorString(EApiStatusCode, ErrBuf, ARRAY_SIZE(ErrBuf));\
+    EAPI_FORMATED_MES1(E, main, ErrBuf, TEXT(#x));\
+    exit(EApiStatusCode);\
   }
 
 /*
@@ -296,10 +381,26 @@ main(
   )
 {
   EeePHandel_t BHandel;
+  TCHAR ErrBuf[64];
   FILE *lclStream=NULL;
   EApiStatusCode_t EApiStatusCode;
+  DO_MAIN(EApiLibInitialize());
 
-  DO(ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc)));
+  EApiStatusCode=ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc));
+  switch(EApiStatusCode){
+    case EAPI_STATUS_INVALID_PARAMETER:
+      printf("%s", syntaxErrMes);
+      exit(EApiStatusCode);
+      break;
+    case EAPI_STATUS_SUCCESS:
+      break;
+    default:
+      EApiAHCreateErrorString(EApiStatusCode, ErrBuf, ARRAY_SIZE(ErrBuf));
+      EAPI_FORMATED_MES1(E, main, ErrBuf, TEXT("ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc))"));
+      exit(EApiStatusCode);
+      break;
+  }
+
   if(!CurOptions.uiQuiet){
     fprintf(stderr, cszTitle, APP_VERSION, APP_REVISION, APP_BUILD);
   }
@@ -312,98 +413,156 @@ main(
    *
    */
   if(CurOptions.uiCreateCOM0R20CB_EEP){
-    DO(EeeP_CreateCOM0R20_CBImage(
+    DO_MAIN(EeeP_CreateCOM0R20_CBImage(
           &BHandel                              ,
           CurOptions.szCOM0R20CB_S2Cfg_File
         ));
-    DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, 0xAE));
-    DO(EeePFreeBuffer(&BHandel));
+    DO_MAIN(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
+  }
+  /*
+   *
+   */
+  if(CurOptions.uiProgramCOM0R20CB_EEP){
+    DO_MAIN(EeePReadBufferFromFile(
+          &BHandel                              ,
+          CurOptions.szCOM0R20CB_SBIN_File
+        ));
+    if(memcmp(((COM0R20_CB_t *)BHandel)->GenId, COM0R20_CB_HEADER_ID, sizeof(COM0R20_CB_HEADER_ID)-1)){
+      EAPI_APP_RETURN_ERROR(
+          main,
+          EAPI_STATUS_ERROR,
+          TEXT("Not Valid COM0 R2.0 Carrier Board Image")
+        );
+    }
+    DO_MAIN(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
   }
   /*
    *
    */
   if(CurOptions.uiCreateCOM0R20M_EEP){
-    DO(EeeP_CreateCOM0R20_CBImage(
+    DO_MAIN(EeeP_CreateCOM0R20_MEEPImage(
           &BHandel                              ,
           CurOptions.szCOM0R20M_S2Cfg_File
         ));
-    DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, 0xA0));
-    DO(EeePFreeBuffer(&BHandel));
+    DO_MAIN(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
+  }
+  /*
+   *
+   */
+  if(CurOptions.uiProgramCOM0R20M_EEP){
+    DO_MAIN(EeePReadBufferFromFile(
+          &BHandel                              ,
+          CurOptions.szCOM0R20M_SBIN_File
+        ));
+    if(memcmp(((COM0R20_M_t *)BHandel)->GenId, COM0R20_M_HEADER_ID, sizeof(COM0R20_M_HEADER_ID)-1)){
+      EAPI_APP_RETURN_ERROR(
+          main,
+          EAPI_STATUS_ERROR,
+          TEXT("Not Valid COM0 R2.0 Module Image")
+        );
+    }
+    DO_MAIN(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
   }
   /*
    *
    */
   if(CurOptions.uiCreateCOM0R20CB_IMG){
-    DO(EeeP_CreateCOM0R20_CBImage(
+    DO_MAIN(EeeP_CreateCOM0R20_CBImage(
           &BHandel                              ,
           CurOptions.szCOM0R20CB_SCfg_File
         ));
-    DO(EeePWriteBufferToFile(BHandel, CurOptions.szCOM0R20CB_Img_File));
-    DO(EeePFreeBuffer(&BHandel));
+    DO_MAIN(EeePWriteBufferToFile(BHandel, CurOptions.szCOM0R20CB_Img_File));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
   }
   /*
    *
    */
   if(CurOptions.uiCreateCOM0R20M_IMG){
-    DO(EeeP_CreateCOM0R20_MEEPImage(
+    DO_MAIN(EeeP_CreateCOM0R20_MEEPImage(
           &BHandel                              ,
           CurOptions.szCOM0R20M_SCfg_File
         ));
-    DO(EeePWriteBufferToFile(BHandel, CurOptions.szCOM0R20M_Img_File));
-    DO(EeePFreeBuffer(&BHandel));
+    DO_MAIN(EeePWriteBufferToFile(BHandel, CurOptions.szCOM0R20M_Img_File));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
   }
   /*
    *
    */
   if(CurOptions.uiCreateEeePExpEEP_IMG){
-    DO(EeeP_CreateEeePExtEEPImage(
+    DO_MAIN(EeeP_CreateEeePExtEEPImage(
           &BHandel                              ,
           CurOptions.szEeePExpEEP_SCfg_File
         ));
-    DO(EeePWriteBufferToFile(BHandel, CurOptions.szEeePExpEEP_Img_File));
-    DO(EeePFreeBuffer(&BHandel));
+    DO_MAIN(EeePWriteBufferToFile(BHandel, CurOptions.szEeePExpEEP_Img_File));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
   }
   /*
    *
    */
   if(CurOptions.uiCreateEeePExpEEP_EEP){
-    DO(EeeP_CreateEeePExtEEPImage(
+    DO_MAIN(EeeP_CreateEeePExtEEPImage(
           &BHandel                              ,
           CurOptions.szEeePExpEEP_S2Cfg_File
         ));
-    DO(EeePWriteBufferToFile(BHandel, CurOptions.szEeePExpEEP_Img_File));
-    DO(EeePWriteBufferToEEP(
+    DO_MAIN(EeePWriteBufferToEEP(
             BHandel, 
             (uint16_t)CurOptions.ulEeePExpEEP_Img_EApiBus, 
             (uint16_t)CurOptions.ulEeePExpEEP_Img_DevAddr
         ));
-    DO(EeePFreeBuffer(&BHandel));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
+  }
+  /*
+   *
+   */
+  if(CurOptions.uiProgramEeePExpEEP_EEP){
+    DO_MAIN(EeePReadBufferFromFile(
+          &BHandel                              ,
+          CurOptions.szEeePExpEEP_SBIN_File
+        ));
+    if(memcmp(((Exp_EEP_t *)BHandel)->GenId, EEEP_EXP_HEADER_ID, sizeof(EEEP_EXP_HEADER_ID)-1)){
+      EAPI_APP_RETURN_ERROR(
+          main,
+          EAPI_STATUS_ERROR,
+          TEXT("Not Valid EeeP Extended EEP Image")
+        );
+    }
+    DO_MAIN(EeePWriteBufferToEEP(
+            BHandel, 
+            (uint16_t)CurOptions.ulEeePExpEEP_Bin_EApiBus, 
+            (uint16_t)CurOptions.ulEeePExpEEP_Bin_DevAddr
+        ));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
   }
   /*
    *
    */
   if(CurOptions.uiCreateCOM0R20CB_CFG){
-    DO(CreateTxtFilePtr(CurOptions.szCOM0R20CB_Cfg_File, &lclStream));
-    DO(EeeP_CreateCOM0R20_CBCfg(lclStream));
+    DO_MAIN(CreateTxtFilePtr(CurOptions.szCOM0R20CB_Cfg_File, &lclStream));
+    DO_MAIN(EeeP_CreateCOM0R20_CBCfg(lclStream));
     FREE_STREAM(lclStream);
   }
   /*
    *
    */
   if(CurOptions.uiCreateCOM0R20M_CFG){
-    DO(CreateTxtFilePtr(CurOptions.szCOM0R20M_Cfg_File, &lclStream));
-    DO(EeeP_CreateCOM0R20_MEEPCfg(lclStream));
+    DO_MAIN(CreateTxtFilePtr(CurOptions.szCOM0R20M_Cfg_File, &lclStream));
+    DO_MAIN(EeeP_CreateCOM0R20_MEEPCfg(lclStream));
     FREE_STREAM(lclStream);
   }
   /*
    *
    */
   if(CurOptions.uiCreateEeePExpEEP_CFG){
-    DO(CreateTxtFilePtr(CurOptions.szEeePExpEEP_Cfg_File, &lclStream));
-    DO(EeeP_CreateEeePExtEEPCfg(lclStream));
+    DO_MAIN(CreateTxtFilePtr(CurOptions.szEeePExpEEP_Cfg_File, &lclStream));
+    DO_MAIN(EeeP_CreateEeePExtEEPCfg(lclStream));
     FREE_STREAM(lclStream);
   }
   
+  DO_MAIN(EApiLibUnInitialize());
   exit(EApiStatusCode);
 
 }

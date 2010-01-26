@@ -403,13 +403,8 @@ EApiStrLen  (
     )
 {
   uint32_t i;
-#if 0
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiStrLen, 0, pBuffer);
-  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiStrLen, 0, BufferLen);
-#else
   if(pBuffer   ==NULL) return 0;
   if(BufferLen==0   ) return 0;
-#endif
 
   for(i=0; i<BufferLen; i++)
     if(pBuffer[i]==TEXT('\0'))
@@ -423,15 +418,9 @@ EApiStrCpy(
     __IN const TCHAR *const StringSource
     )
 {
-#if 0
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiStrCpy, StringDest, StringDest);
-  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiStrCpy, StringDest, StrBufLen);
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiStrCpy, StringDest, StringSource);
-#else
   if(StringDest  ==NULL) return StringDest;
   if(StringSource==NULL) return StringDest;
   if(StrBufLen==0   ) return StringDest;
-#endif
 
   EAPI_strncpy(StringDest, StringSource, StrBufLen);
   StringDest[StrBufLen-1]=TEXT('\0');
@@ -448,15 +437,9 @@ EApiSprintf (
 {
   int ReturnValue;
   va_list arg;
-#if 0
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiSprintf, -1, pBuffer);
-  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiSprintf, -1, BufferLen);
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiSprintf, -1, fmt);
-#else
   if(pBuffer  ==NULL) return -1;
   if(fmt      ==NULL) return -1;
   if(BufferLen==0   ) return -1;
-#endif
 
   va_start(arg, fmt);
   ReturnValue=EAPI_vsnprintf(pBuffer, BufferLen, fmt, arg);

@@ -38,6 +38,8 @@
 #ifndef __COM0EEP_H__    
 #define __COM0EEP_H__
 
+#define COM0R20_M_EEP_DEV_ADDR  0xA0
+#define COM0R20_CB_EEP_DEV_ADDR 0xAE
 /* 
  * Detecting COM0 R1.0 EEPROM
  *

@@ -76,6 +76,12 @@
 
 
 #if (STRICT_VALIDATION>0)
+#define EAPI_FORMATED_MES1(type, func, err, desc) \
+    EAPI_ERR_OUT(TEXT(#type) TEXT("%04u %-20s : %-20s : %s\n"), __LINE__, TEXT(#func), err, desc );
+#else
+#define EAPI_FORMATED_MES1(type, func, err, desc)
+#endif
+#if (STRICT_VALIDATION>0)
 #define EAPI_FORMATED_MES(type, func, err, desc) \
     EAPI_ERR_OUT(TEXT(#type) TEXT("%04u %-20s : %-20s : %s\n"), __LINE__, TEXT(#func), TEXT(#err), desc );
 #else
