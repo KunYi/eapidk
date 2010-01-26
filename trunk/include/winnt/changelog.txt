@@ -1,13 +1,10 @@
 #<KHeader>
 #+=========================================================================
-#I               EApiDK Embedded Application Development Kit
+#I  Project Name: EApiDK Embedded Application Development Kit
 #+=========================================================================
 #I  $HeadURL$
 #+=========================================================================
 #I   Copyright: Auto Created for changelog.txt
-#I              
-#I              
-#I              
 #I      Author: John Kearney,                  John.Kearney@kontron.com
 #I
 #I     License: All rights reserved. This program and the accompanying 
@@ -23,7 +20,7 @@
 #I
 #I Description: Auto Created for changelog.txt
 #I
-#+------------------------------------------------------------------------=
+#+-------------------------------------------------------------------------
 #I
 #I  File Name            : changelog.txt
 #I  File Location        : include\winnt

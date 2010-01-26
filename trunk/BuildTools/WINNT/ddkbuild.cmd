@@ -1,27 +1,27 @@
-REM <KHeader>
-REM +=========================================================================
-REM I               EApiDK Embedded Application Development Kit
-REM +=========================================================================
-REM I  $HeadURL$
-REM +=========================================================================
-REM I   Copyright: N/A
-REM I      Author: N/A
-REM I
-REM I     License: N/A
-REM I
-REM I Description: Auto Created for ddkbuild.cmd
-REM I
-REM +------------------------------------------------------------------------=
-REM I
-REM I  File Name            : ddkbuild.cmd
-REM I  File Location        : BuildTools\WINNT
-REM I  Last committed       : $Revision$
-REM I  Last changed by      : $Author$
-REM I  Last changed date    : $Date$
-REM I  ID                   : $Id$
-REM I
-REM +=========================================================================
-REM </KHeader>
+@REM <KHeader>
+@REM +=========================================================================
+@REM I  Project Name: EApiDK Embedded Application Development Kit
+@REM +=========================================================================
+@REM I  $HeadURL$
+@REM +=========================================================================
+@REM I   Copyright: N/A
+@REM I      Author: N/A
+@REM I
+@REM I     License: N/A
+@REM I
+@REM I Description: Auto Created for ddkbuild.cmd
+@REM I
+@REM +-------------------------------------------------------------------------
+@REM I
+@REM I  File Name            : ddkbuild.cmd
+@REM I  File Location        : BuildTools\WINNT
+@REM I  Last committed       : $Revision$
+@REM I  Last changed by      : $Author$
+@REM I  Last changed date    : $Date$
+@REM I  ID                   : $Id$
+@REM I
+@REM +=========================================================================
+@REM </KHeader>
 @echo off
 @set VERSION=V7.3
 @set OSR_DEBUG=off

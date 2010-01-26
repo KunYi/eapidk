@@ -1,7 +1,7 @@
 /*
  *<KHeader>
  *+=========================================================================
- *I               EApiDK Embedded Application Development Kit
+ *I  Project Name: EApiDK Embedded Application Development Kit
  *+=========================================================================
  *I  $HeadURL$
  *+=========================================================================
@@ -21,13 +21,13 @@
  *I
  *I Description: COM0 R2.0 Specific Structures and Data
  *I
- *+------------------------------------------------------------------------=
+ *+-------------------------------------------------------------------------
  *I
  *I  File Name            : COM0EEP.h
  *I  File Location        : include
  *I  Last committed       : $Revision$
  *I  Last changed by      : $Author$
- *I  Last changed date    : 009-11-09 07:57:37 +0100 (Mo, 09 Nov 2009) $
+ *I  Last changed date    : $Date$
  *I  ID                   : $Id$
  *I
  *+=========================================================================

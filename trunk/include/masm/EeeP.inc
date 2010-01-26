@@ -1,6 +1,6 @@
 ;<KHeader>
 ;+=========================================================================
-;I               EApiDK Embedded Application Development Kit
+;I  Project Name: EApiDK Embedded Application Development Kit
 ;+=========================================================================
 ;I  $HeadURL$
 ;+=========================================================================
@@ -20,9 +20,9 @@
 ;I
 ;I Description: Auto Created for EApi.inc
 ;I
-;+------------------------------------------------------------------------=
+;+-------------------------------------------------------------------------
 ;I
-;I  File Name            : EApi.inc
+;I  File Name            : EeeP.inc
 ;I  File Location        : include\masm
 ;I  Last committed       : $Revision$
 ;I  Last changed by      : $Author$
