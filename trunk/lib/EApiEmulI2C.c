@@ -35,6 +35,7 @@
  */
 
 #include <EApiLib.h>
+#include <stdio.h>
 
 #define END_OF_LIST_MARK ((uint32_t)-1)
 
@@ -84,7 +85,9 @@ typedef struct EepromCfgData_s{
 #define STD_INDEX 1                  
 #define EXT_INDEX 2                  
   uint32_t CurIndx       ;/* Current Index Value */
-  uint8_t  *DatapBuffer   ;/* Eeprom pBuffer Pointer */ 
+  uint8_t  *pu8DBuffer   ;/* Eeprom pBuffer Pointer */ 
+  const char *cszFilename;
+  FILE     *FStream;
 }EepromCfgData_t;
 
 typedef struct BusDevicesTbl_s{
@@ -94,7 +97,7 @@ typedef struct BusDevicesTbl_s{
 }BusDevicesTbl_t;
 
 uint32_t 
-EmulateEeprom(
+EmulateEepromFS(
     __IN uint32_t Arg1, 
     __IN EepromCfgData_t *CfgData, 
     __IN void *pWBuffer, 
@@ -107,7 +110,7 @@ EmulateEeprom(
 #if (STRICT_VALIDATION>1)
   EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : ECMD=%1"PRIX32" CINDX=%04"PRIX32
         " Arg1=%1"PRIX32" DLEN=%04"PRIX32" PLEN=%04"PRIX32" WLEN=%04"PRIX32
-        " RLEN=%04"PRIX32" %08"PRIX32"\n", __LINE__, "EmulateEeprom", 
+        " RLEN=%04"PRIX32" %08"PRIX32"\n", __LINE__, "EmulateEepromFS", 
         "Info", CfgData->ExtendedCmd, CfgData->CurIndx, Arg1, 
         CfgData->ByteLen, CfgData->PageLength, WriteBCnt, ReadBCnt, 
         ((uint32_t*)pWBuffer)[0])
@@ -128,7 +131,7 @@ EmulateEeprom(
       case EXT_INDEX:                             /* Emulate Extended IDX/CMD
                                                     Device */
         EAPI_LIB_RETURN_ERROR_IF(
-            EmulateEeprom, 
+            EmulateEepromFS, 
             WriteBCnt<2, 
             EAPI_STATUS_READ_ERROR, 
             " STD INDEX Sent to EXT INDEX EEPROM"
@@ -146,7 +149,7 @@ EmulateEeprom(
     }
 #if (STRICT_VALIDATION>1)
     EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : CINDX=%04"PRIX32" PLEN=%04"PRIX32
-          " EPLEN=%04"PRIX32"\n", __LINE__, "EmulateEeprom", "Info", 
+          " EPLEN=%04"PRIX32"\n", __LINE__, "EmulateEepromFS", "Info", 
           CfgData->CurIndx, CfgData->CurIndx%CfgData->PageLength, 
           (CfgData->CurIndx%CfgData->PageLength)+WriteBCnt)
         );
@@ -154,20 +157,21 @@ EmulateEeprom(
     if(WriteBCnt)
     {
       EAPI_LIB_RETURN_ERROR_IF(
-          EmulateEeprom,
+          EmulateEepromFS,
           ((CfgData->CurIndx%CfgData->PageLength)+WriteBCnt)>CfgData->PageLength,
           EAPI_STATUS_READ_ERROR, 
           "Device Page Wrap around"
           );
       EAPI_LIB_RETURN_ERROR_IF(
-          EmulateEeprom,
+          EmulateEepromFS,
           (CfgData->CurIndx+WriteBCnt)>CfgData->ByteLen   , 
           EAPI_STATUS_READ_ERROR, 
           "Device Write Wrap around"
           );
 
       EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS*WriteBCnt);
-      memcpy(&CfgData->DatapBuffer[CfgData->CurIndx], pWBuffer, WriteBCnt);
+      fseek(CfgData->FStream, CfgData->CurIndx, SEEK_SET);
+      fwrite(pWBuffer, sizeof(uint8_t), WriteBCnt, CfgData->FStream);
       CfgData->CurIndx+=WriteBCnt;
     }
   }
@@ -175,18 +179,20 @@ EmulateEeprom(
   if(ReadBCnt)
   {
     EAPI_LIB_RETURN_ERROR_IF(
-        EmulateEeprom,
+        EmulateEepromFS,
         (CfgData->CurIndx+ReadBCnt)>CfgData->ByteLen      , 
         EAPI_STATUS_READ_ERROR, 
         "Device Read Wrap around"
         );
 
     EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS*ReadBCnt);
-    memcpy(pRBuffer, &CfgData->DatapBuffer[CfgData->CurIndx], ReadBCnt);
+    fseek(CfgData->FStream, CfgData->CurIndx, SEEK_SET);
+    fread(pRBuffer, sizeof(uint8_t), ReadBCnt, CfgData->FStream);
     CfgData->CurIndx+=ReadBCnt;
   }
-  EAPI_LIB_RETURN_SUCCESS(EmulateEeprom, "");
+  EAPI_LIB_RETURN_SUCCESS(EmulateEepromFS, "");
 }
+
 
 uint32_t 
 EmulateCmdDevice(
@@ -222,7 +228,7 @@ EmulateCmdDevice(
                                                     Device */
     {
       EAPI_LIB_RETURN_ERROR_IF(
-          EmulateEeprom, 
+          EmulateEepromFS, 
           WriteBCnt<2, 
           EAPI_STATUS_WRITE_ERROR, 
           " STD INDEX Sent to EXT INDEX EEPROM"
@@ -264,7 +270,7 @@ EmulateCmdDevice(
       }
     }
   }
-  EAPI_LIB_RETURN_SUCCESS(EmulateEeprom, "");
+  EAPI_LIB_RETURN_SUCCESS(EmulateEepromFS, "");
 }
 #define bin_data DIDEEPROM
 #include "DIDData.h"
@@ -274,7 +280,9 @@ static EepromCfgData_t DIDEEPromData={
   EXT_INDEX        ,  /* Ext/Std Index */
   256              ,  /* Device Page Length */
   0                ,  /* Current Index Value */
-  DIDEEPROM           /* Eeprom pBuffer Pointer */
+  DIDEEPROM        ,  /* EEPROM pBuffer Pointer */
+  "DID.EEP"        ,
+  NULL
 };
 uint32_t 
 EmulateDIDEeprom(
@@ -285,7 +293,7 @@ EmulateDIDEeprom(
     __IN uint32_t ReadBCnt
     )
 {
-  return EmulateEeprom(
+  return EmulateEepromFS(
       Arg1, 
       &DIDEEPromData, 
       pWBuffer, 
@@ -302,7 +310,9 @@ static EepromCfgData_t UDSEEPromData={
   STD_INDEX        ,  /* Ext/Std Index */
   16               ,  /* Device Page Length */
   0                ,  /* Current Index Value */
-  UDSEEPROM           /* Eeprom pBuffer Pointer */
+  UDSEEPROM        ,  /* EEPROM pBuffer Pointer */
+  "UDS.EEP"        ,
+  NULL
 };
 uint32_t 
 EmulateUDSEeprom(
@@ -313,7 +323,7 @@ EmulateUDSEeprom(
     __IN uint32_t ReadBCnt
     )
 {
-  return EmulateEeprom(
+  return EmulateEepromFS(
       Arg1, 
       &UDSEEPromData, 
       pWBuffer, 
@@ -330,7 +340,9 @@ static EepromCfgData_t EPIEEPromData={
   STD_INDEX        ,  /* Ext/Std Index */
   16               ,  /* Device Page Length */
   0                ,  /* Current Index Value */
-  EPIEEPROM           /* Eeprom pBuffer Pointer */ 
+  EPIEEPROM        ,  /* EEPROM pBuffer Pointer */ 
+  "EPI.EEP"        ,
+  NULL
 };
 
 uint32_t 
@@ -342,7 +354,7 @@ EmulateEPIEeprom(
     __IN uint32_t ReadBCnt
     )
 {
-  return EmulateEeprom(
+  return EmulateEepromFS(
       Arg1, 
       &EPIEEPromData, 
       pWBuffer, 
@@ -361,16 +373,62 @@ static EepromCfgData_t COM0MEEPromData={
   EXT_INDEX          ,  /* Ext/Std Index */
   16                 ,  /* Max Block Write Length */
   0                  ,  /* Current Index Value */
-  COM0MEEPROM           /* Eeprom pBuffer Pointer */ 
+  COM0MEEPROM        ,  /* EEPROM pBuffer Pointer */ 
+  "COM0R20M.EEP"     ,
+  NULL
 };
 uint8_t COM0CBEEPROM[2048]={0};
 static EepromCfgData_t COM0CBEEPromData={
-  sizeof(COM0CBEEPROM),  /* EEPROM Length */
+  sizeof(COM0CBEEPROM), /* EEPROM Length */
   EXT_INDEX          ,  /* Ext/Std Index */
   16                 ,  /* Max Block Write Length */
   0                  ,  /* Current Index Value */
-  COM0CBEEPROM           /* Eeprom pBuffer Pointer */ 
+  COM0CBEEPROM       ,  /* EEPROM pBuffer Pointer */ 
+  "COM0R20CB.EEP"    ,
+  NULL
 };
+EepromCfgData_t *OpenFiles[]={
+  &COM0CBEEPromData,
+  &COM0MEEPromData,
+  &EPIEEPromData,
+  &UDSEEPromData,
+  &DIDEEPromData,
+};
+
+
+uint32_t 
+OpenI2CEepromFiles(void)
+{
+  int i;
+  EepromCfgData_t **pOpenFiles=OpenFiles;
+  for(i=ARRAY_SIZE(OpenFiles); i; i--, pOpenFiles++){
+    (*pOpenFiles)->FStream=fopen((*pOpenFiles)->cszFilename, "r+");
+    if((*pOpenFiles)->FStream==NULL){
+      (*pOpenFiles)->FStream=fopen((*pOpenFiles)->cszFilename, "w+");
+    }
+    if((*pOpenFiles)->FStream!=NULL){
+        fseek((*pOpenFiles)->FStream, 0, SEEK_END);
+        if(ftell((*pOpenFiles)->FStream)<(signed)(*pOpenFiles)->ByteLen){
+          rewind((*pOpenFiles)->FStream);
+          fwrite((*pOpenFiles)->pu8DBuffer, sizeof(uint8_t), (*pOpenFiles)->ByteLen, (*pOpenFiles)->FStream);
+      }
+    }
+  }
+  return EAPI_STATUS_SUCCESS;
+}
+uint32_t 
+CloseI2CEepromFiles(void)
+{
+  int i;
+  EepromCfgData_t **pOpenFiles=OpenFiles;
+  for(i=ARRAY_SIZE(OpenFiles); i; i--, pOpenFiles++){
+    if((*pOpenFiles)->FStream!=NULL){
+      fclose((*pOpenFiles)->FStream);
+      (*pOpenFiles)->FStream=NULL;
+    }
+  }
+  return EAPI_STATUS_SUCCESS;
+}
 
 uint32_t 
 EmulateCOM0CBEeprom(
@@ -381,7 +439,7 @@ EmulateCOM0CBEeprom(
     __IN uint32_t ReadBCnt
     )
 {
-  return EmulateEeprom(
+  return EmulateEepromFS(
       Arg1, 
       &COM0CBEEPromData, 
       pWBuffer, 
@@ -400,7 +458,7 @@ EmulateCOM0MEeprom(
     __IN uint32_t ReadBCnt
     )
 {
-  return EmulateEeprom(
+  return EmulateEepromFS(
       Arg1, 
       &COM0MEEPromData, 
       pWBuffer, 

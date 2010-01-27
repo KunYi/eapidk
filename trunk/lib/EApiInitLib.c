@@ -51,6 +51,8 @@ void __cdecl DebugMsg(__IN const char *const fmt, ...)
 }
 
 
+uint32_t OpenI2CEepromFiles(void);
+uint32_t CloseI2CEepromFiles(void);
 
 
 uint32_t EApiInitLib(){
@@ -61,6 +63,7 @@ uint32_t EApiInitLib(){
     OutputStream=stdout;
 #endif
   }
+  OpenI2CEepromFiles();
     DebugMsg("#\n"
               "# Embedded API EApi\n"
               "# Version %u.%u\n"
@@ -82,6 +85,8 @@ uint32_t EApiUninitLib(){
             );
   if(OutputStream!=NULL)
     fclose(OutputStream);
+  OutputStream=NULL;
+  CloseI2CEepromFiles();
   return EAPI_STATUS_SUCCESS;
 }
 
