@@ -473,8 +473,8 @@ typedef struct VendBlockHdr_s{
     /* After This Point is only 
      * Suggested
      */
-    /*uint8_t       VendBlockId; * 0x04 Vendor Specific Block Id  */
-    /*uint8_t       VendData[1]; * 0x05 Vendor Data */
+    uint8_t       VendBlockId; /* 0x05 Vendor Specific Block Id  */
+    /*uint8_t       VendData[1]; * 0x06 Vendor Data */
 }VendBlockHdr_t;
 
 

@@ -378,7 +378,7 @@ typedef struct COM0R20_CB_s{
                             */
 #       define COM0R20_PCIe_GEN1            EEEP_UINT8_C(0)
 #       define COM0R20_PCIe_GEN2            EEEP_UINT8_C(1)
-#       define COM0R20_PCIe_GEN4            EEEP_UINT8_C(2)
+#       define COM0R20_PCIe_GEN3            EEEP_UINT8_C(2)
      uint8_t    LaneMap[16];/* 0x20 Lane Information
                             *      +=======+=======+======================+
                             *      | Bits  | Value | Meaning              |
