@@ -108,6 +108,9 @@ endef
 
 define SHARED_BUILD_RULE
 $(CC) $(CFLAGS) $(1) -v -shared -L. -o $(@) -Wl,-soname,$(SoName),-Map,$(basename $<).map  $^
+objcopy --only-keep-debug  "$(@)" "$(@).debug" 
+strip --strip-debug --strip-unneeded "$(@)"
+objcopy --add-gnu-debuglink="$(@).debug" "$(@)"
 endef
 
 define C_BUILD_RULE

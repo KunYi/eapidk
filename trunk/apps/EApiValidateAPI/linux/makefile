@@ -89,6 +89,9 @@ endef
 
 define PRG_BUILD_RULE
 gcc -v $(CFLAGS) $(1) -L. -ldl -o $(@) -Wl,-Map,$(basename $(@)).map $^
+objcopy --only-keep-debug  "$(@)" "$(@).debug" 
+strip --strip-debug --strip-unneeded "$(@)"
+objcopy --add-gnu-debuglink="$(@).debug" "$(@)"
 endef
 
 define C_BUILD_RULE
