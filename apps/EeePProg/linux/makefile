@@ -78,7 +78,7 @@ ExeName=EeePProg
 #DBGOPT:=-g3
 #DBGOPT:=-gstabs
 #DBGOPT:=-gstabs+
-DBGOPT:=-g -O0
+DBGOPT:=-g -O0 
 RELOPT:=-O3
 INCLUDS=-I../../../include/linux -I../ -I../../include -I../../../include 
 CFLAGS:= -Wall -W -Werror -pedantic $(INCLUDS)
@@ -88,7 +88,7 @@ define FLD_BUILD_RULE
 endef
 
 define PRG_BUILD_RULE
-gcc -v $(CFLAGS) -L. -ldl -o $(@) -Wl,-Map,$(basename $(@)).map $^ $(2) -s 
+gcc -v $(CFLAGS) $(1) -L. -ldl -o $(@) -Wl,-Map,$(basename $(@)).map $^
 endef
 
 define C_BUILD_RULE

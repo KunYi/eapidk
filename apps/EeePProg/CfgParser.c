@@ -123,7 +123,7 @@ CleanBlock(
         DO(pCurElement->pHandlers->Clean(
               EAPI_CREATE_PTR(
                   pCurElement->Elements.pv, 
-                  pCurElement->cstElementSize*(pCurElement->stElementCount-1), 
+                  pCurElement->cstElementSize*(pCurElement->stElementCount), 
                   void*
                 ),
               pCurElement->cstElementSize

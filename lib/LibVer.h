@@ -41,5 +41,5 @@
 /****************************************************************************/    
 #define LIB_VERSION 0  
 #define LIB_REVISION 5  
-#define LIB_BUILD 802  
+#define LIB_BUILD 811
 #endif    

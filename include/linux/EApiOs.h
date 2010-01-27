@@ -78,7 +78,7 @@ void EApiSleepns(unsigned long ns);
 #define EAPI_EMUL_DELAY_NS(x) EApiSleepns(x)
 
 #ifndef EApiSleep
-#  define EApiSleep(x) sleep(x)
+#  define EApiSleep(x) usleep(x*1000)
 #endif
 
 #define EAPI_strdup         strdup

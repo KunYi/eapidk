@@ -88,7 +88,7 @@ define FLD_BUILD_RULE
 endef
 
 define PRG_BUILD_RULE
-gcc -v $(CFLAGS) -L. -ldl -o $(@) -Wl,-Map,$(basename $(@)).map $^ $(2) -s 
+gcc -v $(CFLAGS) $(1) -L. -ldl -o $(@) -Wl,-Map,$(basename $(@)).map $^
 endef
 
 define C_BUILD_RULE
