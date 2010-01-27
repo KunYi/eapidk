@@ -260,9 +260,10 @@ EApiI2CWriteTransfer(
   }
 
   if(!EAPI_I2C_IS_NO_CMD(Cmd)){
-    if(EAPI_I2C_IS_EXT_CMD(Cmd))
-      pLclBuffer[LclByteCnt++]=(uint8_t)((Cmd>>8)&0xFF);
-    pLclBuffer[LclByteCnt++]=(uint8_t)(Cmd&0xFF);
+    if(EAPI_I2C_IS_EXT_CMD(Cmd)){
+      pLclBuffer[LclByteCnt++]=(uint8_t)((Cmd>>8)&UINT8_MAX);
+    }
+    pLclBuffer[LclByteCnt++]=(uint8_t)((Cmd)&UINT8_MAX);
   }
 
 #if (STRICT_VALIDATION>1)

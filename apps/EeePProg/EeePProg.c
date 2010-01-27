@@ -185,6 +185,28 @@ ArgDesc_t  COM0R20M_PEEP[]={
   StringArg
   },
 };
+ArgDesc_t  GEN_LIST_DBLOCKS_FILE[]={
+  {
+  &CurOptions.szGEN_List_DBlocks_File        ,
+  sizeof(CurOptions.szGEN_List_DBlocks_File) ,
+  "<Filename>  Binary Image Filename"       ,
+  StringArg
+  },
+};
+ArgDesc_t  GEN_LIST_DBLOCKS_EEP[]={
+  {
+  &CurOptions.ulEEP_Img_EApiBus     ,
+  sizeof(CurOptions.ulEEP_Img_EApiBus),
+  "<EApi Id>      EApi Bus Id"             ,
+  NumberArg
+  },
+  {
+  &CurOptions.ulEEP_Img_DevAddr     ,
+  sizeof(CurOptions.ulEEP_Img_DevAddr),
+  "<I2C Address>  EEPROM Device Address"   ,
+  NumberArg
+  },
+};
 
 CmdDesc_t ArgsDesc[]={
   {
@@ -314,6 +336,22 @@ CmdDesc_t ArgsDesc[]={
     "Program COM0 R2.0 Module EEP Image file over EApi", 
     COM0R20M_PEEP                                   ,
     ARRAY_SIZE(COM0R20M_PEEP)
+  },
+  {
+    0x00                                            , 
+    "LIST-DBLOCKS-IMG"                              , 
+    &CurOptions.uiListDBlocks_IMG                   , 
+    "Lists Dynamic Blocks in Binary Image file"     , 
+    GEN_LIST_DBLOCKS_FILE                           ,
+    ARRAY_SIZE(GEN_LIST_DBLOCKS_FILE)
+  },
+  {
+    0x00                                            , 
+    "LIST-DBLOCKS-EEP"                              , 
+    &CurOptions.uiListDBlocks_EEP                   , 
+    "Lists Dynamic Blocks in Binary Image file"     , 
+    GEN_LIST_DBLOCKS_EEP                           ,
+    ARRAY_SIZE(GEN_LIST_DBLOCKS_EEP)
   },
 };
 
@@ -535,6 +573,29 @@ main(
             (uint16_t)CurOptions.ulEeePExpEEP_Bin_EApiBus, 
             (uint16_t)CurOptions.ulEeePExpEEP_Bin_DevAddr
         ));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
+  }
+  /*
+   *
+   */
+  if(CurOptions.uiListDBlocks_IMG){
+    DO_MAIN(EeePReadBufferFromFile(
+          &BHandel                              ,
+          CurOptions.szGEN_List_DBlocks_File
+        ));
+    DO_MAIN(EeePListBlocks( BHandel, 0));
+    DO_MAIN(EeePFreeBuffer(&BHandel));
+  }
+  /*
+   *
+   */
+  if(CurOptions.uiListDBlocks_EEP){
+    DO_MAIN(EeePReadBufferFromEEP(
+            &BHandel, 
+            (uint16_t)CurOptions.ulEEP_Img_EApiBus, 
+            (uint16_t)CurOptions.ulEEP_Img_DevAddr
+        ));
+    DO_MAIN(EeePListBlocks( BHandel, 0));
     DO_MAIN(EeePFreeBuffer(&BHandel));
   }
   /*

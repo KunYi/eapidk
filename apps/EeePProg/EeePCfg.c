@@ -216,9 +216,9 @@ TokenDesc_t  PCIeLaneWidths[]={
 };
 
 TokenDesc_t  PCIeGeneration[]={
-  {"Gen1"	, 0  },
-  {"Gen2"	, 1  },
-  {"Gen3"	, 2  },
+  {"Gen1"	, COM0R20_PCIe_GEN1  },
+  {"Gen2"	, COM0R20_PCIe_GEN2  },
+  {"Gen3"	, COM0R20_PCIe_GEN3  },
 };
 
 
@@ -325,19 +325,19 @@ TokenDesc_t  ImpNotImpTokens[]={
 PCFG_TOKEN_LIST_DESC(ImpNotImpTL, ImpNotImpTokens);
 
 TokenDesc_t  DDI1Tokens[]={
-  {"NotImplemented"	, 0  },
-  {"eDisplayPort"   , 1  },
-  {"DisplayPort"    , 2  },
-  {"HDMI/DVI"       , 3  },
-  {"SDVO"           , 4  },
+  {"NotImplemented"	, COM0R20_DDI_NOT_USED },
+  {"eDisplayPort"   , COM0R20_DDI_eDispPort},
+  {"DisplayPort"    , COM0R20_DDI_DispPort },
+  {"HDMI/DVI"       , COM0R20_DDI_HDMI     },
+  {"SDVO"           , COM0R20_DDI_SDVO     },
 };
 PCFG_TOKEN_LIST_DESC(DDI1TL, DDI1Tokens);
 
 TokenDesc_t  DDI2Tokens[]={
-  {"NotImplemented"	, 0  },
-  {"eDisplayPort"   , 1  },
-  {"DisplayPort"    , 2  },
-  {"HDMI/DVI"       , 3  },
+  {"NotImplemented"	, COM0R20_DDI_NOT_USED },
+  {"eDisplayPort"   , COM0R20_DDI_eDispPort},
+  {"DisplayPort"    , COM0R20_DDI_DispPort },
+  {"HDMI/DVI"       , COM0R20_DDI_HDMI     },
 };
 PCFG_TOKEN_LIST_DESC(DDI2TL, DDI2Tokens);
 
@@ -433,12 +433,6 @@ TokenDesc_t  IRQTokens[]={
 };
 PCFG_TOKEN_LIST_DESC(IRQTL, IRQTokens);
 
-TokenDesc_t  CrcTokens[]={
-  {"In_CRC"	      , 0},
-  {"Outside_CRC"	, 1},
-};
-PCFG_TOKEN_LIST_DESC(CrcTL, CrcTokens);
-
 typedef struct SmbiosModule_s{
   unsigned long aulHandle         [1];
   char *        aszManuf          [1];
@@ -491,16 +485,19 @@ SmbiosChassis_t COM0_SMBIOS_Chassis={{0xE003},{NULL},{0},{NULL},{NULL},{NULL},{0
 typedef struct EeePLFP_s{
   unsigned long aulInterface   [1];
   char *        aszFilename    [1];
-  unsigned long aulInsideCrc      [1];
+  unsigned long aulInsideCrc   [1];
 }EeePLFP_t;
 
 EeePLFP_t EeeP_LFP0_Cfg;
 EeePLFP_t EeeP_LFP1_Cfg;
+EeePLFP_t EeeP_LFP2_Cfg;
+EeePLFP_t EeeP_LFP3_Cfg;
 
 typedef struct EeePVendorBlock_s{
   char *        aszFilename   [1];
   unsigned long aulVendorId   [1];
   unsigned long aulInsideCrc  [1];
+  unsigned long aulVSBlockId  [1];
 }EeePVendorBlock_t;
 
 EeePVendorBlock_t EeeP_VendorBlock0_Cfg;
@@ -514,7 +511,7 @@ EeePVendorBlock_t EeeP_VendorBlock6_Cfg;
 typedef struct EeePCustomBlock_s{
   unsigned long aulBlockId    [1];
   char *        aszFilename   [1];
-  unsigned long aulInsideCrc      [1];
+  unsigned long aulInsideCrc  [1];
 }EeePCustomBlock_t;
 
 EeePCustomBlock_t EeeP_CustomBlock0_Cfg;
@@ -641,135 +638,152 @@ EeeP_Exp_Hdr_t EeePExpHdr_cgf;
 
 CfgElementDesc_t SmbiosModuleDesc[]={
   ELEMENT_DESC("InsideCRC"     , COM0_SMBIOS_Module.aulInsideCrc      , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Manufacturer"  , COM0_SMBIOS_Module.aszManuf          , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Product"       , COM0_SMBIOS_Module.aszProduct        , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Version"       , COM0_SMBIOS_Module.aszVersion        , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SerialNumber"  , COM0_SMBIOS_Module.aszSerialNum      , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
-  ELEMENT_DESC("AssetTag"      , COM0_SMBIOS_Module.aszAssetTag       , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("Manufacturer"  , COM0_SMBIOS_Module.aszManuf          , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Product"       , COM0_SMBIOS_Module.aszProduct        , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Version"       , COM0_SMBIOS_Module.aszVersion        , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SerialNumber"  , COM0_SMBIOS_Module.aszSerialNum      , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("AssetTag"      , COM0_SMBIOS_Module.aszAssetTag       , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
   ELEMENT_DESC("FeatureFlag"   , COM0_SMBIOS_Module.aulFeatureFlag    , &Token_Element_funcs , &SmbiSmbiosModuleFeatureFlagsTL, ELEMENT_REQUIRED)
-  ELEMENT_DESC("Location"      , COM0_SMBIOS_Module.aszLocation       , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("Location"      , COM0_SMBIOS_Module.aszLocation       , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
   ELEMENT_DESC("LocationHandle", COM0_SMBIOS_Module.aulLocationHandle , &Number_Element_funcs, &ValidHandlesDesc              , ELEMENT_OPTIONAL)
   ELEMENT_DESC("BoardType"     , COM0_SMBIOS_Module.aulBoardType      , &Token_Element_funcs , &SmbiosBoardTypesTL            , ELEMENT_REQUIRED)
   ELEMENT_DESC("Handles"       , COM0_SMBIOS_Module.aulHandles        , &Number_Element_funcs, &ValidHandlesDesc              , ELEMENT_OPTIONAL)
 };                                
 CfgElementDesc_t SmbiosCarrierDesc[]={  
   ELEMENT_DESC("InsideCRC"     , COM0_SMBIOS_Carrier.aulInsideCrc     , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Manufacturer"  , COM0_SMBIOS_Carrier.aszManuf         , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Product"       , COM0_SMBIOS_Carrier.aszProduct       , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Version"       , COM0_SMBIOS_Carrier.aszVersion       , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SerialNumber"  , COM0_SMBIOS_Carrier.aszSerialNum     , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
-  ELEMENT_DESC("AssetTag"      , COM0_SMBIOS_Carrier.aszAssetTag      , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("Manufacturer"  , COM0_SMBIOS_Carrier.aszManuf         , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Product"       , COM0_SMBIOS_Carrier.aszProduct       , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Version"       , COM0_SMBIOS_Carrier.aszVersion       , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SerialNumber"  , COM0_SMBIOS_Carrier.aszSerialNum     , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("AssetTag"      , COM0_SMBIOS_Carrier.aszAssetTag      , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
   ELEMENT_DESC("FeatureFlag"   , COM0_SMBIOS_Carrier.aulFeatureFlag   , &Token_Element_funcs , &SmbiSmbiosModuleFeatureFlagsTL, ELEMENT_REQUIRED)
-  ELEMENT_DESC("Location"      , COM0_SMBIOS_Carrier.aszLocation      , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("Location"      , COM0_SMBIOS_Carrier.aszLocation      , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
   ELEMENT_DESC("LocationHandle", COM0_SMBIOS_Carrier.aulLocationHandle, &Number_Element_funcs, &ValidHandlesDesc              , ELEMENT_OPTIONAL)
   ELEMENT_DESC("BoardType"     , COM0_SMBIOS_Carrier.aulBoardType     , &Token_Element_funcs , &SmbiosBoardTypesTL            , ELEMENT_REQUIRED)
   ELEMENT_DESC("Handles"       , COM0_SMBIOS_Carrier.aulHandles       , &Number_Element_funcs, &ValidHandlesDesc              , ELEMENT_OPTIONAL)
 };
 CfgElementDesc_t SmbiosSystemDesc[]={
   ELEMENT_DESC("InsideCRC"     , COM0_SMBIOS_System.aulInsideCrc      , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Manufacturer"  , COM0_SMBIOS_System.aszManuf          , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Product"       , COM0_SMBIOS_System.aszProduct        , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Version"       , COM0_SMBIOS_System.aszVersion        , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SerialNumber"  , COM0_SMBIOS_System.aszSerialNum      , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("Manufacturer"  , COM0_SMBIOS_System.aszManuf          , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Product"       , COM0_SMBIOS_System.aszProduct        , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Version"       , COM0_SMBIOS_System.aszVersion        , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SerialNumber"  , COM0_SMBIOS_System.aszSerialNum      , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
   ELEMENT_DESC("UUID"          , COM0_SMBIOS_System.aUUID             , &GUID_Element_funcs  , NULL                           , ELEMENT_OPTIONAL)
-  ELEMENT_DESC("SKU_Number"    , COM0_SMBIOS_System.aszSKU_Number     , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
-  ELEMENT_DESC("Family"        , COM0_SMBIOS_System.aszFamily         , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("SKU_Number"    , COM0_SMBIOS_System.aszSKU_Number     , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("Family"        , COM0_SMBIOS_System.aszFamily         , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
 };                                                         
                                                            
 CfgElementDesc_t SmbiosChassisDesc[]={                     
   ELEMENT_DESC("InsideCRC"     , COM0_SMBIOS_Chassis.aulInsideCrc     , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Manufacturer"  , COM0_SMBIOS_Chassis.aszManuf         , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Manufacturer"  , COM0_SMBIOS_Chassis.aszManuf         , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
   ELEMENT_DESC("Type"          , COM0_SMBIOS_Chassis.aulType          , &Token_Element_funcs , &SmbiosChassisTypesTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Version"       , COM0_SMBIOS_Chassis.aszVersion       , &String_Element_funcs, NULL                           , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SerialNumber"  , COM0_SMBIOS_Chassis.aszSerialNum     , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
-  ELEMENT_DESC("AssetTag"      , COM0_SMBIOS_Chassis.aszAssetTag      , &String_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("Version"       , COM0_SMBIOS_Chassis.aszVersion       , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SerialNumber"  , COM0_SMBIOS_Chassis.aszSerialNum     , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("AssetTag"      , COM0_SMBIOS_Chassis.aszAssetTag      , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
   ELEMENT_DESC("OEM"           , COM0_SMBIOS_Chassis.aulOEM           , &Number_Element_funcs, &UINT32RangeDesc               , ELEMENT_OPTIONAL)
-  ELEMENT_DESC("Height"        , COM0_SMBIOS_Chassis.aulHeight        , &Number_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
-  ELEMENT_DESC("NumPowerCords" , COM0_SMBIOS_Chassis.aulNumPowerCords , &Number_Element_funcs, NULL                           , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("Height"        , COM0_SMBIOS_Chassis.aulHeight        , &Number_Element_funcs, &UINT8RangeDesc                , ELEMENT_OPTIONAL)
+  ELEMENT_DESC("NumPowerCords" , COM0_SMBIOS_Chassis.aulNumPowerCords , &Number_Element_funcs, &UINT8RangeDesc                , ELEMENT_OPTIONAL)
   ELEMENT_DESC("CElements"     , COM0_SMBIOS_Chassis.aCElements       , &SMBIOS_CE_Element_funcs, NULL                        , ELEMENT_OPTIONAL)
 };
 
 CfgElementDesc_t LFPData0Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeeP_LFP0_Cfg.aulInsideCrc         , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Interface"     , EeeP_LFP0_Cfg.aulInterface         , &Token_Element_funcs , &DisplayInterfaceTL               , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_LFP0_Cfg.aszFilename          , &String_Element_funcs, NULL                              , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Interface"     , EeeP_LFP0_Cfg.aulInterface         , &Token_Element_funcs , &DisplayInterfaceTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_LFP0_Cfg.aszFilename          , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t LFPData1Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeeP_LFP1_Cfg.aulInsideCrc         , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Interface"     , EeeP_LFP1_Cfg.aulInterface         , &Token_Element_funcs , &DisplayInterfaceTL               , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_LFP1_Cfg.aszFilename          , &String_Element_funcs, NULL                              , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Interface"     , EeeP_LFP1_Cfg.aulInterface         , &Token_Element_funcs , &DisplayInterfaceTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_LFP1_Cfg.aszFilename          , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
+};
+CfgElementDesc_t LFPData2Desc[]={
+  ELEMENT_DESC("InsideCRC"     , EeeP_LFP2_Cfg.aulInsideCrc         , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Interface"     , EeeP_LFP2_Cfg.aulInterface         , &Token_Element_funcs , &DisplayInterfaceTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_LFP2_Cfg.aszFilename          , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
+};
+CfgElementDesc_t LFPData3Desc[]={
+  ELEMENT_DESC("InsideCRC"     , EeeP_LFP3_Cfg.aulInsideCrc         , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Interface"     , EeeP_LFP3_Cfg.aulInterface         , &Token_Element_funcs , &DisplayInterfaceTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_LFP3_Cfg.aszFilename          , &String_Element_funcs, &DeleteTrailingSpaces           , ELEMENT_REQUIRED)
 };
 
 CfgElementDesc_t VendorBlock0Desc[]={
-  ELEMENT_DESC("InsideCRC"     , EeeP_VendorBlock0_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("VendorId"      , EeeP_VendorBlock0_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                             , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_VendorBlock0_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("InsideCRC"            , EeeP_VendorBlock0_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorId"             , EeeP_VendorBlock0_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                    , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorSpecificBlockId", EeeP_VendorBlock0_Cfg.aulVSBlockId , &Number_Element_funcs, &UINT8RangeDesc         , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"             , EeeP_VendorBlock0_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces   , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t VendorBlock1Desc[]={
-  ELEMENT_DESC("InsideCRC"     , EeeP_VendorBlock1_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("VendorId"      , EeeP_VendorBlock1_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                             , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_VendorBlock1_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("InsideCRC"            , EeeP_VendorBlock1_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorId"             , EeeP_VendorBlock1_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                    , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorSpecificBlockId", EeeP_VendorBlock1_Cfg.aulVSBlockId , &Number_Element_funcs, &UINT8RangeDesc         , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"             , EeeP_VendorBlock1_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces   , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t VendorBlock2Desc[]={
-  ELEMENT_DESC("InsideCRC"     , EeeP_VendorBlock2_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("VendorId"      , EeeP_VendorBlock2_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                             , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_VendorBlock2_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("InsideCRC"            , EeeP_VendorBlock2_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorId"             , EeeP_VendorBlock2_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                    , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorSpecificBlockId", EeeP_VendorBlock2_Cfg.aulVSBlockId , &Number_Element_funcs, &UINT8RangeDesc         , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"             , EeeP_VendorBlock2_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces   , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t VendorBlock3Desc[]={
-  ELEMENT_DESC("InsideCRC"     , EeeP_VendorBlock3_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("VendorId"      , EeeP_VendorBlock3_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                             , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_VendorBlock3_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("InsideCRC"            , EeeP_VendorBlock3_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorId"             , EeeP_VendorBlock3_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                    , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorSpecificBlockId", EeeP_VendorBlock3_Cfg.aulVSBlockId , &Number_Element_funcs, &UINT8RangeDesc         , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"             , EeeP_VendorBlock3_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces   , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t VendorBlock4Desc[]={
-  ELEMENT_DESC("InsideCRC"     , EeeP_VendorBlock4_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("VendorId"      , EeeP_VendorBlock4_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                             , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_VendorBlock4_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("InsideCRC"            , EeeP_VendorBlock4_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorId"             , EeeP_VendorBlock4_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                    , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorSpecificBlockId", EeeP_VendorBlock4_Cfg.aulVSBlockId , &Number_Element_funcs, &UINT8RangeDesc         , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"             , EeeP_VendorBlock4_Cfg.aszFilename  , &String_Element_funcs, NULL                    , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t VendorBlock5Desc[]={
-  ELEMENT_DESC("InsideCRC"     , EeeP_VendorBlock5_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("VendorId"      , EeeP_VendorBlock5_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                             , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_VendorBlock5_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("InsideCRC"            , EeeP_VendorBlock5_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorId"             , EeeP_VendorBlock5_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                    , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorSpecificBlockId", EeeP_VendorBlock5_Cfg.aulVSBlockId , &Number_Element_funcs, &UINT8RangeDesc         , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"             , EeeP_VendorBlock5_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces   , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t VendorBlock6Desc[]={
-  ELEMENT_DESC("InsideCRC"     , EeeP_VendorBlock6_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("VendorId"      , EeeP_VendorBlock6_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                             , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_VendorBlock6_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("InsideCRC"            , EeeP_VendorBlock6_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL            , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorId"             , EeeP_VendorBlock6_Cfg.aulVendorId  , &PNPID_Element_funcs , NULL                    , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorSpecificBlockId", EeeP_VendorBlock6_Cfg.aulVSBlockId , &Number_Element_funcs, &UINT8RangeDesc         , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"             , EeeP_VendorBlock6_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces   , ELEMENT_REQUIRED)
 };
 
 CfgElementDesc_t CustomBlock0Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeeP_CustomBlock0_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock0_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_CustomBlock0_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock0_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_CustomBlock0_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t CustomBlock1Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeeP_CustomBlock1_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock1_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_CustomBlock1_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock1_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_CustomBlock1_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t CustomBlock2Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeeP_CustomBlock2_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock2_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_CustomBlock2_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock2_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_CustomBlock2_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t CustomBlock3Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeeP_CustomBlock3_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock3_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_CustomBlock3_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock3_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_CustomBlock3_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t CustomBlock4Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeeP_CustomBlock4_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock4_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_CustomBlock4_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock4_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_CustomBlock4_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t CustomBlock5Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeeP_CustomBlock5_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock5_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_CustomBlock5_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock5_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_CustomBlock5_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t CustomBlock6Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeeP_CustomBlock6_Cfg.aulInsideCrc , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock6_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FileName"      , EeeP_CustomBlock6_Cfg.aszFilename  , &String_Element_funcs, NULL                             , ELEMENT_REQUIRED)
+  ELEMENT_DESC("BlockId"       , EeeP_CustomBlock6_Cfg.aulBlockId   , &Number_Element_funcs, &UINT8RangeDesc                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FileName"      , EeeP_CustomBlock6_Cfg.aszFilename  , &String_Element_funcs, &DeleteTrailingSpaces          , ELEMENT_REQUIRED)
 };
 TokenDesc_t  EEPDeviceSizeTokens[]={
   {"256Bytes"	  , 0},
@@ -847,55 +861,55 @@ NumberRange_t ValidModuleTypes[]={
 PCFG_RANGE_LIST_DESC(ValidModuleTypesDesc, ValidModuleTypes);
 
 CfgElementDesc_t COM0R20_CB_Desc[]={
-  ELEMENT_DESC("EepDeviceType" , COM0R20_CB_cgf.aulDeviceType , &Token_Element_funcs , &StandardExtendedTL    , ELEMENT_REQUIRED)
-  ELEMENT_DESC("EepDeviceSize" , COM0R20_CB_cgf.aulDeviceSize , &Token_Element_funcs , &EEPDeviceSizeTL       , ELEMENT_REQUIRED)
-  ELEMENT_DESC("WriteLength"   , COM0R20_CB_cgf.aulWriteLength, &Token_Element_funcs , &EeePEEPWriteLenTL     , ELEMENT_REQUIRED)
-  ELEMENT_DESC("VendorId"      , COM0R20_CB_cgf.aulVendorId   , &PNPID_Element_funcs  , NULL                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DeviceId"      , COM0R20_CB_cgf.aulDeviceId   , &Number_Element_funcs , &UINT16RangeDesc      , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DeviceFlav"    , COM0R20_CB_cgf.aulDeviceFlav , &Number_Element_funcs , &UINT8RangeDesc       , ELEMENT_REQUIRED)
-  ELEMENT_DESC("RevId"         , COM0R20_CB_cgf.aulRevId      , &Number_Element_funcs , &UINT8RangeDesc       , ELEMENT_REQUIRED)
-  ELEMENT_DESC("CBType"        , COM0R20_CB_cgf.aulCBType     , &Number_Element_funcs , &ValidModuleTypesDesc , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SpecRevision"  , COM0R20_CB_cgf.aulSpecRev    , &SpecRev_Element_funcs, NULL                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("USBHSCount"    , COM0R20_CB_cgf.aulUSBHSCount , &Number_Element_funcs , &ValidUsbHSRangeDesc  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("USBSSCount"    , COM0R20_CB_cgf.aulUSBSSCount , &Number_Element_funcs , &ValidUsbSSRangeDesc  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SASPort0"      , COM0R20_CB_cgf.aulSASPort0   , &Token_Element_funcs  , &SasTL                , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SASPort1"      , COM0R20_CB_cgf.aulSASPort1   , &Token_Element_funcs  , &SasTL                , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SASPort2"      , COM0R20_CB_cgf.aulSASPort2   , &Token_Element_funcs  , &SasTL                , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SASPort3"      , COM0R20_CB_cgf.aulSASPort3   , &Token_Element_funcs  , &SasTL                , ELEMENT_REQUIRED)
-  ELEMENT_DESC("GBE0"          , COM0R20_CB_cgf.aulGBE0       , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("GBE1"          , COM0R20_CB_cgf.aulGBE1       , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("GBE2"          , COM0R20_CB_cgf.aulGBE2       , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("WAKE0"         , COM0R20_CB_cgf.aulWAKE0      , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("WAKE1"         , COM0R20_CB_cgf.aulWAKE1      , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SUS"           , COM0R20_CB_cgf.aulSUS        , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("BatLow"        , COM0R20_CB_cgf.aulBatLow     , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("THRMP"         , COM0R20_CB_cgf.aulTHRMP      , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("EBROM"         , COM0R20_CB_cgf.aulEBROM      , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("WDT"           , COM0R20_CB_cgf.aulWDT        , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("AC97/HDA"      , COM0R20_CB_cgf.aulAC97       , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SSC"           , COM0R20_CB_cgf.aulSSC        , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SDIO"          , COM0R20_CB_cgf.aulSDIO       , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("LID"           , COM0R20_CB_cgf.aulLID        , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Sleep"         , COM0R20_CB_cgf.aulSleep      , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("FAN0"          , COM0R20_CB_cgf.aulFAN0       , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SER0"          , COM0R20_CB_cgf.aulSER0       , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SER1"          , COM0R20_CB_cgf.aulSER1       , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SER2"          , COM0R20_CB_cgf.aulSER2       , &Token_Element_funcs  , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DDI1"          , COM0R20_CB_cgf.aulDDI1       , &Token_Element_funcs  , &DDI1TL               , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DDI2"          , COM0R20_CB_cgf.aulDDI2       , &Token_Element_funcs  , &DDI2TL               , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DDI3"          , COM0R20_CB_cgf.aulDDI3       , &Token_Element_funcs  , &DDI2TL               , ELEMENT_REQUIRED)
-  ELEMENT_DESC("PCIePorts"     , COM0R20_CB_cgf.aulPCIePorts  , &COM0PCIe_Element_funcs, NULL                 , ELEMENT_REQUIRED)
+  ELEMENT_DESC("EepDeviceType" , COM0R20_CB_cgf.aulDeviceType , &Token_Element_funcs   , &StandardExtendedTL   , ELEMENT_REQUIRED)
+  ELEMENT_DESC("EepDeviceSize" , COM0R20_CB_cgf.aulDeviceSize , &Token_Element_funcs   , &EEPDeviceSizeTL      , ELEMENT_REQUIRED)
+  ELEMENT_DESC("WriteLength"   , COM0R20_CB_cgf.aulWriteLength, &Token_Element_funcs   , &EeePEEPWriteLenTL    , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorId"      , COM0R20_CB_cgf.aulVendorId   , &PNPID_Element_funcs   , NULL                  , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceId"      , COM0R20_CB_cgf.aulDeviceId   , &Number_Element_funcs  , &UINT16RangeDesc      , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceFlav"    , COM0R20_CB_cgf.aulDeviceFlav , &Number_Element_funcs  , &UINT8RangeDesc       , ELEMENT_REQUIRED)
+  ELEMENT_DESC("RevId"         , COM0R20_CB_cgf.aulRevId      , &Number_Element_funcs  , &UINT8RangeDesc       , ELEMENT_REQUIRED)
+  ELEMENT_DESC("CBType"        , COM0R20_CB_cgf.aulCBType     , &Number_Element_funcs  , &ValidModuleTypesDesc , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SpecRevision"  , COM0R20_CB_cgf.aulSpecRev    , &SpecRev_Element_funcs , NULL                  , ELEMENT_REQUIRED)
+  ELEMENT_DESC("USBHSCount"    , COM0R20_CB_cgf.aulUSBHSCount , &Number_Element_funcs  , &ValidUsbHSRangeDesc  , ELEMENT_REQUIRED)
+  ELEMENT_DESC("USBSSCount"    , COM0R20_CB_cgf.aulUSBSSCount , &Number_Element_funcs  , &ValidUsbSSRangeDesc  , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SASPort0"      , COM0R20_CB_cgf.aulSASPort0   , &Token_Element_funcs   , &SasTL                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SASPort1"      , COM0R20_CB_cgf.aulSASPort1   , &Token_Element_funcs   , &SasTL                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SASPort2"      , COM0R20_CB_cgf.aulSASPort2   , &Token_Element_funcs   , &SasTL                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SASPort3"      , COM0R20_CB_cgf.aulSASPort3   , &Token_Element_funcs   , &SasTL                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("GBE0"          , COM0R20_CB_cgf.aulGBE0       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("GBE1"          , COM0R20_CB_cgf.aulGBE1       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("GBE2"          , COM0R20_CB_cgf.aulGBE2       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("WAKE0"         , COM0R20_CB_cgf.aulWAKE0      , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("WAKE1"         , COM0R20_CB_cgf.aulWAKE1      , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SUS"           , COM0R20_CB_cgf.aulSUS        , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("BatLow"        , COM0R20_CB_cgf.aulBatLow     , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("THRMP"         , COM0R20_CB_cgf.aulTHRMP      , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("EBROM"         , COM0R20_CB_cgf.aulEBROM      , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("WDT"           , COM0R20_CB_cgf.aulWDT        , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("AC97/HDA"      , COM0R20_CB_cgf.aulAC97       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SSC"           , COM0R20_CB_cgf.aulSSC        , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SDIO"          , COM0R20_CB_cgf.aulSDIO       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("LID"           , COM0R20_CB_cgf.aulLID        , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Sleep"         , COM0R20_CB_cgf.aulSleep      , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("FAN0"          , COM0R20_CB_cgf.aulFAN0       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SER0"          , COM0R20_CB_cgf.aulSER0       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SER1"          , COM0R20_CB_cgf.aulSER1       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("SER2"          , COM0R20_CB_cgf.aulSER2       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DDI1"          , COM0R20_CB_cgf.aulDDI1       , &Token_Element_funcs   , &DDI1TL               , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DDI2"          , COM0R20_CB_cgf.aulDDI2       , &Token_Element_funcs   , &DDI2TL               , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DDI3"          , COM0R20_CB_cgf.aulDDI3       , &Token_Element_funcs   , &DDI2TL               , ELEMENT_REQUIRED)
+  ELEMENT_DESC("PCIePorts"     , COM0R20_CB_cgf.aulPCIePorts  , &COM0PCIe_Element_funcs, NULL                  , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t COM0R20_M_Desc[]={
-  ELEMENT_DESC("EepDeviceType" , COM0R20_M_cgf.aulDeviceType  , &Token_Element_funcs , &StandardExtendedTL  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("EepDeviceSize" , COM0R20_M_cgf.aulDeviceSize  , &Token_Element_funcs , &EEPDeviceSizeTL     , ELEMENT_REQUIRED)
-  ELEMENT_DESC("WriteLength"   , COM0R20_M_cgf.aulWriteLength , &Token_Element_funcs , &EeePEEPWriteLenTL   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("VendorId"      , COM0R20_M_cgf.aulVendorId    , &PNPID_Element_funcs , NULL                 , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DeviceId"      , COM0R20_M_cgf.aulDeviceId    , &Number_Element_funcs, &UINT16RangeDesc     , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DeviceFlav"    , COM0R20_M_cgf.aulDeviceFlav  , &Number_Element_funcs, &UINT8RangeDesc      , ELEMENT_REQUIRED)
-  ELEMENT_DESC("RevId"         , COM0R20_M_cgf.aulRevId       , &Number_Element_funcs, &UINT8RangeDesc      , ELEMENT_REQUIRED)
-  ELEMENT_DESC("MType"         , COM0R20_M_cgf.aulMType       , &Number_Element_funcs, &ValidModuleTypesDesc, ELEMENT_REQUIRED)
-  ELEMENT_DESC("SpecRevision"  , COM0R20_M_cgf.aulSpecRev     , &SpecRev_Element_funcs, NULL                , ELEMENT_REQUIRED)
+  ELEMENT_DESC("EepDeviceType" , COM0R20_M_cgf.aulDeviceType  , &Token_Element_funcs  , &StandardExtendedTL  , ELEMENT_REQUIRED)
+  ELEMENT_DESC("EepDeviceSize" , COM0R20_M_cgf.aulDeviceSize  , &Token_Element_funcs  , &EEPDeviceSizeTL     , ELEMENT_REQUIRED)
+  ELEMENT_DESC("WriteLength"   , COM0R20_M_cgf.aulWriteLength , &Token_Element_funcs  , &EeePEEPWriteLenTL   , ELEMENT_REQUIRED)
+  ELEMENT_DESC("VendorId"      , COM0R20_M_cgf.aulVendorId    , &PNPID_Element_funcs  , NULL                 , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceId"      , COM0R20_M_cgf.aulDeviceId    , &Number_Element_funcs , &UINT16RangeDesc     , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceFlav"    , COM0R20_M_cgf.aulDeviceFlav  , &Number_Element_funcs , &UINT8RangeDesc      , ELEMENT_REQUIRED)
+  ELEMENT_DESC("RevId"         , COM0R20_M_cgf.aulRevId       , &Number_Element_funcs , &UINT8RangeDesc      , ELEMENT_REQUIRED)
+  ELEMENT_DESC("MType"         , COM0R20_M_cgf.aulMType       , &Number_Element_funcs , &ValidModuleTypesDesc, ELEMENT_REQUIRED)
+  ELEMENT_DESC("SpecRevision"  , COM0R20_M_cgf.aulSpecRev     , &SpecRev_Element_funcs, NULL                 , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t EeePExpHdr_Desc[]={
   ELEMENT_DESC("EepDeviceType" , EeePExpHdr_cgf.aulDeviceType  , &Token_Element_funcs , &StandardExtendedTL  , ELEMENT_REQUIRED)
@@ -965,7 +979,7 @@ HandleCOM0R20CBHeaderBlock(
   EeeP_Set16BitValue_BE(pHeader->DevId.VendId  , (uint16_t)pCOM0R20_CB_cgf->aulVendorId[0]);
   EeeP_Set16BitValue_BE(pHeader->DevId.DeviceId, (uint16_t)pCOM0R20_CB_cgf->aulDeviceId[0]);
   pHeader->DevId.DeviceFlav=(uint8_t)pCOM0R20_CB_cgf->aulDeviceFlav[0];
-  pHeader->DevId.RevId=(uint8_t)pCOM0R20_CB_cgf->aulRevId[0];
+  pHeader->DevId.RevId     =(uint8_t)pCOM0R20_CB_cgf->aulRevId[0];
 
   pHeader->CBType =(uint8_t)pCOM0R20_CB_cgf->aulCBType[0];
   pHeader->SpecRev=(uint8_t)pCOM0R20_CB_cgf->aulSpecRev[0];
@@ -1170,7 +1184,7 @@ HandleCOM0R20ExpCardCfgBlock(
       );
 
 
-  DO(SetDynBlockHeader(pHeader, COM0R20_BLOCK_ID_SERIO_DESC, stBlockLength));
+  DO(SetDynBlockHeader(pHeader, COM0R20_BLOCK_ID_EXP_CARD_DESC, stBlockLength));
 
   pHeader->ExpressCardNumber=(uint8_t)pCOM0ExpCard_cgf->aulExpCardNum[0];
   pHeader->ComExpressPort   =(uint8_t)pCOM0ExpCard_cgf->aulPCIe_Port[0];
@@ -1455,6 +1469,7 @@ HandleVendorBlock(
 
   DO(SetDynBlockHeader(pHeader, EEEP_BLOCK_ID_VENDOR_SPECIFIC, stBlockLength));
   EeeP_Set16BitValue_BE(pHeader->VendId, (uint16_t)pVendorBlock->aulVendorId[0]);
+  pHeader->VendBlockId=(uint8_t)pVendorBlock->aulVSBlockId[0];
   memcpy(
       EAPI_CREATE_PTR(pHeader, sizeof(*pHeader), void*), 
       pvFileBuffer, 

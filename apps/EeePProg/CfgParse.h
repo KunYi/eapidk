@@ -83,6 +83,12 @@ typedef struct NumberRangeDesc_s{
 }NumberRangeDesc_t;
 
 
+typedef struct StringDesc_s{
+  unsigned int uiMinLength;
+  unsigned int uiMaxLength;
+  unsigned int uiPreserveTrailingSpaces;
+}StringDesc_t;
+
 typedef 
 EApiStatusCode_t 
 ElementHandler_t(
@@ -172,7 +178,11 @@ ElementHelpTxt_t GUID_Help;
 
 ElementDefaultTxt_t No_Default_Txt;
 ElementDefaultTxt_t Token_List_Default;
+ElementDefaultTxt_t Range_Default_Txt;
 ElementDefaultTxt_t GUID_Default;
+
+extern StringDesc_t PreserveTrailingSpaces;
+extern StringDesc_t DeleteTrailingSpaces;
 
 EApiStatusCode_t
 GetTokenValue(

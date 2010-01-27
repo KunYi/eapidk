@@ -35,6 +35,47 @@
  */
   #include <EeePApp.h>
 
+typedef struct StringLookup_s{
+  char *szString;
+  const unsigned int cuiValue;
+}StringLookup_t;
+
+StringLookup_t BlockIdLookup[]={
+  { "EEEP_BLOCK_ID_UNUSED"          , EEEP_BLOCK_ID_UNUSED          },
+  { "EEEP_BLOCK_ID_VENDOR_SPECIFIC" , EEEP_BLOCK_ID_VENDOR_SPECIFIC },
+  { "EEEP_BLOCK_ID_EXP_EEPROM"      , EEEP_BLOCK_ID_EXP_EEPROM      },
+  { "EEEP_BLOCK_ID_SMBIOS"          , EEEP_BLOCK_ID_SMBIOS          },
+  { "EEEP_BLOCK_ID_LFP"             , EEEP_BLOCK_ID_LFP             },
+  { "EEEP_BLOCK_ID_CRC_CHK"         , EEEP_BLOCK_ID_CRC_CHK         },
+  { "EEEP_BLOCK_ID_IGNORE"          , EEEP_BLOCK_ID_IGNORE          },
+  { "EEEP_OFFSET_VALUE_EOL"         , EEEP_OFFSET_VALUE_EOL         },
+  { "EEEP_OFFSET_VALUE_EOL_ALT"     , EEEP_OFFSET_VALUE_EOL_ALT     },
+
+  { "COM0R20_BLOCK_ID_EXP_CARD_DESC", COM0R20_BLOCK_ID_EXP_CARD_DESC},
+  { "COM0R20_BLOCK_ID_SERIO_DESC"   , COM0R20_BLOCK_ID_SERIO_DESC   },
+  { NULL                            , 0                             },
+};
+
+
+EApiStatusCode_t 
+GetString(
+    __IN  StringLookup_t *pStrTbl,
+    __OUT TCHAR *        pszString,
+    __IN  size_t         stArrayLen,
+    __IN  unsigned int   uiValue
+    )
+{
+  for(;pStrTbl->szString!=NULL;pStrTbl++){
+    if(pStrTbl->cuiValue==uiValue){
+      EApiSprintf(pszString, stArrayLen, TEXT("%hs"), pStrTbl->szString);
+      return EAPI_STATUS_SUCCESS;
+    }
+  }
+  EApiSprintf(pszString, stArrayLen, TEXT("UNKNOWN ID"));
+  return EAPI_STATUS_ERROR;
+}
+
+
 size_t 
 EeePAdjLength(
     size_t Length
@@ -430,6 +471,83 @@ EeePMapBuffer(
 }
 
 EApiStatusCode_t
+EeePListBlocks(
+    EeePHandel_t BHandel,
+    unsigned int uiFlags
+  )
+{
+  TCHAR BlockName[80];
+  EeePCmn_t     *pEeePCmnHdr; 
+  DBlockIdHdr_t    *pCurBlock       ;
+  EApiStatusCode_t EApiStatusCode;
+  uiFlags=uiFlags;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      EeePListBlocks,
+      EAPI_STATUS_INVALID_PARAMETER,
+      BHandel
+    );
+  pEeePCmnHdr=BHandel;
+
+
+  EAPI_APP_RETURN_ERROR_IF(
+      EeePMapBuffer,
+      memcmp(
+          pEeePCmnHdr->EepId, 
+          EEEP_EEPROM_MARKER, 
+          sizeof(EEEP_EEPROM_MARKER)-1
+        ),
+      EAPI_STATUS_ERROR,
+      TEXT("Invalid EeeP Buffer")
+    );
+
+  DO(EeePGetFirstDB(BHandel, &pCurBlock));
+  EAPI_MSG_OUT(
+      TEXT("LOG: Header Size: 0x%02lX\n"),
+      EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
+      );
+  PrintHexAsciiTable(
+        BHandel, 
+        sizeof(*pEeePCmnHdr), 
+        BHandel, 
+        TEXT("EeeP Common Header")
+      );
+
+  if(EAPI_GET_PTR_OFFSET(pCurBlock, BHandel) > sizeof(*pEeePCmnHdr)){
+    PrintHexAsciiTable(
+        EAPI_CREATE_PTR(BHandel, sizeof(*pEeePCmnHdr), void *), 
+        EAPI_GET_PTR_OFFSET(pCurBlock, BHandel) - sizeof(*pEeePCmnHdr), 
+        BHandel, 
+        TEXT("EeeP Extended Header")
+      );
+  }
+
+  for(;pCurBlock!=NULL;pCurBlock=GetNextBlock(pCurBlock))
+  {
+    GetString(BlockIdLookup, BlockName, ARRAY_SIZE(BlockName), pCurBlock->DBlockId);
+    EAPI_MSG_OUT(
+        TEXT("\n")
+        TEXT("LOG: BLOCK ID  : %ls(0x%02")TEXT(PRIX8)TEXT(")\n")
+        TEXT("LOG:   Length  : 0x%04X\n")
+        TEXT("LOG:   Offset  : 0x%08X\n"),
+        BlockName,
+        pCurBlock->DBlockId,
+        GetBlockLength(pCurBlock),
+        EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
+      );
+    if(GetNextBlock(pCurBlock)!=NULL){
+      PrintHexAsciiTable(
+            EAPI_CREATE_PTR(pCurBlock, sizeof(*pCurBlock), void *), 
+            GetBlockLength(pCurBlock) - sizeof(*pCurBlock), 
+            BHandel, 
+            NULL
+        );
+    }
+  }
+
+  return EAPI_STATUS_SUCCESS;
+}
+
+EApiStatusCode_t
 EeePSetCRC(
     EeePHandel_t BHandel
     )
@@ -742,7 +860,7 @@ EeePSetI2CDeviceDesc(
 EApiStatusCode_t
 EeePWriteBufferToEEP(
     __IN  EeePHandel_t   BHandel,
-    __IN  unsigned       u16DeviceBus ,
+    __IN  unsigned       DeviceBus ,
     __IN  uint16_t       u16DeviceAddr 
     )
 {
@@ -750,12 +868,69 @@ EeePWriteBufferToEEP(
   I2CDeviceDesc_t DDesc;
   DO(EeePSetI2CDeviceDesc(&DDesc, BHandel, 5, u16DeviceAddr));
   return EApiAHI2CWriteEeprom(
-          u16DeviceBus, 
+          DeviceBus, 
           &DDesc, 
           0,
           BHandel, 
           DDesc.DevSize
       );
+}
+
+
+EApiStatusCode_t
+EeePReadBufferFromEEP(
+    __IN  EeePHandel_t  *pBHandel,
+    __IN  unsigned          DeviceBus ,
+    __IN  uint16_t       u16DeviceAddr 
+    )
+{
+  EApiStatusCode_t EApiStatusCode;
+  I2CDeviceDesc_t DDesc;
+  EeePCmn_t     EeePCmnHdr; 
+  size_t        stEEPSize;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+        EeePReadBufferFromEEP,
+        EAPI_STATUS_INVALID_PARAMETER,
+        pBHandel
+      );
+  *pBHandel=NULL;
+  DDesc.DeviceAddr=u16DeviceAddr;
+  DDesc.WRecTimems=5;
+  DDesc.PageSize  =1;
+  DDesc.ExtIndx   =(uint16_t)EApiAPI2CExtIndex;
+  DDesc.DevSize   =sizeof(EeePCmnHdr);
+  DO(EApiAHI2CReadEeprom(
+          DeviceBus, 
+          &DDesc, 
+          1,
+          EeePCmnHdr.EepId, 
+          sizeof(EeePCmnHdr)- 1,
+          sizeof(EeePCmnHdr)- 1
+      ));
+
+  DO(EeePSetI2CDeviceDesc(&DDesc, &EeePCmnHdr, 5, u16DeviceAddr));
+
+  stEEPSize=256<<(EeePCmnHdr.DeviceDesc&EEEP_DEVICE_SIZE_MASK);
+  *pBHandel=malloc(stEEPSize);
+
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+        EeePReadBufferFromEEP,
+        EAPI_STATUS_ALLOC_ERROR,
+        *pBHandel
+      );
+  EApiStatusCode=EApiAHI2CReadEeprom(
+          DeviceBus, 
+          &DDesc, 
+          0,
+          *pBHandel, 
+          stEEPSize,
+          stEEPSize
+      );
+  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+    free(*pBHandel);
+    *pBHandel=NULL;
+  }
+  return EApiStatusCode;
 }
 
 

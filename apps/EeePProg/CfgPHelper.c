@@ -38,7 +38,7 @@
 /*  */
 
 Handlers_t  String_Element_funcs  ={ String_Element  , Dealloc_Element  , String_Help    , No_Default_Txt};
-Handlers_t  Number_Element_funcs  ={ Number_Element  , GenClear_Element , Range_List_Help, No_Default_Txt};
+Handlers_t  Number_Element_funcs  ={ Number_Element  , GenClear_Element , Range_List_Help, Range_Default_Txt};
 Handlers_t  Token_Element_funcs   ={ Token_Element   , GenClear_Element , Token_List_Help, Token_List_Default};
 Handlers_t  SpecRev_Element_funcs ={ SpecRev_Element , GenClear_Element , SpecRev_Help   , No_Default_Txt};
 Handlers_t  PNPID_Element_funcs   ={ PNPID_Element   , GenClear_Element , PNPID_Help     , No_Default_Txt};
@@ -78,6 +78,24 @@ Token_List_Default(
   return EAPI_STATUS_SUCCESS;
 }
 
+
+EApiStatusCode_t                                    
+Range_Default_Txt(
+    struct  CfgElementDesc_s *pElementDesc,
+    FILE * stream ,
+    __IN  unsigned int uiCount
+  )
+{ 
+  NumberRangeDesc_t *pRange=pElementDesc->pExtraInfo;
+  uiCount=uiCount;
+  fprintf(
+      stream, 
+      "0x%02X", 
+      pRange->pNumberRange->uiLowerLimit
+    );
+  return EAPI_STATUS_SUCCESS;
+}
+
 EApiStatusCode_t                                    
 GUID_Default(
     struct  CfgElementDesc_s *pElementDesc,
@@ -97,6 +115,10 @@ GUID_Default(
  *
  *
  */
+const char *DeletePreserve[]={
+  "Deleted",
+  "Preserved"
+};
 EApiStatusCode_t                                    
 String_Help(
     struct  CfgElementDesc_s *pElementDesc,
@@ -104,8 +126,17 @@ String_Help(
     const char *Indent
   )
 { 
-  pElementDesc=pElementDesc;
+  StringDesc_t *pStringDesc=pElementDesc->pExtraInfo; 
   fprintf(stream, "%s %s\n", Indent, "Generic String");
+  if(pStringDesc!=NULL){
+    if(pStringDesc->uiMaxLength){
+      fprintf(stream, "%s   Max Length %u\n", Indent, pStringDesc->uiMaxLength);
+    }
+    if(pStringDesc->uiMinLength){
+      fprintf(stream, "%s   Min Length %u\n", Indent, pStringDesc->uiMinLength);
+    }
+    fprintf(stream, "%s   Trailing spaces %s\n", Indent, DeletePreserve[pStringDesc->uiPreserveTrailingSpaces]);
+  }
   return EAPI_STATUS_SUCCESS;
 }
 EApiStatusCode_t
@@ -270,7 +301,24 @@ String_Element(
     char   *pszValue
   )
 { 
-  pElementDesc=pElementDesc;
+  StringDesc_t *pStringDesc=pElementDesc->pExtraInfo; 
+  size_t stStrLength;
+  if(pStringDesc!=NULL){
+    if(!pStringDesc->uiPreserveTrailingSpaces){
+      stripWhiteSpaces(pszValue);
+    }
+    stStrLength=strlen(pszValue);
+    if(pStringDesc->uiMinLength){
+      if(pStringDesc->uiMinLength>stStrLength){
+        printf("\tString_Element = String Too Short, %s\n", pszValue);
+      }
+    }
+    if(pStringDesc->uiMaxLength){
+      if(pStringDesc->uiMaxLength<stStrLength){
+        printf("\tString_Element = String Too Long, %s\n", pszValue);
+      }
+    }
+  }
   *(char **)pCurElement=EAPI_strdup(pszValue);
 #if TEST_EEPCFG
 /*   printf("\tString_Element = %s, %s\n", *(char**)pCurElement, pszValue); */
@@ -537,3 +585,5 @@ TokenDesc_t  InsideCrcTokens[]={
 };
 PCFG_TOKEN_LIST_DESC(InsideCrcTL, InsideCrcTokens);
 
+StringDesc_t PreserveTrailingSpaces={0,0,1};
+StringDesc_t DeleteTrailingSpaces={0,0,0};
