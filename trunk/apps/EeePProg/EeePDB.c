@@ -503,7 +503,7 @@ EeePListBlocks(
   DO(EeePGetFirstDB(BHandel, &pCurBlock));
   EAPI_MSG_OUT(
       TEXT("LOG: Header Size: 0x%02lX\n"),
-      EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
+      (unsigned long)EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
       );
   PrintHexAsciiTable(
         BHandel, 
@@ -526,7 +526,11 @@ EeePListBlocks(
     GetString(BlockIdLookup, BlockName, ARRAY_SIZE(BlockName), pCurBlock->DBlockId);
     EAPI_MSG_OUT(
         TEXT("\n")
+#ifdef _UNICODE
         TEXT("LOG: BLOCK ID  : %ls(0x%02")TEXT(PRIX8)TEXT(")\n")
+#else
+        TEXT("LOG: BLOCK ID  : %s(0x%02")TEXT(PRIX8)TEXT(")\n")
+#endif
         TEXT("LOG:   Length  : 0x%04X\n")
         TEXT("LOG:   Offset  : 0x%08X\n"),
         BlockName,
