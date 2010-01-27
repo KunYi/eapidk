@@ -531,12 +531,12 @@ EeePListBlocks(
 #else
         TEXT("LOG: BLOCK ID  : %s(0x%02")TEXT(PRIX8)TEXT(")\n")
 #endif
-        TEXT("LOG:   Length  : 0x%04X\n")
-        TEXT("LOG:   Offset  : 0x%08X\n"),
+        TEXT("LOG:   Length  : 0x%04lX\n")
+        TEXT("LOG:   Offset  : 0x%08lX\n"),
         BlockName,
         pCurBlock->DBlockId,
-        GetBlockLength(pCurBlock),
-        EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
+        (unsigned long)GetBlockLength(pCurBlock),
+        (unsigned long)EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
       );
     if(GetNextBlock(pCurBlock)!=NULL){
       PrintHexAsciiTable(
