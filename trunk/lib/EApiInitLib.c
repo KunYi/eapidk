@@ -83,11 +83,12 @@ uint32_t EApiUninitLib(){
               "# Exit \n"
               "#\n"
             );
-  if(OutputStream!=NULL){
+  CloseI2CEepromFiles();
+  if(OutputStream!=NULL&&OutputStream!=stdout){
     fclose(OutputStream);
-    OutputStream=NULL;
   }
-  return CloseI2CEepromFiles();
+  OutputStream=stdout;
+  return EAPI_STATUS_SUCCESS; 
 }
 
 
