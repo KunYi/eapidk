@@ -111,10 +111,16 @@ EmulateEepromFS(
   EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : ECMD=%1"PRIX32" CINDX=%04"PRIX32
         " Arg1=%1"PRIX32" DLEN=%04"PRIX32" PLEN=%04"PRIX32" WLEN=%04"PRIX32
         " RLEN=%04"PRIX32" %08"PRIX32"\n", __LINE__, "EmulateEepromFS", 
-        "Info", CfgData->ExtendedCmd, CfgData->CurIndx, Arg1, 
-        CfgData->ByteLen, CfgData->PageLength, WriteBCnt, ReadBCnt, 
-        ((uint32_t*)pWBuffer)[0])
-      );
+        "Info", 
+        CfgData->ExtendedCmd, 
+        CfgData->CurIndx, 
+        Arg1, 
+        CfgData->ByteLen, 
+        CfgData->PageLength, 
+        WriteBCnt, 
+        ReadBCnt, 
+        ((uint32_t*)pWBuffer)[0]
+      ));
 #endif
   if(WriteBCnt)
   {
@@ -150,7 +156,8 @@ EmulateEepromFS(
 #if (STRICT_VALIDATION>1)
     EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : CINDX=%04"PRIX32" PLEN=%04"PRIX32
           " EPLEN=%04"PRIX32"\n", __LINE__, "EmulateEepromFS", "Info", 
-          CfgData->CurIndx, CfgData->CurIndx%CfgData->PageLength, 
+          CfgData->CurIndx, 
+          CfgData->CurIndx%CfgData->PageLength, 
           (CfgData->CurIndx%CfgData->PageLength)+WriteBCnt)
         );
 #endif
@@ -159,19 +166,24 @@ EmulateEepromFS(
       EAPI_LIB_RETURN_ERROR_IF(
           EmulateEepromFS,
           ((CfgData->CurIndx%CfgData->PageLength)+WriteBCnt)>CfgData->PageLength,
-          EAPI_STATUS_READ_ERROR, 
+          EAPI_STATUS_WRITE_ERROR, 
           "Device Page Wrap around"
           );
       EAPI_LIB_RETURN_ERROR_IF(
           EmulateEepromFS,
           (CfgData->CurIndx+WriteBCnt)>CfgData->ByteLen   , 
-          EAPI_STATUS_READ_ERROR, 
+          EAPI_STATUS_WRITE_ERROR, 
           "Device Write Wrap around"
           );
 
       EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS*WriteBCnt);
       fseek(CfgData->FStream, CfgData->CurIndx, SEEK_SET);
-      fwrite(pWBuffer, sizeof(uint8_t), WriteBCnt, CfgData->FStream);
+      EAPI_LIB_RETURN_ERROR_IF(
+          EmulateEepromFS,
+          WriteBCnt!=fwrite(pWBuffer, sizeof(uint8_t), WriteBCnt, CfgData->FStream), 
+          EAPI_STATUS_WRITE_ERROR, 
+          "Device Write Error"
+          );
       CfgData->CurIndx+=WriteBCnt;
     }
   }
@@ -187,7 +199,12 @@ EmulateEepromFS(
 
     EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS*ReadBCnt);
     fseek(CfgData->FStream, CfgData->CurIndx, SEEK_SET);
-    fread(pRBuffer, sizeof(uint8_t), ReadBCnt, CfgData->FStream);
+    EAPI_LIB_RETURN_ERROR_IF(
+        EmulateEepromFS,
+        ReadBCnt!=fread(pRBuffer, sizeof(uint8_t), ReadBCnt, CfgData->FStream), 
+        EAPI_STATUS_READ_ERROR, 
+        "Device Read Error"
+        );
     CfgData->CurIndx+=ReadBCnt;
   }
   EAPI_LIB_RETURN_SUCCESS(EmulateEepromFS, "");
@@ -387,7 +404,18 @@ static EepromCfgData_t COM0CBEEPromData={
   "COM0R20CB.EEP"    ,
   NULL
 };
+uint8_t EeePExpEEPROM[2048]={0};
+static EepromCfgData_t EeePExpEEPromData={
+  sizeof(EeePExpEEPROM), /* EEPROM Length */
+  STD_INDEX          ,  /* Ext/Std Index */
+  16                 ,  /* Max Block Write Length */
+  0                  ,  /* Current Index Value */
+  EeePExpEEPROM      ,  /* EEPROM pBuffer Pointer */ 
+  "EeePExp.EEP"      ,
+  NULL
+};
 EepromCfgData_t *OpenFiles[]={
+  &EeePExpEEPromData,
   &COM0CBEEPromData,
   &COM0MEEPromData,
   &EPIEEPromData,
@@ -402,9 +430,9 @@ OpenI2CEepromFiles(void)
   int i;
   EepromCfgData_t **pOpenFiles=OpenFiles;
   for(i=ARRAY_SIZE(OpenFiles); i; i--, pOpenFiles++){
-    (*pOpenFiles)->FStream=fopen((*pOpenFiles)->cszFilename, "r+");
+    (*pOpenFiles)->FStream=fopen((*pOpenFiles)->cszFilename, "rb+");
     if((*pOpenFiles)->FStream==NULL){
-      (*pOpenFiles)->FStream=fopen((*pOpenFiles)->cszFilename, "w+");
+      (*pOpenFiles)->FStream=fopen((*pOpenFiles)->cszFilename, "wb+");
     }
     if((*pOpenFiles)->FStream!=NULL){
         fseek((*pOpenFiles)->FStream, 0, SEEK_END);
@@ -429,6 +457,26 @@ CloseI2CEepromFiles(void)
   }
   return EAPI_STATUS_SUCCESS;
 }
+
+uint32_t 
+EmulateEeePExpEeprom(
+    __IN uint32_t Arg1, 
+    __IN void *pWBuffer, 
+    __IN uint32_t WriteBCnt, 
+    __OUT void *pRBuffer, 
+    __IN uint32_t ReadBCnt
+    )
+{
+  return EmulateEepromFS(
+      Arg1, 
+      &EeePExpEEPromData, 
+      pWBuffer, 
+      WriteBCnt, 
+      pRBuffer, 
+      ReadBCnt
+      );
+}
+
 
 uint32_t 
 EmulateCOM0CBEeprom(
@@ -505,9 +553,10 @@ EmulateHWMonDevice(
 const BusDevicesTbl_t ExternalI2CDevices[]={
 /* Device      Device         BLCK*/
 /* Address    Emulator        CNT */
-  {0x00A0, EmulateCOM0MEeprom , 0},
-  {0x0052, EmulateHWMonDevice , 0},
-  {0x00AE, EmulateCOM0CBEeprom, 0},
+  {0x0052, EmulateHWMonDevice  , 0},
+  {0x00A0, EmulateCOM0MEeprom  , 0},
+  {0x00A2, EmulateEeePExpEeprom, 0},
+  {0x00AE, EmulateCOM0CBEeprom , 0},
   {END_OF_LIST_MARK, NULL, 0}
 };
 const BusDevicesTbl_t LVDS_1I2CDevices[]={

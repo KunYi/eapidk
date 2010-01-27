@@ -169,6 +169,20 @@ EeePReadBufferFromFile(
     __IN  char          *pszFilename
     );
 
+EApiStatusCode_t
+EeePReadBufferFromEEP(
+    __IN  EeePHandel_t  *pBHandel,
+    __IN  unsigned       u16DeviceBus ,
+    __IN  uint16_t       u16DeviceAddr 
+    );
+
+
+EApiStatusCode_t
+EeePListBlocks(
+    EeePHandel_t BHandel,
+    unsigned int uiFlags
+  );
+
 #ifdef __cplusplus
 }
 #endif

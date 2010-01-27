@@ -74,6 +74,16 @@ typedef struct Options_s{
   unsigned int uiListDBlocks_EEP;
   unsigned long  ulEEP_Img_EApiBus;
   unsigned long  ulEEP_Img_DevAddr;
+  unsigned int uiListDBlocks_COM0R20_CB_EEP;
+  unsigned int uiListDBlocks_COM0R20_M_EEP;
+  unsigned int uiStoreEeePExpEEP_EEP;
+  char  *        szEeePExpEEP_To_Img_FName  ;
+  unsigned long  ulEeePExpEEP_To_Img_EApiBus;
+  unsigned long  ulEeePExpEEP_To_Img_DevAddr;
+  unsigned int uiStoreCOM0R20CB_EEP;
+  char  *        szCOM0R20CBEEP_To_Img_FName  ;
+  unsigned int uiStoreCOM0R20M_EEP;
+  char  *        szCOM0R20MEEP_To_Img_FName  ;
 }Options_t;
 
 extern Options_t CurOptions;
