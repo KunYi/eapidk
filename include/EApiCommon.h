@@ -40,9 +40,19 @@
  * ALL Of these MACROS can be overridden by MACROS
  * in the OS Specific Header File EApiOs.h
  */
-#ifndef ARRAY_SIZE
-#  define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
+#ifndef ELEMENT_SIZE
+#  define ELEMENT_SIZE(x) (sizeof(x[0]))
 #endif
+#ifndef ARRAY_SIZE
+#  define ARRAY_SIZE(x) (sizeof(x)/ELEMENT_SIZE(x))
+#endif
+
+#define EAPI_CREATE_PTR(Base, ByteOffset, PtrType) \
+  ((PtrType)(((uint8_t*)(Base))+(ByteOffset)))
+
+#define EAPI_GET_PTR_OFFSET(Ptr1, Ptr2) \
+  ((unsigned long)(((const uint8_t* const)(Ptr1))-((const uint8_t*const)(Ptr2))))
+
 #ifndef STRICT_VALIDATION
 #  define  STRICT_VALIDATION 2
 #endif

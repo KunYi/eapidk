@@ -146,7 +146,7 @@ PrintHexAsciiTableEx(
 
 
     if(pcvBuffer==NULL){
-      EAPI_printf(TEXT("E%04x %-20s %s\n"), __LINE__, TEXT("PrintHexAsciiTableEx"), TEXT("pcvBuffer==(NULL)"));
+      EAPI_FORMATED_MES(E, PrintHexAsciiTableEx, EAPI_STATUS_INVALID_PARAMETER, TEXT("(pcvBuffer==NULL)"));
       return ;
     }
     if(pcvBase==NULL)
@@ -360,7 +360,7 @@ EeeP_Set16BitValue_BE(
      )
 {
   pBuffer[1]=EEEP_LO_UINT8(Value   );
-  pBuffer[0]=EEEP_LO_UINT8(Value>>8);
+  pBuffer[0]=EEEP_LO_UINT8(Value>>(8*1));
 }
 uint16_t
 EeeP_Get16BitValue_BE(
@@ -368,7 +368,7 @@ EeeP_Get16BitValue_BE(
      )
 {
   return (pBuffer[1]    ) |
-         (pBuffer[0]<< 8) ;
+         (pBuffer[0]<<(8*1)) ;
 }
 void
 EeeP_Set32BitValue_BE(
@@ -377,9 +377,9 @@ EeeP_Set32BitValue_BE(
      )
 {
   pBuffer[3]=EEEP_LO_UINT8(Value    );
-  pBuffer[2]=EEEP_LO_UINT8(Value>> 8);
-  pBuffer[1]=EEEP_LO_UINT8(Value>>16);
-  pBuffer[0]=EEEP_LO_UINT8(Value>>24);
+  pBuffer[2]=EEEP_LO_UINT8(Value>>(8*1));
+  pBuffer[1]=EEEP_LO_UINT8(Value>>(8*2));
+  pBuffer[0]=EEEP_LO_UINT8(Value>>(8*3));
 }
 uint32_t
 EeeP_Get32BitValue_BE(
@@ -387,9 +387,38 @@ EeeP_Get32BitValue_BE(
      )
 {
   return (pBuffer[3]    ) |
-         (pBuffer[2]<< 8) |
-         (pBuffer[1]<<16) |
-         (pBuffer[0]<<24) ;
+         (pBuffer[2]<<(8*1)) |
+         (pBuffer[1]<<(8*2)) |
+         (pBuffer[0]<<(8*3)) ;
+}
+void
+EeeP_Set64BitValue_BE(
+    uint8_t *pBuffer,
+    uint64_t Value
+     )
+{
+  pBuffer[7]=EEEP_LO_UINT8(Value       );
+  pBuffer[6]=EEEP_LO_UINT8(Value>>(8*1));
+  pBuffer[5]=EEEP_LO_UINT8(Value>>(8*2));
+  pBuffer[4]=EEEP_LO_UINT8(Value>>(8*3));
+  pBuffer[3]=EEEP_LO_UINT8(Value>>(8*4));
+  pBuffer[2]=EEEP_LO_UINT8(Value>>(8*5));
+  pBuffer[1]=EEEP_LO_UINT8(Value>>(8*6));
+  pBuffer[0]=EEEP_LO_UINT8(Value>>(8*7));
+}
+uint64_t
+EeeP_Get64BitValue_BE(
+    const uint8_t *pBuffer
+     )
+{
+  return (pBuffer[7]       ) |
+         (pBuffer[6]<<(8*1)) |
+         (pBuffer[5]<<(8*2)) |
+         (pBuffer[4]<<(8*3)) |
+         (pBuffer[3]<<(8*4)) |
+         (pBuffer[2]<<(8*5)) |
+         (pBuffer[1]<<(8*6)) |
+         (pBuffer[0]<<(8*7)) ;
 }
 /*
  * CPU Independent Multi Byte 
@@ -401,8 +430,8 @@ EeeP_Set16BitValue_LE(
     uint16_t Value
      )
 {
-  pBuffer[0]=EEEP_LO_UINT8(Value   );
-  pBuffer[1]=EEEP_LO_UINT8(Value>>8);
+  pBuffer[0]=EEEP_LO_UINT8(Value       );
+  pBuffer[1]=EEEP_LO_UINT8(Value>>(8*1));
 }
 uint16_t
 EeeP_Get16BitValue_LE(
@@ -410,7 +439,7 @@ EeeP_Get16BitValue_LE(
      )
 {
   return (pBuffer[0]    ) |
-         (pBuffer[1]<< 8) ;
+         (pBuffer[1]<<(8*1)) ;
 }
 void
 EeeP_Set32BitValue_LE(
@@ -419,9 +448,9 @@ EeeP_Set32BitValue_LE(
      )
 {
   pBuffer[0]=EEEP_LO_UINT8(Value    );
-  pBuffer[1]=EEEP_LO_UINT8(Value>> 8);
-  pBuffer[2]=EEEP_LO_UINT8(Value>>16);
-  pBuffer[3]=EEEP_LO_UINT8(Value>>24);
+  pBuffer[1]=EEEP_LO_UINT8(Value>>(8*1));
+  pBuffer[2]=EEEP_LO_UINT8(Value>>(8*2));
+  pBuffer[3]=EEEP_LO_UINT8(Value>>(8*3));
 }
 uint32_t
 EeeP_Get32BitValue_LE(
@@ -429,9 +458,38 @@ EeeP_Get32BitValue_LE(
      )
 {
   return (pBuffer[0]    ) |
-         (pBuffer[1]<< 8) |
-         (pBuffer[2]<<16) |
-         (pBuffer[3]<<24) ;
+         (pBuffer[1]<<(8*1)) |
+         (pBuffer[2]<<(8*2)) |
+         (pBuffer[3]<<(8*3)) ;
+}
+void
+EeeP_Set64BitValue_LE(
+    uint8_t *pBuffer,
+    uint64_t Value
+     )
+{
+  pBuffer[0]=EEEP_LO_UINT8(Value       );
+  pBuffer[1]=EEEP_LO_UINT8(Value>>(8*1));
+  pBuffer[2]=EEEP_LO_UINT8(Value>>(8*2));
+  pBuffer[3]=EEEP_LO_UINT8(Value>>(8*3));
+  pBuffer[4]=EEEP_LO_UINT8(Value>>(8*4));
+  pBuffer[5]=EEEP_LO_UINT8(Value>>(8*5));
+  pBuffer[6]=EEEP_LO_UINT8(Value>>(8*6));
+  pBuffer[7]=EEEP_LO_UINT8(Value>>(8*7));
+}
+uint64_t
+EeeP_Get64BitValue_LE(
+    const uint8_t *pBuffer
+     )
+{
+  return (pBuffer[0]       ) |
+         (pBuffer[1]<<(8*1)) |
+         (pBuffer[2]<<(8*2)) |
+         (pBuffer[3]<<(8*3)) |
+         (pBuffer[4]<<(8*4)) |
+         (pBuffer[5]<<(8*5)) |
+         (pBuffer[6]<<(8*6)) |
+         (pBuffer[7]<<(8*7)) ;
 }
 
 
