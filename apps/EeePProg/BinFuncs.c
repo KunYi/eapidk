@@ -415,10 +415,10 @@ EeeP_Get64BitValue_BE(
          (pBuffer[6]<<(8*1)) |
          (pBuffer[5]<<(8*2)) |
          (pBuffer[4]<<(8*3)) |
-         (pBuffer[3]<<(8*4)) |
-         (pBuffer[2]<<(8*5)) |
-         (pBuffer[1]<<(8*6)) |
-         (pBuffer[0]<<(8*7)) ;
+         ((uint64_t)pBuffer[3]<<(8*4)) |
+         ((uint64_t)pBuffer[2]<<(8*5)) |
+         ((uint64_t)pBuffer[1]<<(8*6)) |
+         ((uint64_t)pBuffer[0]<<(8*7)) ;
 }
 /*
  * CPU Independent Multi Byte 
@@ -486,10 +486,10 @@ EeeP_Get64BitValue_LE(
          (pBuffer[1]<<(8*1)) |
          (pBuffer[2]<<(8*2)) |
          (pBuffer[3]<<(8*3)) |
-         (pBuffer[4]<<(8*4)) |
-         (pBuffer[5]<<(8*5)) |
-         (pBuffer[6]<<(8*6)) |
-         (pBuffer[7]<<(8*7)) ;
+         ((uint64_t)pBuffer[4]<<(8*4)) |
+         ((uint64_t)pBuffer[5]<<(8*5)) |
+         ((uint64_t)pBuffer[6]<<(8*6)) |
+         ((uint64_t)pBuffer[7]<<(8*7)) ;
 }
 
 
