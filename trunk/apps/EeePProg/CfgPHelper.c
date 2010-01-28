@@ -298,28 +298,28 @@ EApiStatusCode_t
 String_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void  *pCurElement, 
-    char   *pszValue
+    char   *szValue
   )
 { 
   StringDesc_t *pStringDesc=pElementDesc->pExtraInfo; 
   size_t stStrLength;
   if(pStringDesc!=NULL){
     if(!pStringDesc->uiPreserveTrailingSpaces){
-      stripWhiteSpaces(pszValue);
+      stripWhiteSpaces(szValue);
     }
-    stStrLength=strlen(pszValue);
+    stStrLength=strlen(szValue);
     if(pStringDesc->uiMinLength){
       if(pStringDesc->uiMinLength>stStrLength){
-        printf("\tString_Element = String Too Short, %s\n", pszValue);
+        printf("\tString_Element = String Too Short, %s\n", szValue);
       }
     }
     if(pStringDesc->uiMaxLength){
       if(pStringDesc->uiMaxLength<stStrLength){
-        printf("\tString_Element = String Too Long, %s\n", pszValue);
+        printf("\tString_Element = String Too Long, %s\n", szValue);
       }
     }
   }
-  *(char **)pCurElement=EAPI_strdup(pszValue);
+  *(char **)pCurElement=EAPI_strdup(szValue);
 #if TEST_EEPCFG
 /*   printf("\tString_Element = %s, %s\n", *(char**)pCurElement, pszValue); */
 #endif
@@ -329,46 +329,46 @@ EApiStatusCode_t
 GUID_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void    *pCurElement, 
-    char   *pszValue
+    char   *szValue
   )
 { 
   unsigned int i;
-  char    *pszEnd;
+  char    *szEnd;
   uint32_t Part1;
   uint16_t Part2[2];
   char     Short[3];
   pElementDesc=pElementDesc;
-  skipWhiteSpaces(&pszValue);
-  stripWhiteSpaces(pszValue);
+  skipWhiteSpaces(&szValue);
+  stripWhiteSpaces(szValue);
   /*0000000000111111111122222222223333333333
    *0123456789012345678901234567890123456789
    *F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4
    */
-  if( *(pszValue+8)!='-'||
-      *(pszValue+13)!='-'||
-      *(pszValue+18)!='-'||
-      *(pszValue+23)!='-'||
-      *(pszValue+36)!='\0'
+  if( szValue[ 8]!='-'||
+      szValue[13]!='-'||
+      szValue[18]!='-'||
+      szValue[23]!='-'||
+      szValue[36]!='\0'
     )
   {
-    printf("\tString_Element = Invalid Format, %s\n", pszValue);
+    printf("\tString_Element = Invalid Format, %s\n", szValue);
     return EAPI_STATUS_ERROR;
   }
-  Part1=strtoul(pszValue+0, &pszEnd, 16);
-  Part2[0]=(uint16_t)strtoul(pszValue+9, &pszEnd, 16);
-  Part2[1]=(uint16_t)strtoul(pszValue+14, &pszEnd, 16);
+  Part1=strtoul(szValue+0, &szEnd, 16);
+  Part2[0]=(uint16_t)strtoul(szValue+9, &szEnd, 16);
+  Part2[1]=(uint16_t)strtoul(szValue+14, &szEnd, 16);
   EeeP_Set32BitValue_BE(((uint8_t*)pCurElement)+0, Part1);
   EeeP_Set16BitValue_BE(((uint8_t*)pCurElement)+4, Part2[0]);
   EeeP_Set16BitValue_BE(((uint8_t*)pCurElement)+6, Part2[1]);
   for(i=19;i<22;i+=2){
-    memcpy(Short, pszValue+i, 2);
+    memcpy(Short, szValue+i, 2);
     Short[2]='\0';
-    ((uint8_t*)pCurElement)[8+((i-19)/2)]=(uint8_t)strtoul(Short, &pszEnd, 16);
+    ((uint8_t*)pCurElement)[8+((i-19)/2)]=(uint8_t)strtoul(Short, &szEnd, 16);
   }
   for(i=24;i<35;i+=2){
-    memcpy(Short, pszValue+i, 2);
+    memcpy(Short, szValue+i, 2);
     Short[2]='\0';
-    ((uint8_t*)pCurElement)[10+(i/2)-12]=(uint8_t)strtoul(Short, &pszEnd, 16);
+    ((uint8_t*)pCurElement)[10+(i/2)-12]=(uint8_t)strtoul(Short, &szEnd, 16);
   }
 #if TEST_EEPCFG
 /*   printf("\tGUID_Element = "); */
@@ -426,11 +426,11 @@ EApiStatusCode_t
 Number_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void *pCurElement,
-    char   *pszValue
+    char   *szValue
   )
 { 
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
-  *(unsigned long*)pCurElement=ulConvertStr2Num(pszValue, NULL);
+  *(unsigned long*)pCurElement=ulConvertStr2Num(szValue, NULL);
   
   if(pElementDesc->pExtraInfo!=NULL){
     EApiStatusCode=RangeCheck(
@@ -440,7 +440,7 @@ Number_Element(
       );
   }
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
-    printf("\tNumber_Element = Outside Range, %s\n", pszValue);
+    printf("\tNumber_Element = Outside Range, %s\n", szValue);
 /*   }else{ */
 /*     printf("\tNumber_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, pszValue); */
   }
@@ -451,16 +451,16 @@ EApiStatusCode_t
 I2C_EEPROM_Addr(
     struct  CfgElementDesc_s *pElementDesc, 
     void *pCurElement,
-    char   *pszValue
+    char   *szValue
   )
 { 
   pElementDesc=pElementDesc;
-  *(unsigned long*)pCurElement=ulConvertStr2Num(pszValue, NULL);
+  *(unsigned long*)pCurElement=ulConvertStr2Num(szValue, NULL);
   if((*(unsigned long*)pCurElement<=0xAE)&&(*(unsigned long*)pCurElement>=0xA0)&&!(*(unsigned long*)pCurElement&1)){
 /*     printf("\tI2C_EEPROM_Addr = 0x%02lX, %s\n", *pCurElement, pszValue); */
     return EAPI_STATUS_SUCCESS;
   }
-  printf("\tI2C_EEPROM_Addr = Invalid Address 0x%02lX, %s\n", *(unsigned long*)pCurElement, pszValue);
+  printf("\tI2C_EEPROM_Addr = Invalid Address 0x%02lX, %s\n", *(unsigned long*)pCurElement, szValue);
   return EAPI_STATUS_ERROR;
 }
 
@@ -468,15 +468,15 @@ EApiStatusCode_t
 GetTokenValue(
     TokenDesc_t  *pTokens   ,
     size_t        stTokencnt,
-          char   *pszValue  ,
+          char   *szValue  ,
     unsigned long*pulValue
   )
 { 
   *pulValue=0;
-  skipWhiteSpaces(&pszValue);
-  stripWhiteSpaces(pszValue);
+  skipWhiteSpaces(&szValue);
+  stripWhiteSpaces(szValue);
   while(stTokencnt--){
-    if(!strcmp(pTokens->pszTokenList, pszValue)){
+    if(!strcmp(pTokens->pszTokenList, szValue)){
       *pulValue=pTokens->ulTokenValue;
       return EAPI_STATUS_SUCCESS;
     }
@@ -490,18 +490,18 @@ EApiStatusCode_t
 Token_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void *pCurElement,
-    char   *pszValue
+    char   *szValue
   )
 { 
   EApiStatusCode_t EApiStatusCode;
   EApiStatusCode=GetTokenValue(
       ((TokenListDesc_t*)pElementDesc->pExtraInfo)->pTokenList, 
       ((TokenListDesc_t*)pElementDesc->pExtraInfo)->uiTokenCount, 
-      pszValue, 
+      szValue, 
       pCurElement
     );
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
-    printf("\tToken_Element = Unknown Token, %s\n", pszValue);
+    printf("\tToken_Element = Unknown Token, %s\n", szValue);
 /*   }else{ */
 /*     printf("\tToken_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, pszValue); */
   }
@@ -512,18 +512,18 @@ EApiStatusCode_t
 SpecRev_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void     *pCurElement,
-    char   *pszValue
+    char   *szValue
   )
 { 
-  char *pszEnd;
+  char *szEnd;
   pElementDesc=pElementDesc;
-  *(unsigned long*)pCurElement=(ulConvertStr2Num(pszValue, &pszEnd)&0xF)<<4;
+  *(unsigned long*)pCurElement=(ulConvertStr2Num(szValue, &szEnd)&0xF)<<4;
   EAPI_APP_RETURN_ERROR_IF_S(
       SpecRev_Element,
-      (*pszEnd!='.'),
+      (*szEnd!='.'),
       EAPI_STATUS_ERROR
       );
-  *(unsigned long*)pCurElement|=ulConvertStr2Num(pszEnd+1, &pszEnd)&0xF;
+  *(unsigned long*)pCurElement|=ulConvertStr2Num(szEnd+1, &szEnd)&0xF;
 /*   printf("\tSpecRev_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, pszValue); */
   return EAPI_STATUS_SUCCESS;
 }
@@ -531,28 +531,28 @@ EApiStatusCode_t
 PNPID_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void          *pCurElement,
-    char          *pszValue
+    char          *szValue
   )
 { 
   unsigned int i=3;
-  char CurChar;
+  unsigned int uiCurChar;
   pElementDesc=pElementDesc;
   *(unsigned long*)pCurElement=0;
-  stripWhiteSpaces(pszValue);
+  stripWhiteSpaces(szValue);
   EAPI_APP_RETURN_ERROR_IF_S(
       PNPID_Element,
-      (strlen(pszValue)!=3),
+      (strlen(szValue)!=3),
       EAPI_STATUS_ERROR
       );
   while(i--){
-    CurChar=(char)toupper(*pszValue++);
+    uiCurChar=toupper(*szValue++);
     EAPI_APP_RETURN_ERROR_IF_S(
         PNPID_Element,
-        (CurChar<'A'||CurChar>'Z'),
+        (uiCurChar<'A'||uiCurChar>'Z'),
         EAPI_STATUS_ERROR
       );
     *(unsigned long*)pCurElement<<=5;
-    *(unsigned long*)pCurElement|=CurChar-'A'+1;
+    *(unsigned long*)pCurElement|=uiCurChar - 'A'+1;
   }
 /*   printf("\tPNPID_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, pszValue); */
   return EAPI_STATUS_SUCCESS;

@@ -827,12 +827,14 @@ PCFG_TOKEN_LIST_DESC(EeePEEPWriteLenTL, EeePEEPWriteLenTokens);
 
 
 CfgElementDesc_t ExtI2CDevice0Desc[]={
+  ELEMENT_DESC("InsideCRC"     , EeePExtI2CDevice0.aulInsideCrc, &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceBus"     , EeePExtI2CDevice0.aulBus      , &Token_Element_funcs  , &I2CBusTL             , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceAddr"    , EeePExtI2CDevice0.aulAddr     , &I2C_EEPROM_Addr_funcs, NULL                  , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceType"    , EeePExtI2CDevice0.aulType     , &Token_Element_funcs  , &StandardExtendedTL   , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceSize"    , EeePExtI2CDevice0.aulSize     , &Token_Element_funcs  , &EEPDeviceSizeTL      , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t ExtI2CDevice1Desc[]={
+  ELEMENT_DESC("InsideCRC"     , EeePExtI2CDevice1.aulInsideCrc, &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceBus"     , EeePExtI2CDevice1.aulBus      , &Token_Element_funcs  , &I2CBusTL             , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceAddr"    , EeePExtI2CDevice1.aulAddr     , &I2C_EEPROM_Addr_funcs, NULL                  , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceType"    , EeePExtI2CDevice1.aulType     , &Token_Element_funcs  , &StandardExtendedTL   , ELEMENT_REQUIRED)

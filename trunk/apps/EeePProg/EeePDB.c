@@ -503,7 +503,7 @@ EeePListBlocks(
   DO(EeePGetFirstDB(BHandel, &pCurBlock));
   EAPI_MSG_OUT(
       TEXT("LOG: Header Size: 0x%02lX\n"),
-      (unsigned long)EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
+      EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
       );
   PrintHexAsciiTable(
         BHandel, 
@@ -536,7 +536,7 @@ EeePListBlocks(
         BlockName,
         pCurBlock->DBlockId,
         (unsigned long)GetBlockLength(pCurBlock),
-        (unsigned long)EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
+        EAPI_GET_PTR_OFFSET(pCurBlock, BHandel)
       );
     if(GetNextBlock(pCurBlock)!=NULL){
       PrintHexAsciiTable(
@@ -717,7 +717,6 @@ EeePFindBlock(
 {
   DBlockIdHdr_t    *pCurBlock;
   EApiStatusCode_t EApiStatusCode;
-  signed            lclInstance=0;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePFindBlock,
@@ -729,11 +728,16 @@ EeePFindBlock(
       EAPI_STATUS_INVALID_PARAMETER,
       pvFBlock
     );
+  EAPI_APP_ASSERT_PARAMATER_ZERO(
+      EeePFindBlock,
+      EAPI_STATUS_INVALID_PARAMETER,
+      Instance
+    );
 
   DO(EeePGetFirstDB(BHandel, &pCurBlock));
   for(;pCurBlock!=NULL;pCurBlock=GetNextBlock(pCurBlock)){
     if(pCurBlock->DBlockId==BlockId){
-      if(++lclInstance==Instance){
+      if(!-- Instance){
         *pvFBlock=pCurBlock;
         return EAPI_STATUS_SUCCESS;
       }
@@ -744,8 +748,53 @@ EeePFindBlock(
       EAPI_STATUS_ERROR,
       TEXT("Block Not Found")
     );
+}
+EApiStatusCode_t
+EeePFindVendorBlock(
+    __IN  EeePHandel_t   BHandel,
+    __IN  uint16_t       VendorId,
+    __IN  uint8_t        VendorBlockId,
+    __IN  signed int     Instance,
+    __OUT void         **pvFBlock
+    )
+{
+  DBlockIdHdr_t   *pCurBlock;
+  EApiStatusCode_t EApiStatusCode;
 
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      EeePFindVendorBlock,
+      EAPI_STATUS_INVALID_PARAMETER,
+      BHandel
+    );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      EeePFindVendorBlock,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pvFBlock
+    );
+  EAPI_APP_ASSERT_PARAMATER_ZERO(
+      EeePFindVendorBlock,
+      EAPI_STATUS_INVALID_PARAMETER,
+      Instance
+    );
 
+  DO(EeePGetFirstDB(BHandel, &pCurBlock));
+  for(;pCurBlock!=NULL;pCurBlock=GetNextBlock(pCurBlock)){
+    if(pCurBlock->DBlockId==EEEP_BLOCK_ID_VENDOR_SPECIFIC&&
+       ((VendBlockHdr_t*)pCurBlock)->VendBlockId==VendorBlockId&&
+       EeeP_Get16BitValue_BE(((VendBlockHdr_t*)pCurBlock)->VendId)==VendorId
+      )
+    {
+      if(!-- Instance){
+        *pvFBlock=pCurBlock;
+        return EAPI_STATUS_SUCCESS;
+      }
+    }
+  }
+  EAPI_APP_RETURN_ERROR(
+      EeePFindVendorBlock,
+      EAPI_STATUS_ERROR,
+      TEXT("Block Not Found")
+    );
 }
 
 

@@ -151,6 +151,15 @@ EeePFindBlock(
     );
 
 EApiStatusCode_t
+EeePFindVendorBlock(
+    __IN  EeePHandel_t   BHandel,
+    __IN  uint16_t       VendorId,
+    __IN  uint8_t        VendorBlockId,
+    __IN  signed int     Instance,
+    __OUT void         **pvFBlock
+    );
+
+EApiStatusCode_t
 EeePWriteBufferToFile(
     __IN  EeePHandel_t   BHandel,
     __IN  char          *pszFilename

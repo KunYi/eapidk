@@ -48,7 +48,7 @@ extern "C" {
 
 #define DO(x) \
   EApiStatusCode=x;\
-  if(!EAPI_STATUS_TEST_OK(EApiStatusCode)){ \
+  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){ \
     return EApiStatusCode;\
   }
 

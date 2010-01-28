@@ -161,6 +161,7 @@ CleanStruct(
   return EApiStatusCode;
 
 }
+#define MAX_LINE_LEN 2048
 EApiStatusCode_t
 ParseCfgFile(
     __IN    const char *pcszCfgFileName       ,
@@ -227,7 +228,7 @@ ParseCfgFile(
             EApiSprintf(
                 ErrorBuffer, 
                 ARRAY_SIZE(ErrorBuffer), 
-                TEXT("ERROR: Missing Required Element '%hs' in Block '%hs'"), 
+                TEXT("Missing Required Element '%hs' in Block '%hs'"), 
                 pCurElement->pcszElementName, 
                 pCurBlockDesc->pszBlockName
               );
@@ -324,11 +325,10 @@ ParseCfgFile(
   pCurBlockDesc=pCfgBDesc;
   for(i=stCfgBDescElements;i;i--){
     if(pCurBlockDesc->cuiRequired>pCurBlockDesc->uiFound){
-      TCHAR ErrorBuffer[50];
         EApiSprintf(
           ErrorBuffer, 
           ARRAY_SIZE(ErrorBuffer), 
-          TEXT("ERROR: Missing Required Block '%hs'\n"), 
+          TEXT("Missing Required Block '%hs'\n"), 
           pCurBlockDesc->pszBlockName
         );
       EAPI_APP_RETURN_ERROR(

@@ -313,13 +313,12 @@ EApiAHI2CReadEeprom(
 
     BlockEndAddress=ByteOffset+ByteCnt;
 
-    BlockLength=IntMaxBlckLen;
     if(pDDesc->ExtIndx==EApiAPI2CExtIndex)
       /* After this length it is necessary to increment the Device Address */
-      BlockLength=(BlockLength<0x10000?BlockLength:0x10000);
+      BlockLength=(IntMaxBlckLen<0x10000?IntMaxBlckLen:0x10000);
     else
       /* After this length it is necessary to increment the Device Address */
-      BlockLength=(BlockLength<0x100?BlockLength:0x100);
+      BlockLength=(IntMaxBlckLen<0x100?IntMaxBlckLen:0x100);
     CurOffset=ByteOffset;
     while(CurOffset<BlockEndAddress)
     {
@@ -336,7 +335,7 @@ EApiAHI2CReadEeprom(
           Id, 
           (uint32_t)EncAddr, 
           (uint32_t)EncOffset, 
-          &((int8_t *)pBuffer)[CurOffset-ByteOffset], 
+          ((int8_t *)pBuffer)+(CurOffset-ByteOffset), 
           (uint32_t)BlockLength, 
           (uint32_t)BlockLength
           );

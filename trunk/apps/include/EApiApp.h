@@ -133,11 +133,6 @@
     x=y;\
   }
 
-#define EAPI_CREATE_PTR(Base, ByteOffset, PtrType) \
-  ((PtrType)(((uint8_t*)(Base))+(ByteOffset)))
-
-#define EAPI_GET_PTR_OFFSET(Ptr1, Ptr2) \
-  ((size_t)(((const uint8_t* const)(Ptr1))-((const uint8_t*const)(Ptr2))))
 
 
 #endif /* _EAPIAPP_H_ */

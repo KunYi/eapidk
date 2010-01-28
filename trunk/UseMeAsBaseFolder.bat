@@ -31,7 +31,7 @@
 @REM I
 @REM +=========================================================================
 @REM </KHeader>
-SET DirType=EAPI
+SET DirType=EApiDK
 color 
 REM SET _MAKEENVROOT=%WNETBASE%\bin
 REM IF EXIST "%_MAKEENVROOT%\setenv.bat" call "%_MAKEENVROOT%\setenv.bat" %WNETBACD %NUBIOS%
