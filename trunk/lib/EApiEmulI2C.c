@@ -67,59 +67,72 @@ I2CDevEmulator EmulateEPIEeprom;
 I2CDevEmulator EmulatePICMGEeprom;
 
 typedef struct CmdDesc_s{
-  uint32_t Cmd           ;/* Cmd */
-  uint32_t CmdBlockLen   ;/* Cmd Buffer Length */
-  void     *pBuffer      ;/* Cmd Content */ 
+  const unsigned long Cmd           ;/* Cmd */
+  const unsigned long CmdBlockLen   ;/* Cmd Buffer Length */
+  void     *const pBuffer      ;/* Cmd Content */ 
 }CmdDesc_t;
 typedef struct CmdDeviceCfgData_s{
-  uint32_t ExtendedCmd   ;/* Ext/Std Index */
-  uint32_t CurrentCmd    ;/* Ext/Std Index */
-  uint32_t CurrentOffset ;/* Ext/Std Index */
-  CmdDesc_t *Cmds        ;/* Commands Buffer pointer */ 
+  const unsigned long ExtendedCmd   ;/* Ext/Std Index */
+  unsigned long CurrentCmd    ;/* Ext/Std Index */
+  unsigned long CurrentOffset ;/* Ext/Std Index */
+  const char *const cszDeviceName;
+  CmdDesc_t *const Cmds        ;/* Commands Buffer pointer */ 
 }CmdDeviceCfgData_t;
 
 typedef struct EepromCfgData_s{
-  uint32_t ByteLen       ;/* EEPROM Length */
-  uint32_t ExtendedCmd   ;/* Ext/Std Index */
-  uint32_t PageLength    ;/* Write Page Alignment size */
+  const unsigned long ByteLen       ;/* EEPROM Length */
+  const unsigned long ExtendedCmd   ;/* Ext/Std Index */
+  const unsigned long PageLength    ;/* Write Page Alignment size */
 #define STD_INDEX 1                  
 #define EXT_INDEX 2                  
-  uint32_t CurIndx       ;/* Current Index Value */
-  uint8_t  *pu8DBuffer   ;/* Eeprom pBuffer Pointer */ 
-  const char *cszFilename;
+  unsigned long CurIndx       ;/* Current Index Value */
+  uint8_t  *const pu8DBuffer   ;/* Eeprom pBuffer Pointer */ 
+  const char *const cszFilename;
   FILE     *FStream;
 }EepromCfgData_t;
 
 typedef struct BusDevicesTbl_s{
-  uint32_t EncAddr         ;/* Device Address */
-  I2CDevEmulator *Emulator ;/* Emulator */
-  uint32_t Arg1            ;/* Argument to pass to Emulator */
+  const unsigned long EncAddr         ;/* Device Address */
+  I2CDevEmulator *const Emulator ;/* Emulator */
+  const unsigned long Arg1            ;/* Argument to pass to Emulator */
 }BusDevicesTbl_t;
+#if (STRICT_VALIDATION>1)
+char * StdExt[]={
+  "   ",
+  "Std",
+  "Ext"
+};
+#endif
 
 uint32_t 
 EmulateEepromFS(
-    __IN uint32_t Arg1, 
+    __IN unsigned long Arg1, 
     __IN EepromCfgData_t *CfgData, 
-    __IN void *pWBuffer, 
-    __IN uint32_t WriteBCnt, 
-    __OUT void *pRBuffer, 
-    __IN uint32_t ReadBCnt
+    __IN uint8_t *pWBuffer, 
+    __IN unsigned long WriteBCnt, 
+    __OUT uint8_t *pRBuffer, 
+    __IN unsigned long ReadBCnt
     )
 {
   
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : ECMD=%1"PRIX32" CINDX=%04"PRIX32
-        " Arg1=%1"PRIX32" DLEN=%04"PRIX32" PLEN=%04"PRIX32" WLEN=%04"PRIX32
-        " RLEN=%04"PRIX32" %08"PRIX32"\n", __LINE__, "EmulateEepromFS", 
-        "Info", 
-        CfgData->ExtendedCmd, 
+  EAPI_LIB_MSG_OUT((
+        "O%04u %-30s : %-30s : %3s CIDX=%04lX Arg1=%1lX DLEN=%04lX PLEN=%04lX"
+        " WLEN=%04lX RLEN=%04lX %02"PRIX8",%02"PRIX8",%02"PRIX8",%02"PRIX8"\n", 
+        __LINE__, 
+        "EmulateEepromFS", 
+        CfgData->cszFilename, 
+        StdExt[CfgData->ExtendedCmd], 
         CfgData->CurIndx, 
         Arg1, 
         CfgData->ByteLen, 
         CfgData->PageLength, 
         WriteBCnt, 
         ReadBCnt, 
-        ((uint32_t*)pWBuffer)[0]
+        pWBuffer[0],
+        pWBuffer[1],
+        pWBuffer[2],
+        pWBuffer[3]
       ));
 #endif
   if(WriteBCnt)
@@ -127,8 +140,7 @@ EmulateEepromFS(
     switch((CfgData->ExtendedCmd))  {      /* Emulate Standard IDX/CMD 
                                                     Device */
       case STD_INDEX:
-        CfgData->CurIndx=(*(uint8_t*)pWBuffer);
-        pWBuffer=((uint8_t*)pWBuffer)+1;
+        CfgData->CurIndx=*pWBuffer++;
         WriteBCnt--;
         CfgData->CurIndx|=Arg1<<8;                 /* Add the Device Address 
                                                       Index */
@@ -143,9 +155,9 @@ EmulateEepromFS(
             " STD INDEX Sent to EXT INDEX EEPROM"
             );
 
-        CfgData->CurIndx =((uint8_t*)pWBuffer)[0]<<8;
-        CfgData->CurIndx|=((uint8_t*)pWBuffer)[1];
-        pWBuffer=((uint8_t*)pWBuffer)+2;
+        CfgData->CurIndx =pWBuffer[0]<<8;
+        CfgData->CurIndx|=pWBuffer[1];
+        pWBuffer+=2;
         WriteBCnt-=2;
         CfgData->CurIndx|=Arg1<<16;                /* Add the Device Address Index */
         EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS*2);
@@ -154,8 +166,11 @@ EmulateEepromFS(
         break;
     }
 #if (STRICT_VALIDATION>1)
-    EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : CINDX=%04"PRIX32" PLEN=%04"PRIX32
-          " EPLEN=%04"PRIX32"\n", __LINE__, "EmulateEepromFS", "Info", 
+    EAPI_LIB_MSG_OUT((
+          "O%04u %-30s : %-30s : CINDX=%04lX PLEN=%04lX EPLEN=%04lX\n", 
+          __LINE__, 
+          "EmulateEepromFS", 
+          CfgData->cszFilename, 
           CfgData->CurIndx, 
           CfgData->CurIndx%CfgData->PageLength, 
           (CfgData->CurIndx%CfgData->PageLength)+WriteBCnt)
@@ -213,58 +228,70 @@ EmulateEepromFS(
 
 uint32_t 
 EmulateCmdDevice(
-    __IN uint32_t Arg1, 
+    __IN unsigned long  Arg1, 
     __IN CmdDeviceCfgData_t *CfgData, 
-    __IN void *pWBuffer, 
-    __IN uint32_t WriteBCnt, 
-    __OUT void *pRBuffer, 
-    __IN uint32_t ReadBCnt
+    __IN uint8_t *pWBuffer, 
+    __IN unsigned long WriteBCnt, 
+    __OUT uint8_t *pRBuffer, 
+    __IN unsigned long ReadBCnt
     )
 {
-    int i;
-    uint32_t ReadBCnt2;
+    unsigned long ReadBCnt2;
+    CmdDesc_t *pCurCmd;
   
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : "
-        " Arg1=%1"PRIX32" WLEN=%04"PRIX32
-        " RLEN=%04"PRIX32" %08"PRIX32"\n", __LINE__, "EmulateCmdDevice", 
-        "Info", Arg1, WriteBCnt, ReadBCnt, ((uint32_t*)pWBuffer)[0])
-      );
+  EAPI_LIB_MSG_OUT((
+        "O%04u %-30s : %-30s : %3s CCMD=%04lX Arg1=%1lX "
+        " WLEN=%04lX RLEN=%04lX %02"PRIX8",%02"PRIX8",%02"PRIX8",%02"PRIX8"\n", 
+        __LINE__, 
+        "EmulateCmdDevice", 
+        CfgData->cszDeviceName, 
+        StdExt[CfgData->ExtendedCmd], 
+        CfgData->CurrentCmd, 
+        Arg1, 
+        WriteBCnt, 
+        ReadBCnt, 
+        pWBuffer[0],
+        pWBuffer[1],
+        pWBuffer[2],
+        pWBuffer[3]
+      ));
 #endif
   if(WriteBCnt)
   {
-    if((CfgData->ExtendedCmd==STD_INDEX))        /* Emulate Standard IDX/CMD 
+    switch((CfgData->ExtendedCmd))  {      /* Emulate Standard IDX/CMD 
                                                     Device */
-    {
-      CfgData->CurrentCmd =((uint8_t*)pWBuffer)[0];
-      pWBuffer=((uint8_t*)pWBuffer)+1;
-      WriteBCnt--;
-      EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS);
-    }
-    else if((CfgData->ExtendedCmd==EXT_INDEX))   /* Emulate Extended IDX/CMD
+      case STD_INDEX:
+        CfgData->CurrentCmd=*pWBuffer++;
+        WriteBCnt--;
+        EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS);
+        break;
+      case EXT_INDEX:                             /* Emulate Extended IDX/CMD
                                                     Device */
-    {
-      EAPI_LIB_RETURN_ERROR_IF(
-          EmulateEepromFS, 
-          WriteBCnt<2, 
-          EAPI_STATUS_WRITE_ERROR, 
-          " STD INDEX Sent to EXT INDEX EEPROM"
-          );
+        EAPI_LIB_RETURN_ERROR_IF(
+            EmulateEepromFS, 
+            WriteBCnt<2, 
+            EAPI_STATUS_READ_ERROR, 
+            " STD INDEX Sent to EXT INDEX EEPROM"
+            );
 
-      CfgData->CurrentCmd =((uint8_t*)pWBuffer)[0]<<8;
-      CfgData->CurrentCmd|=((uint8_t*)pWBuffer)[1];
-      pWBuffer=((uint8_t*)pWBuffer)+2;
-      WriteBCnt-=2;
-      EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS*2);
+        CfgData->CurrentCmd =pWBuffer[0]<<8;
+        CfgData->CurrentCmd|=pWBuffer[1];
+        pWBuffer+=2;
+        WriteBCnt-=2;
+        EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS*2);
+        break;
+      default:
+        break;
     }
     if(WriteBCnt)
     {
       EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS*WriteBCnt);
-      for(i=0;CfgData->Cmds[i].Cmd!=END_OF_LIST_MARK;i++){
-        if(CfgData->Cmds[i].Cmd==CfgData->CurrentCmd){
-          ReadBCnt2=CfgData->Cmds[i].CmdBlockLen;
+      for(pCurCmd=CfgData->Cmds;pCurCmd->Cmd!=END_OF_LIST_MARK;pCurCmd++){
+        if(pCurCmd->Cmd==CfgData->CurrentCmd){
+          ReadBCnt2=pCurCmd->CmdBlockLen;
           memcpy(
-            CfgData->Cmds[i].pBuffer, 
+            pCurCmd->pBuffer, 
             pRBuffer, 
             (ReadBCnt>ReadBCnt2?ReadBCnt2:ReadBCnt)
             );
@@ -275,14 +302,14 @@ EmulateCmdDevice(
   if(ReadBCnt)
   {
     EAPI_EMUL_DELAY_NS(I2C_EMUL_BYTE_DELAY_NS*ReadBCnt);
-    for(i=0;CfgData->Cmds[i].Cmd!=END_OF_LIST_MARK;i++){
-      if(CfgData->Cmds[i].Cmd==CfgData->CurrentCmd){
-        ReadBCnt2=CfgData->Cmds[i].CmdBlockLen;
+    for(pCurCmd=CfgData->Cmds;pCurCmd->Cmd!=END_OF_LIST_MARK;pCurCmd++){
+      if(pCurCmd->Cmd==CfgData->CurrentCmd){
+        ReadBCnt2=pCurCmd->CmdBlockLen;
         if(ReadBCnt2<ReadBCnt){
-          memcpy(pRBuffer, CfgData->Cmds[i].pBuffer, ReadBCnt2);
-          memset(pRBuffer, ReadBCnt-ReadBCnt2, 0xFF);
+          memcpy(pRBuffer, pCurCmd->pBuffer, ReadBCnt2);
+          memset(pRBuffer+ReadBCnt2, ReadBCnt-ReadBCnt2, 0xFF);
         }else{
-          memcpy(pRBuffer, CfgData->Cmds[i].pBuffer, ReadBCnt);
+          memcpy(pRBuffer, pCurCmd->pBuffer, ReadBCnt);
         }
       }
     }
@@ -298,7 +325,7 @@ static EepromCfgData_t DIDEEPromData={
   256              ,  /* Device Page Length */
   0                ,  /* Current Index Value */
   DIDEEPROM        ,  /* EEPROM pBuffer Pointer */
-  "DID.EEP"        ,
+  "DID.EEPROM.EMUL",
   NULL
 };
 uint32_t 
@@ -328,7 +355,7 @@ static EepromCfgData_t UDSEEPromData={
   16               ,  /* Device Page Length */
   0                ,  /* Current Index Value */
   UDSEEPROM        ,  /* EEPROM pBuffer Pointer */
-  "UDS.EEP"        ,
+  "UDS.EEPROM.EMUL",
   NULL
 };
 uint32_t 
@@ -358,7 +385,7 @@ static EepromCfgData_t EPIEEPromData={
   16               ,  /* Device Page Length */
   0                ,  /* Current Index Value */
   EPIEEPROM        ,  /* EEPROM pBuffer Pointer */ 
-  "EPI.EEP"        ,
+  "EPI.EEPROM.EMUL",
   NULL
 };
 
@@ -391,27 +418,27 @@ static EepromCfgData_t COM0MEEPromData={
   16                 ,  /* Max Block Write Length */
   0                  ,  /* Current Index Value */
   COM0MEEPROM        ,  /* EEPROM pBuffer Pointer */ 
-  "COM0R20M.EEP"     ,
+  "COM0R20-M.EEPROM.EMUL" ,
   NULL
 };
-uint8_t COM0CBEEPROM[2048]={0};
+uint8_t COM0CBEEPROM[4096]={0};
 static EepromCfgData_t COM0CBEEPromData={
   sizeof(COM0CBEEPROM), /* EEPROM Length */
   EXT_INDEX          ,  /* Ext/Std Index */
-  16                 ,  /* Max Block Write Length */
+  64                 ,  /* Max Block Write Length */
   0                  ,  /* Current Index Value */
   COM0CBEEPROM       ,  /* EEPROM pBuffer Pointer */ 
-  "COM0R20CB.EEP"    ,
+  "COM0R20-CB.EEPROM.EMUL",
   NULL
 };
-uint8_t EeePExpEEPROM[2048]={0};
+uint8_t EeePExpEEPROM[1024]={0};
 static EepromCfgData_t EeePExpEEPromData={
   sizeof(EeePExpEEPROM), /* EEPROM Length */
   STD_INDEX          ,  /* Ext/Std Index */
-  16                 ,  /* Max Block Write Length */
+  8                  ,  /* Max Block Write Length */
   0                  ,  /* Current Index Value */
   EeePExpEEPROM      ,  /* EEPROM pBuffer Pointer */ 
-  "EeePExp.EEP"      ,
+  "EeePExp.EEPROM.EMUL",
   NULL
 };
 EepromCfgData_t *OpenFiles[]={
@@ -516,19 +543,20 @@ EmulateCOM0MEeprom(
       );
 }
 
-int8_t CpuTemp=56;
-int8_t ChipsetTemp=46;
-int8_t SystemTemp=-46;
+int8_t CpuTemp[1]={56};
+int8_t ChipsetTemp[1]={46};
+int8_t SystemTemp[1]={- 46};
 CmdDesc_t HwmonCmdIndx[]={
-  {0x0010, sizeof(CpuTemp)    , &CpuTemp    },
-  {0x0011, sizeof(ChipsetTemp), &ChipsetTemp},
-  {0x0012, sizeof(SystemTemp) , &SystemTemp },
+  {0x0010, ARRAY_SIZE(CpuTemp)    , CpuTemp    },
+  {0x0011, ARRAY_SIZE(ChipsetTemp), ChipsetTemp},
+  {0x0012, ARRAY_SIZE(SystemTemp) , SystemTemp },
   {END_OF_LIST_MARK, 0 , NULL },
 };
 CmdDeviceCfgData_t HWMon={
   STD_INDEX,
   0,
   0,
+  "ADT7447",
   HwmonCmdIndx
 };
 uint32_t 
@@ -556,6 +584,9 @@ const BusDevicesTbl_t ExternalI2CDevices[]={
   {0x0052, EmulateHWMonDevice  , 0},
   {0x00A0, EmulateCOM0MEeprom  , 0},
   {0x00A2, EmulateEeePExpEeprom, 0},
+  {0x00A4, EmulateEeePExpEeprom, 1},
+  {0x00A6, EmulateEeePExpEeprom, 2},
+  {0x00A8, EmulateEeePExpEeprom, 3},
   {0x00AE, EmulateCOM0CBEeprom , 0},
   {END_OF_LIST_MARK, NULL, 0}
 };
@@ -671,7 +702,11 @@ EApiI2CWriteReadEmul(
 
 #if (STRICT_VALIDATION>1)
         EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : ADDR=%02"PRIX16
-            " \n", __LINE__, "EApiI2CWriteReadEmul", "Info", LclAddr
+            " \n", 
+            __LINE__, 
+            "EApiI2CWriteReadEmul", 
+            "Info", 
+            LclAddr
             ));
 #endif
         for(i2=0;

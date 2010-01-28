@@ -1,4 +1,4 @@
-; EApi.def : Declares the module parameters for the DLL.
+; EApi_1.def : Declares the module parameters for the DLL.
 
 LIBRARY      "EApi_1"
 
