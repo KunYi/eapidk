@@ -173,10 +173,10 @@ ParseCfgFile(
   char LineBuffer[1024];
   TCHAR ErrorBuffer[1324];
   EApiStatusCode_t EApiStatusCode;
-  char *pszName;
-  char *pszValue;
+  char *szName;
+  char *szValue;
   size_t i;
-  unsigned long ulLineNum;
+  unsigned long ulLineNum, ulBlockStartLine;
   CfgBlockDesc_t *pCurBlockDesc=NULL;
   CfgElementDesc_t *pCurElement;
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -202,14 +202,16 @@ ParseCfgFile(
       EAPI_STATUS_INVALID_PARAMETER
     );
   ulLineNum=0;
+  ulBlockStartLine=0;
   while(!feof(pCfgFile)){
-    pszName=fgets(LineBuffer, ARRAY_SIZE(LineBuffer), pCfgFile);
+    szName=fgets(LineBuffer, ARRAY_SIZE(LineBuffer), pCfgFile);
     ulLineNum++;
     /*
      * Remove Comments And New Lines etc..
      */
-    i=strcspn(LineBuffer, "#\n\r");
-    LineBuffer[i]='\0';
+    szName=strpbrk(LineBuffer, "#\n\r");
+    if(szName!=NULL)
+      *szName='\0';
     if(LineBuffer[0]=='['){
       size_t stTokenLen;
       /*
@@ -228,8 +230,9 @@ ParseCfgFile(
             EApiSprintf(
                 ErrorBuffer, 
                 ARRAY_SIZE(ErrorBuffer), 
-                TEXT("Missing Required Element '%hs' in Block '%hs'"), 
+                TEXT("Missing Required Element '%hs' in Block (%lu)'%hs'"), 
                 pCurElement->pcszElementName, 
+                ulBlockStartLine,
                 pCurBlockDesc->pszBlockName
               );
             EAPI_APP_RETURN_ERROR(
@@ -246,6 +249,7 @@ ParseCfgFile(
 /*       EAPI_FORMATED_MES( L, ParseCfgFile, 0, ErrorBuffer); */
 #endif
       pCurBlockDesc=NULL;
+      ulBlockStartLine=ulLineNum;
       for(i=0;i<stCfgBDescElements;i++){
         stTokenLen=strlen(pCfgBDesc[i].pszBlockName);
         if((LineBuffer[stTokenLen+1]==']')&&!memcmp(LineBuffer+1, pCfgBDesc[i].pszBlockName, stTokenLen)){
@@ -256,9 +260,9 @@ ParseCfgFile(
       }
     }else{
       unsigned int FoundElement=0;
-      pszName=LineBuffer;
-      skipWhiteSpaces(&pszName);
-      if(!strlen(pszName)){
+      szName=LineBuffer;
+      skipWhiteSpaces(&szName);
+      if(!strlen(szName)){
         /*Skip Empty Blank Lines */
         continue;
       }
@@ -274,8 +278,8 @@ ParseCfgFile(
         EAPI_FORMATED_MES( W, ParseCfgFile, 0, ErrorBuffer);
         continue;
       }
-      pszValue=strchr(pszName, '=');
-      if(pszValue==NULL){
+      szValue=strchr(szName, '=');
+      if(szValue==NULL){
         EApiSprintf(
             ErrorBuffer, 
             ARRAY_SIZE(ErrorBuffer), 
@@ -287,15 +291,15 @@ ParseCfgFile(
         EAPI_FORMATED_MES( W, ParseCfgFile, 0, ErrorBuffer);
         continue;
       }
-      *pszValue++='\0';
-      stripWhiteSpaces(pszName);
-      skipWhiteSpaces(&pszValue);
+      *szValue++='\0';
+      stripWhiteSpaces(szName);
+      skipWhiteSpaces(&szValue);
 #if TEST_EEPCFG
-/*       sprintf(ErrorBuffer, "%-15s : %-20s = %s", pCurBlockDesc->pszBlockName, pszName, pszValue); */
+/*       sprintf(ErrorBuffer, "%-15s : %-20s = %s", pCurBlockDesc->pszBlockName, szName, szValue); */
 /*       EAPI_FORMATED_MES( L, ParseCfgFile, 0, ErrorBuffer); */
 #endif
       for(i=pCurBlockDesc->stElementCount, pCurElement=pCurBlockDesc->pElementsDesc; i; i--, pCurElement++){
-        if(!strcmp(pszName, pCurElement->pcszElementName)){
+        if(!strcmp(szName, pCurElement->pcszElementName)){
           EAPI_APP_RETURN_ERROR_IF_S(
               ParseCfgFile,
               (pCurElement->stElementCount+1>pCurElement->cstElementMax),
@@ -308,7 +312,7 @@ ParseCfgFile(
                     pCurElement->cstElementSize*pCurElement->stElementCount, 
                     void*
                   ),
-                pszValue
+                szValue
               ));
           pCurElement->stElementCount++;
           FoundElement++;
