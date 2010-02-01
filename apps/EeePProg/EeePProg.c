@@ -437,6 +437,7 @@ CreateTxtFilePtr(
     FILE **     FilePtr
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   if(!strcmp(Destination, "stdout")){
      *FilePtr=stdout;
   }else if(!strcmp(Destination, "stderr")){
@@ -449,7 +450,8 @@ CreateTxtFilePtr(
          EAPI_STATUS_WRITE_ERROR
       );
   }
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 EApiStatusCode_t
 FreeFilePtr(
@@ -480,7 +482,7 @@ FreeFilePtr(
   EApiStatusCode=x;\
   if(!EAPI_STATUS_TEST_OK(EApiStatusCode)){ \
     EAPI_FORMATED_MES('E', main, EApiStatusCode, #x);\
-    exit(EApiStatusCode);\
+    goto ErrorExit;\
   }
 
 /*
@@ -738,6 +740,7 @@ main(
   }
   
   DO_MAIN(EApiLibUnInitialize());
+ErrorExit:
   exit(EApiStatusCode);
 
 }

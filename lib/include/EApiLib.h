@@ -110,13 +110,15 @@
 #define EAPI_LIB_RETURN_SUCCESS(func, desc)  \
 	do{\
   		EAPI_FORMATED_MES('L', func, EAPI_STATUS_SUCCESS, desc );\
-  		return EAPI_STATUS_SUCCESS; \
+  		EApiStatusCode=EAPI_STATUS_SUCCESS; \
+      goto ExitSuccess; \
 		}while(0)
 
 #define EAPI_LIB_RETURN_ERROR(func, err, desc) \
 	do{ \
   	  EAPI_FORMATED_MES('E', func, err, desc );\
-  	  return err;\
+  		EApiStatusCode=err; \
+      goto ErrorExit; \
 	}while(0)
 
 #define EAPI_LIB_RETURN_ERROR_IF(func, exp, err, desc)  \
@@ -154,7 +156,7 @@
     EAPI_FORMATED_MES('E', func, EAPI_STATUS_MORE_DATA, \
 					" pBuffer Overflow Prevented" #x ">" #y );\
     x=y;\
-    ErrorCode=EAPI_STATUS_MORE_DATA;\
+    EApiStatusCode=EAPI_STATUS_MORE_DATA;\
   }
 
 #endif /* _EAPILIB_H_ */

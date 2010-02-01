@@ -72,10 +72,13 @@ EApiI2CGetBusCap(
                                   */
     )
 {
+  EApiStatusCode_t EApiStatusCode;
   EAPI_CHECK_INITIALIZED(EApiI2CGetBusCap);
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiI2CGetBusCap, pMaxBlkLen);
 
-  return EApiI2CGetBusCapEmul(Id, pMaxBlkLen);
+  EApiStatusCode=EApiI2CGetBusCapEmul(Id, pMaxBlkLen);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t 
@@ -96,7 +99,7 @@ EApiI2CWriteReadRaw(
                                    */
     )
 {
-  EApiStatusCode_t ErrorCode=EAPI_STATUS_SUCCESS;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EApiStatusCode_t ErrorCode2;
   EAPI_CHECK_INITIALIZED(EApiI2CWriteReadRaw);
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
@@ -149,8 +152,10 @@ EApiI2CWriteReadRaw(
       ReadBCnt
       );
   if(ErrorCode2!=EAPI_STATUS_SUCCESS)
-    return ErrorCode2;
-  return ErrorCode;
+    EApiStatusCode=ErrorCode2;
+ErrorExit:
+// ExitSuccess:
+  return EApiStatusCode;
 
 }
 
@@ -168,6 +173,7 @@ EApiI2CReadTransfer(
     __IN  uint32_t  ByteCnt   /* Byte Count to read */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   uint8_t LclpBuffer[8]={0};
   int LclByteCnt=0;
 #if (STRICT_VALIDATION>1)
@@ -213,7 +219,7 @@ EApiI2CReadTransfer(
     LclpBuffer[LclByteCnt++]=(uint8_t)(Cmd&0xFF);
   }
 
-  return EApiI2CWriteReadRaw(
+  EApiStatusCode=EApiI2CWriteReadRaw(
       Id, 
       (uint8_t)Addr, 
       &LclpBuffer, 
@@ -222,6 +228,8 @@ EApiI2CReadTransfer(
       BufLen, 
       ByteCnt+1
       );
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -238,6 +246,7 @@ EApiI2CWriteTransfer(
     __IN  uint32_t  ByteCnt   /* Byte Count to write */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   uint8_t * pLclBuffer;
   uint32_t LclByteCnt=0;
   uint32_t ReturnValue;
@@ -321,7 +330,8 @@ EApiI2CWriteTransfer(
       );
   if(LclByteCnt)
     free(pLclBuffer);
-  return ReturnValue;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t 
@@ -333,7 +343,7 @@ EApiI2CProbeDevice(
                             */
     )
 {
-  EApiStatusCode_t ReturnValue;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   uint8_t LclpBuffer[8]={0};
   int LclByteCnt=0;
   EAPI_CHECK_INITIALIZED(EApiI2CWriteTransfer);
@@ -342,7 +352,7 @@ EApiI2CProbeDevice(
     LclpBuffer[LclByteCnt++]=(uint8_t)(Addr&0xFF);
     Addr>>=8;
   }
-  ReturnValue=EApiI2CWriteReadRaw(
+  EApiStatusCode=EApiI2CWriteReadRaw(
       Id, 
       (uint8_t)Addr, 
       LclpBuffer, 
@@ -351,9 +361,10 @@ EApiI2CProbeDevice(
       0, 
       0
       );
-  if(ReturnValue==EAPI_STATUS_WRITE_ERROR)
-    ReturnValue=EAPI_STATUS_NOT_FOUND;
-  return ReturnValue;
+  if(EApiStatusCode==EAPI_STATUS_WRITE_ERROR)
+    EApiStatusCode=EAPI_STATUS_NOT_FOUND;
+ErrorExit:
+  return EApiStatusCode;
 }
 /*
  *
@@ -373,6 +384,7 @@ EApiBoardGetStringA(
     __INOUT   uint32_t *pBufLen   /* pBuffer Length */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiBoardGetStringA);
   EAPI_LIB_ASSERT_PARAMATER_NULL (EApiBoardGetStringA, pBufLen);
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
@@ -381,7 +393,9 @@ EApiBoardGetStringA(
       "pBuffer is NULL"          
       );
 
-  return EApiBoardGetStringAEmul(Id, pBuffer, pBufLen);
+  EApiStatusCode=EApiBoardGetStringAEmul(Id, pBuffer, pBufLen);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 /*
@@ -400,6 +414,7 @@ EApiBoardGetValue(
     __OUT uint32_t *pValue    /* Return Value */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiBoardGetValue);
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiBoardGetValue, pValue);
 
@@ -408,7 +423,10 @@ EApiBoardGetValue(
     EAPI_LIB_RETURN_SUCCESS(EApiBoardGetValue, "");
   }
 
-  return EApiBoardGetValueEmul(Id, pValue);
+  EApiStatusCode=EApiBoardGetValueEmul(Id, pValue);
+ErrorExit:
+ExitSuccess:
+  return EApiStatusCode;
 }
 
 /*
@@ -427,10 +445,13 @@ EApiVgaGetBacklightEnable(
     __OUT uint32_t *pEnable   /* Backlight Enable */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiVgaGetBacklightEnable);
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiVgaGetBacklightEnable, pEnable);
 
-  return EApiVgaGetBacklightEnableEmul(Id, pEnable);
+  EApiStatusCode=EApiVgaGetBacklightEnableEmul(Id, pEnable);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t
@@ -440,6 +461,7 @@ EApiVgaSetBacklightEnable(
     __IN  uint32_t  Enable    /* Backlight Enable */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
 
   EAPI_CHECK_INITIALIZED(EApiVgaSetBacklightEnable);
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
@@ -448,7 +470,9 @@ EApiVgaSetBacklightEnable(
       "Enable Invalid Value"
       );
 
-  return EApiVgaSetBacklightEnableEmul(Id, Enable);
+  EApiStatusCode=EApiVgaSetBacklightEnableEmul(Id, Enable);
+ErrorExit:
+  return EApiStatusCode;
 }
 EApiStatusCode_t
 EAPI_CALLTYPE
@@ -457,10 +481,13 @@ EApiVgaGetBacklightBrightness(
     __OUT uint32_t *pBright   /* Backlight Brightness */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiVgaGetBacklightBrightness);
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiVgaGetBacklightBrightness, pBright);
 
-  return EApiVgaGetBacklightBrightnessEmul(Id, pBright);
+  EApiStatusCode=EApiVgaGetBacklightBrightnessEmul(Id, pBright);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t 
@@ -470,6 +497,7 @@ EApiVgaSetBacklightBrightness(
     __IN  uint32_t  Bright    /* Backlight Brightness */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiVgaSetBacklightBrightness);
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
       EApiVgaSetBacklightBrightness, 
@@ -477,7 +505,9 @@ EApiVgaSetBacklightBrightness(
       "Brightness Invalid Value"
       );
 
-  return EApiVgaSetBacklightBrightnessEmul(Id, Bright);
+  EApiStatusCode=EApiVgaSetBacklightBrightnessEmul(Id, Bright);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -502,11 +532,14 @@ EApiGPIOGetLevel(
     __OUT uint32_t *pLevel       /* Current Level */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiGPIOGetLevel);
   EAPI_LIB_ASSERT_PARAMATER_ZERO(EApiGPIOGetLevel, Bitmask);
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiGPIOGetLevel, pLevel);
 
-  return EApiGPIOGetLevelEmul(Id, Bitmask, pLevel);
+  EApiStatusCode=EApiGPIOGetLevelEmul(Id, Bitmask, pLevel);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t
@@ -519,10 +552,13 @@ EApiGPIOSetLevel(
     __IN  uint32_t Level         /* Level */  
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiGPIOSetLevel);
   EAPI_LIB_ASSERT_PARAMATER_ZERO(EApiGPIOSetLevel, Bitmask);
 
-  return EApiGPIOSetLevelEmul(Id, Bitmask, Level);
+  EApiStatusCode=EApiGPIOSetLevelEmul(Id, Bitmask, Level);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t 
@@ -535,11 +571,14 @@ EApiGPIOGetDirection(
     __OUT uint32_t *pDirection   /* Current Direction */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiGPIOGetDirection);
   EAPI_LIB_ASSERT_PARAMATER_ZERO(EApiGPIOGetDirection, Bitmask);
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiGPIOGetDirection, pDirection);
 
-  return EApiGPIOGetDirectionEmul(Id, Bitmask, pDirection);
+  EApiStatusCode=EApiGPIOGetDirectionEmul(Id, Bitmask, pDirection);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t 
@@ -552,10 +591,13 @@ EApiGPIOSetDirection(
     __IN  uint32_t Direction     /* Direction */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiGPIOSetDirection);
   EAPI_LIB_ASSERT_PARAMATER_ZERO(EApiGPIOSetDirection, Bitmask);
 
-  return EApiGPIOSetDirectionEmul(Id, Bitmask, Direction);
+  EApiStatusCode=EApiGPIOSetDirectionEmul(Id, Bitmask, Direction);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t
@@ -570,6 +612,7 @@ EApiGPIOGetDirectionCaps(
                                    */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   uint32_t DpBuffer;
 
   EAPI_CHECK_INITIALIZED(EApiGPIOGetDirectionCaps);
@@ -584,7 +627,9 @@ EApiGPIOGetDirectionCaps(
   if(pOutputs==NULL)
     pOutputs=&DpBuffer;
 
-  return EApiGPIOGetDirectionCapsEmul(Id, pInputs, pOutputs);
+  EApiStatusCode=EApiGPIOGetDirectionCapsEmul(Id, pInputs, pOutputs);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -601,19 +646,27 @@ EApiStatusCode_t
 EAPI_CALLTYPE 
 EApiLibInitialize(void)
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_NOT_INITIALIZED(EApiLibInitialize);
   Initialized=1;
   EApiInitLib();
   EAPI_LIB_RETURN_SUCCESS(EApiLibInitialize, "");
+ErrorExit:
+ExitSuccess:
+  return EApiStatusCode;
 }
 EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiLibUnInitialize(void)
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiLibUnInitialize);
   EApiUninitLib();
   Initialized=0;
   EAPI_LIB_RETURN_SUCCESS(EApiLibUnInitialize, "");
+ErrorExit:
+ExitSuccess:
+  return EApiStatusCode;
 }
 
 
@@ -644,6 +697,7 @@ EApiWDogGetCap(
                                          */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   uint32_t DummyData;
   EAPI_CHECK_INITIALIZED(EApiWDogGetCap);
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
@@ -655,7 +709,9 @@ EApiWDogGetCap(
    if(pMaxDelay       ==NULL) pMaxDelay       =&DummyData;
    if(pMaxEventTimeout==NULL) pMaxEventTimeout=&DummyData;
    if(pMaxResetTimeout==NULL) pMaxResetTimeout=&DummyData;
-  return EApiWDogGetCapEmul(pMaxDelay, pMaxEventTimeout, pMaxResetTimeout);
+  EApiStatusCode=EApiWDogGetCapEmul(pMaxDelay, pMaxEventTimeout, pMaxResetTimeout);
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t 
@@ -670,22 +726,31 @@ EApiWDogStart(
                                   */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiWDogStart);
-  return EApiWDogStartEmul(Delay, EventTimeout, ResetTimeout);
+  EApiStatusCode=EApiWDogStartEmul(Delay, EventTimeout, ResetTimeout);
+ErrorExit:
+  return EApiStatusCode;
 }
 EApiStatusCode_t
 EAPI_CALLTYPE 
 EApiWDogTrigger(void)
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiWDogTrigger);
-  return EApiWDogTriggerEmul();
+  EApiStatusCode=EApiWDogTriggerEmul();
+ErrorExit:
+  return EApiStatusCode;
 }
 EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiWDogStop(void)
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_CHECK_INITIALIZED(EApiWDogStop);
-  return EApiWDogStopEmul();
+  EApiStatusCode=EApiWDogStopEmul();
+ErrorExit:
+  return EApiStatusCode;
 }
 
 /*
@@ -705,6 +770,7 @@ EApiStorageCap(
     __OUT uint32_t  *pBlockLength   /* Write Block Length & Alignment */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   uint32_t DummyValue;
 
   EAPI_CHECK_INITIALIZED(EApiStorageCap);
@@ -718,7 +784,9 @@ EApiStorageCap(
   if(pBlockLength==NULL)
     pBlockLength=&DummyValue;
 
-  return EApiStorageCapEmul(Id, pStorageSize, pBlockLength);
+  EApiStatusCode=EApiStorageCapEmul(Id, pStorageSize, pBlockLength);
+ErrorExit:
+  return EApiStatusCode;
 }
 EApiStatusCode_t 
 EAPI_CALLTYPE 
@@ -730,7 +798,7 @@ EApiStorageAreaRead(
     __IN  uint32_t  ByteCnt   /* Number of bytes to read */
     )
 {
-  EApiStatusCode_t ErrorCode=EAPI_STATUS_SUCCESS;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EApiStatusCode_t ErrorCode2;
   EAPI_CHECK_INITIALIZED(EApiStorageAreaRead);
 #if (STRICT_VALIDATION>1)
@@ -753,8 +821,9 @@ EApiStorageAreaRead(
 
   ErrorCode2=EApiStorageAreaReadEmul(Id, Offset, pBuffer, ByteCnt);
   if(ErrorCode2!=EAPI_STATUS_SUCCESS)
-    return ErrorCode2;
-  return ErrorCode;
+    EApiStatusCode=ErrorCode2;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t 
@@ -766,6 +835,7 @@ EApiStorageAreaWrite(
     __IN  uint32_t  ByteCnt   /* Number of bytes to write */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
 
   EAPI_CHECK_INITIALIZED(EApiStorageAreaWrite);
 #if (STRICT_VALIDATION>1)
@@ -783,6 +853,8 @@ EApiStorageAreaWrite(
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiStorageAreaWrite, pBuffer);
   EAPI_LIB_ASSERT_PARAMATER_ZERO(EApiStorageAreaWrite, ByteCnt);
 
-  return EApiStorageAreaWriteEmul(Id, Offset, pBuffer, ByteCnt);
+  EApiStatusCode=EApiStorageAreaWriteEmul(Id, Offset, pBuffer, ByteCnt);
+ErrorExit:
+  return EApiStatusCode;
 }
 

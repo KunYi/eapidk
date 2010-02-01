@@ -454,6 +454,7 @@ SpecRev_Element(
     char   *szValue
   )
 { 
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   char *szEnd;
   pElementDesc=pElementDesc;
   *(unsigned long*)pCurElement=(ulConvertStr2Num(szValue, &szEnd)&0xF)<<4;
@@ -464,7 +465,8 @@ SpecRev_Element(
       );
   *(unsigned long*)pCurElement|=ulConvertStr2Num(szEnd+1, &szEnd)&0xF;
 /*   printf("\tSpecRev_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 EApiStatusCode_t
 PNPID_Element(
@@ -473,6 +475,7 @@ PNPID_Element(
     char          *szValue
   )
 { 
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   unsigned int i=3;
   unsigned int uiCurChar;
   pElementDesc=pElementDesc;
@@ -494,7 +497,8 @@ PNPID_Element(
     *(unsigned long*)pCurElement|=uiCurChar - 'A'+1;
   }
 /*   printf("\tPNPID_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 

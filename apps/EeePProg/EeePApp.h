@@ -46,10 +46,12 @@ extern "C" {
 #include <EeePArg.h>
 
 #define DO(x) \
+  do{ \
   EApiStatusCode=x;\
-  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){ \
-    return EApiStatusCode;\
-  }
+    if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){ \
+      goto ErrorExit;\
+    }\
+  }while(0)
 
 /*
  * CPU Independent Multi Byte 

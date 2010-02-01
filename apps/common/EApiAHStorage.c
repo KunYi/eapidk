@@ -44,11 +44,11 @@ EApiAHWriteStorage(
     __IN  const uint32_t   ByteCnt 
     )
 {
+    EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
     uint32_t MaxLen, alignment;
     uint32_t AdjOffset=ByteOffset, AdjLength=ByteCnt;
-    int_least8_t * pLclBuffer;
+    int_least8_t * pLclBuffer=NULL;
     uint32_t BufferOffset=0;
-    EApiStatusCode_t ReturnValue;
     
     EAPI_APP_ASSERT_PARAMATER_NULL(
         EApiAHWriteStorage, 
@@ -61,16 +61,15 @@ EApiAHWriteStorage(
         ByteCnt
         );
     /* Get Storage Capabilities */
-    ReturnValue=EApiStorageCap(Id, &MaxLen, &alignment);
-    if(ReturnValue!=EAPI_STATUS_SUCCESS)
-      return ReturnValue;
+    EApiStatusCode=EApiStorageCap(Id, &MaxLen, &alignment);
+    if(EAPI_STATUS_TEST_NOK(EApiStatusCode))
+      goto ErrorExit;
 
     /* Is the write possible? */
-    EAPI_APP_ASSERT_PARAMATER_CHECK(
+    EAPI_APP_ASSERT_PARAMATER_CHECK_S(
         EApiAHWriteStorage, 
         EAPI_STATUS_INVALID_PARAMETER, 
-        ((ByteOffset+ByteCnt)>MaxLen), 
-        TEXT("((ByteOffset+ByteCnt)>MaxLen)")
+        ((ByteOffset+ByteCnt)>MaxLen) 
         );
 
     if(ByteOffset%alignment){
@@ -86,31 +85,30 @@ EApiAHWriteStorage(
       /* This Error can only occur if the Storage 
        * area isn't a multiple of its alignment 
        */
-      EAPI_APP_ASSERT_PARAMATER_CHECK(
+      EAPI_APP_ASSERT_PARAMATER_CHECK_S(
           EApiAHWriteStorage, 
           EAPI_STATUS_ERROR, 
-          ((AdjOffset+AdjLength)>MaxLen), 
-          TEXT("((AdjOffset+AdjLength)>MaxLen)")
+          ((AdjOffset+AdjLength)>MaxLen)
           );
       pLclBuffer=malloc(AdjLength);
       EAPI_APP_RETURN_ERROR_IF(
         EApiAHWriteStorage, 
         pLclBuffer==NULL,
         EAPI_STATUS_ALLOC_ERROR, 
-        TEXT("Allocating Page Buffer")
+        "Allocating Page Buffer"
         );
-      ReturnValue=EApiStorageAreaRead(Id, AdjOffset, pLclBuffer, AdjLength, AdjLength);
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
-      {
-        free(pLclBuffer);
-        return ReturnValue;
-      }
+      EApiStatusCode=EApiStorageAreaRead(Id, AdjOffset, pLclBuffer, AdjLength, AdjLength);
+      if(EAPI_STATUS_TEST_NOK(EApiStatusCode))
+        goto ErrorExit;
       memcpy(&pLclBuffer[BufferOffset], pBuffer, ByteCnt);
-      ReturnValue=EApiStorageAreaWrite(Id, AdjOffset, pLclBuffer, AdjLength);
-      free(pLclBuffer);
-      return ReturnValue;
+      EApiStatusCode=EApiStorageAreaWrite(Id, AdjOffset, pLclBuffer, AdjLength);
     }else{
-      return EApiStorageAreaWrite(Id, ByteOffset, pBuffer, ByteCnt);
+      EApiStatusCode=EApiStorageAreaWrite(Id, ByteOffset, pBuffer, ByteCnt);
     }
+ErrorExit:
+/* ExitSuccess: */
+    if(pLclBuffer!=NULL)free(pLclBuffer);
+
+    return EApiStatusCode;
 }
 

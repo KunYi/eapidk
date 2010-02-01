@@ -72,10 +72,14 @@ EApiWDogGetCapEmul(
                                          */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   *pMaxDelay        =MaxDelay;
   *pMaxEventTimeout =MaxEventTimeout;
   *pMaxResetTimeout =MaxResetTimeout;
   EAPI_LIB_RETURN_SUCCESS(EApiWDogGetCapEmul, "");
+/* ErrorExit: */
+ExitSuccess:
+  return EApiStatusCode;
 }
 EApiStatusCode_t 
 EApiWDogStartEmul(
@@ -88,6 +92,7 @@ EApiWDogStartEmul(
                                   */
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_LIB_RETURN_ERROR_IF(
       EApiWDogStartEmul, 
       (WatchdogState==WATCHDOG_ENABLED), 
@@ -111,10 +116,14 @@ EApiWDogStartEmul(
   );
   WatchdogState=WATCHDOG_ENABLED;
   EAPI_LIB_RETURN_SUCCESS(EApiWDogStartEmul, "");
+ErrorExit:
+ExitSuccess:
+  return EApiStatusCode;
 }
 EApiStatusCode_t 
 EApiWDogTriggerEmul(void)
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_LIB_RETURN_ERROR_IF(
       EApiWDogTriggerEmul, 
       (WatchdogState==WATCHDOG_DISABLED), 
@@ -126,15 +135,22 @@ EApiWDogTriggerEmul(void)
       EApiWDogTriggerEmul, 
       ""
       );
+ErrorExit:
+ExitSuccess:
+  return EApiStatusCode;
 }
 EApiStatusCode_t 
 EApiWDogStopEmul(void)
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   WatchdogState=WATCHDOG_DISABLED;
   EAPI_LIB_RETURN_SUCCESS(
       EApiWDogStopEmul, 
       ""
       );
+/* ErrorExit: */
+ExitSuccess:
+  return EApiStatusCode;
 }
 
 
