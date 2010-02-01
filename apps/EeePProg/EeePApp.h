@@ -35,7 +35,6 @@ extern "C" {
 
 
 #include <EApiApp.h>
-  typedef uint32_t EApiStatusCode_t;
 
 #include <BinFuncs.h>
 #include <ArgParse.h>

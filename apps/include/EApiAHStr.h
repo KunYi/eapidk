@@ -89,6 +89,27 @@ EApiSprintf (
     ...
     );
 
+size_t 
+EApiStrLenA  ( 
+    __IN const char  *pBuffer    ,
+    __IN size_t       BufferLen
+    );
+
+char * 
+EApiStrCpyA(
+    __OUT char *const      StringDest   ,
+    __IN size_t             StrBufLen    , 
+    __IN const char *const StringSource
+    );
+
+int 
+__cdecl 
+EApiSprintfA ( 
+    __IN char *const       pBuffer   ,
+    __IN const size_t       BufferLen ,
+    __IN const char *const fmt       ,
+    ...
+    );
 
 /****************************************************************************/
 /* Common pBuffer usage Model */

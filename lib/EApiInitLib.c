@@ -51,11 +51,14 @@ void __cdecl DebugMsg(__IN const char *const fmt, ...)
 }
 
 
-uint32_t OpenI2CEepromFiles(void);
-uint32_t CloseI2CEepromFiles(void);
+EApiStatusCode_t OpenEepromFiles(void);
+EApiStatusCode_t CloseEepromFiles(void);
+EApiStatusCode_t OpenI2CEepromFiles(void);
+EApiStatusCode_t CloseI2CEepromFiles(void);
 
 
-uint32_t EApiInitLib(){
+EApiStatusCode_t 
+EApiInitLib(){
   if(OutputStream==NULL){
 #if EAPI_DBG_USE_OUTPUT_FILE
     OutputStream=fopen(TEXT("EApi.log"), TEXT("w"));
@@ -63,6 +66,7 @@ uint32_t EApiInitLib(){
     OutputStream=stdout;
 #endif
   }
+  OpenEepromFiles();
   OpenI2CEepromFiles();
     DebugMsg("#\n"
               "# Embedded API EApi\n"
@@ -77,14 +81,16 @@ uint32_t EApiInitLib(){
 
 
 
-uint32_t EApiUninitLib(){
+EApiStatusCode_t 
+EApiUninitLib(){
     DebugMsg("#\n"
               "# Embedded API EApi\n"
               "# Exit \n"
               "#\n"
             );
+  CloseEepromFiles();
   CloseI2CEepromFiles();
-  if(OutputStream!=NULL&&OutputStream!=stdout){
+  if(OutputStream!=NULL&&OutputStream!=stdout&&OutputStream!=stderr){
     fclose(OutputStream);
   }
   OutputStream=stdout;

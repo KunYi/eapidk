@@ -55,7 +55,7 @@ static unsigned WatchdogState=WATCHDOG_DISABLED;
 #define MaxDelay        MIN_IN_millisec(10)
 #define MaxEventTimeout MIN_IN_millisec(10)
 #define MaxResetTimeout MIN_IN_millisec(10)
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiWDogGetCapEmul(
     __OUTOPT uint32_t *pMaxDelay       ,/* Maximum Supported 
@@ -77,7 +77,7 @@ EApiWDogGetCapEmul(
   *pMaxResetTimeout =MaxResetTimeout;
   EAPI_LIB_RETURN_SUCCESS(EApiWDogGetCapEmul, "");
 }
-uint32_t 
+EApiStatusCode_t 
 EApiWDogStartEmul(
     __IN  uint32_t Delay       , /* Delay in milliseconds */
     __IN  uint32_t EventTimeout, /* Event Timeout in 
@@ -112,7 +112,7 @@ EApiWDogStartEmul(
   WatchdogState=WATCHDOG_ENABLED;
   EAPI_LIB_RETURN_SUCCESS(EApiWDogStartEmul, "");
 }
-uint32_t 
+EApiStatusCode_t 
 EApiWDogTriggerEmul(void)
 {
   EAPI_LIB_RETURN_ERROR_IF(
@@ -127,7 +127,7 @@ EApiWDogTriggerEmul(void)
       ""
       );
 }
-uint32_t 
+EApiStatusCode_t 
 EApiWDogStopEmul(void)
 {
   WatchdogState=WATCHDOG_DISABLED;

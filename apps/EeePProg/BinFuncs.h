@@ -119,18 +119,32 @@ PrintHexAsciiTable(
 	__IN    const TCHAR *const pcszDescription
 	);
 
+EApiStatusCode_t 
+WriteBinaryFile(
+    __IN const char *cszFilename, 
+    __IN const void *pcvBuffer   , 
+    __IN size_t      stWriteBCnt
+  );
+
 EApiStatusCode_t
 ReadBinaryFile(
-    __IN  const char *pcszFilename, 
+    __IN  const char *cszFilename, 
     __OUT void      **pvBuffer, 
     __OUT size_t     *pstReadBCnt
   );
 
 EApiStatusCode_t 
-WriteBinaryFile(
-    __IN const char *pcszFilename, 
+WriteTextFile(
+    __IN const char *cszFilename, 
     __IN const void *pcvBuffer   , 
     __IN size_t      stWriteBCnt
+  );
+
+EApiStatusCode_t
+ReadTextFile(
+    __IN  const char *cszFilename, 
+    __OUT void      **pvBuffer, 
+    __OUT size_t     *pstReadBCnt
   );
 
 

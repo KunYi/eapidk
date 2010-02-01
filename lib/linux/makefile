@@ -141,7 +141,7 @@ OBJECTS=EApiEmulGPIO.o \
       EApiEmulStorage.o \
       EApiEmulWDT.o \
       EApiOsNIX.o \
-      EApiAPI.o
+      EApiAPI.o DbgChk.o
 
 DefaultTgt: buildall
 

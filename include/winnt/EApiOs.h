@@ -70,8 +70,8 @@ void EApiSleepus(unsigned long ms);
 #  define EAPI_strncpy        wcsncpy
 #  define EAPI_vsnprintf      _vsnwprintf
 #  define EAPI_fprintf        fwprintf
-#  define EAPI_fopen          _wfopen
 #  define EAPI_printf         wprintf
+#  define EAPI_fopen          _wfopen
 #else
 #  define EAPI_strlen         strlen
 #  define EAPI_strnlen        strnlen
@@ -82,7 +82,11 @@ void EApiSleepus(unsigned long ms);
 #  define EAPI_printf         printf
 #endif
 
+#define EAPI_vsnprintfA     _vsnprintf
 #define EAPI_strdup         _strdup
+#define EAPI_strncpyA       strncpy
+#define EAPI_strnlenA       strnlen
+#define EAPI_strlenA        strlen
 
 #define         MSVC_1_5         800
 #define         MSVC_98         1200

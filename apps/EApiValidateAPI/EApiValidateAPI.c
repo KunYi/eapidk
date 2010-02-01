@@ -44,15 +44,58 @@ typedef void EApiValidateTestFunction(void);
 
 /*  */
 FILE *LogStream;
+
+EApiStatusCode_t
+EApiGetErrorStringA(
+    __OUT const char  **const pszString     , 
+    __IN EApiStatusCode_t StatusCode
+    );
+
+signed int
+__cdecl
+siFFormattedMessage_SC(
+    FILE       *  OutStream   ,
+    char          cType       ,
+    const char *  cszFileName ,   
+    const char *  cszFuncName ,   
+    unsigned int  uiLineNum   ,
+    EApiStatusCode_t  StatusCode  ,   
+    const char *  cszFormat   ,   
+    ...
+    )
+{
+  signed int Ret;
+  va_list _ArgList;
+  const char *szStatusDesc;
+  cszFileName=cszFileName;
+  va_start(_ArgList, cszFormat);
+  EApiGetErrorStringA(&szStatusDesc, StatusCode);
+	Ret = fprintf(
+      OutStream,
+      "%c%04i %-30s | ", 
+      cType       ,
+      uiLineNum   ,
+      cszFuncName 
+    );
+  if(szStatusDesc==NULL){
+    fprintf(OutStream, "               0x08lX | ", StatusCode);
+  }else{
+    fprintf(OutStream, "%-25s | ", szStatusDesc);
+  }
+	Ret += vfprintf(OutStream, cszFormat, _ArgList);
+	va_end(_ArgList);
+	return Ret;
+}
+
+
+
+
+
 #define EAPI_LOG_FORMATED_MES(type, func, err, desc) \
-    EAPI_fprintf(LogStream, TEXT(#type) TEXT("%04u %-30s : %-20s : %s\n"), __LINE__, TEXT(#func), TEXT(#err), desc );
-#define EAPI_LOG_RETRUN_VALUE(func, tblRef) \
-    do{\
-       TCHAR LTmpStrBuf[128];\
-       EApiAHCreateErrorString(ReturnValue, LTmpStrBuf, ARRAY_SIZE(LTmpStrBuf));\
-       EAPI_fprintf(LogStream, TEXT("L%04u %-30s : %5")TEXT(PRIX32)TEXT(" %5")TEXT(PRIX32)TEXT("    : %-35s [%s]\n"), __LINE__, TEXT(#func), i, i2, LTmpStrBuf, \
-           FailPass[((tblRef[i2].ReturValue1==ReturnValue)||(tblRef[i2].ReturValue2==ReturnValue)||(tblRef[i2].ReturValue3==ReturnValue))]);\
-    }while(0)
+    siFFormattedMessage_SC(LogStream, type, __FILE__, #func,  __LINE__, err, "%s\n", desc )
+#define EAPI_LOG_RETURN_VALUE(func, tblRef) \
+    siFFormattedMessage_SC(LogStream, 'L', __FILE__, #func, __LINE__, StatusCode, "   %2d    %2d    [%s]\n", \
+    i, i2, FailPass[((tblRef[i2].StatusCode1==StatusCode)||(tblRef[i2].StatusCode2==StatusCode)||(tblRef[i2].StatusCode3==StatusCode))])
 
 
 
@@ -63,17 +106,17 @@ EApiValidateTestFunction EApiValidateStorageApi;
 EApiValidateTestFunction EApiValidateGPIOApi   ;
 
 TCHAR Buffer[1024]={0};
-const TCHAR *FailPass[]={
-  TEXT("FAIL"),
-  TEXT("PASS"),
+const char *FailPass[]={
+  "FAIL",
+  "PASS",
 };
 
 typedef struct EApiBoardStringValidate_s{
         TCHAR    *BufPtr      ; /* Buffer Pointer */
   const uint32_t *BufPtrLen   ; /* Buffer Length */
-  const uint32_t  ReturValue1 ; /* Allowed Return Value 1 */
-  const uint32_t  ReturValue2 ; /* Allowed Return Value 2 */
-  const uint32_t  ReturValue3 ; /* Allowed Return Value 3 */
+  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiBoardStringValidate_t;
 uint32_t BufPtrLen=ARRAY_SIZE(Buffer);
 uint32_t Value0   =0;
@@ -92,7 +135,7 @@ const EApiBoardStringValidate_t EApiStringInterfaceValidate[]={
  *
  */
 typedef struct EApiStringType_s{
-  const uint32_t Id  ;
+  const EApiId_t Id  ;
   const TCHAR *const   Desc;
 }EApiStringType_t;
 const EApiStringType_t EApiStrings[]={
@@ -109,8 +152,8 @@ void EApiValidateStringApi (void)
   uint32_t StringLength;
   uint32_t *pStringLength=&StringLength;
   size_t StringLength2;
-  uint32_t ReturnValue;
-  uint32_t i,i2;
+  EApiStatusCode_t StatusCode;
+  unsigned i,i2;
   for(i=0;i<ARRAY_SIZE(EApiStrings);i++){
     EApiAHGetStringAlloc(EApiStrings[i].Id, &TmpStrPtr);
     if(TmpStrPtr==NULL){
@@ -142,9 +185,9 @@ void EApiValidateStringApi (void)
         pStringLength=&StringLength;
         StringLength=*EApiStringInterfaceValidate[i2].BufPtrLen;
       }
-      ReturnValue=EApiBoardGetString(i, EApiStringInterfaceValidate[i2].BufPtr, pStringLength);
-      EAPI_LOG_RETRUN_VALUE(EApiBoardGetStringA, EApiStringInterfaceValidate);
-      if((EAPI_STATUS_UNSUPPORTED!=ReturnValue)&&(pStringLength!=NULL))
+      StatusCode=EApiBoardGetString(i, EApiStringInterfaceValidate[i2].BufPtr, pStringLength);
+      EAPI_LOG_RETURN_VALUE(EApiBoardGetStringA, EApiStringInterfaceValidate);
+      if((EAPI_STATUS_UNSUPPORTED!=StatusCode)&&(pStringLength!=NULL))
       {
         
         StringLength2=EApiStrLen(
@@ -161,10 +204,8 @@ void EApiValidateStringApi (void)
           if(StringLength2==StringLength)
           {
             EAPI_LOG_FORMATED_MES(
-              E, 
-              EApiBoardGetStringA, 
-              , 
-              TEXT("Returned String Missing Terminating \\0 Character." )
+              'E', EApiBoardGetStringA, 1, 
+              "Returned String Missing Terminating \\0 Character."
             );
           }
           else
@@ -172,10 +213,8 @@ void EApiValidateStringApi (void)
             if((StringLength2+1)!=StringLength)
             {
               EAPI_LOG_FORMATED_MES(
-                E, 
-                EApiBoardGetStringA,
-                , 
-                TEXT("Returned Incorrect String Length." )
+                'E', EApiBoardGetStringA, 1, 
+                "Returned Incorrect String Length."
               );
             }
           }
@@ -192,18 +231,18 @@ void EApiValidateStringApi (void)
 
 typedef struct EApiBoardValueValidate_s{
         void *         BufPtr      ; /* Buffer Pointer */
-  const uint32_t  ReturValue1 ; /* Allowed Return Value 1 */
-  const uint32_t  ReturValue2 ; /* Allowed Return Value 2 */
-  const uint32_t  ReturValue3 ; /* Allowed Return Value 3 */
+  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiBoardValueValidate_t;
 const EApiBoardValueValidate_t BoardValueValidate[]={
   {Buffer, EAPI_STATUS_SUCCESS          , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_UNSUPPORTED       },
   {NULL  , EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
 };
 typedef struct EApiValueType_s{
-  const uint32_t  Id  ;
+  const EApiId_t  Id  ;
   const TCHAR *const   Desc;
-  CreateStringFunction *const CreatString;
+  CreateStringFunction *const CreateString;
 }EApiValueType_t;
 
 const EApiValueType_t EApiValues[]={
@@ -236,15 +275,15 @@ void EApiValidateValuesApi (void)
 {
   TCHAR TmpStrBuf[1024];
   uint32_t Value;
-  uint32_t ReturnValue;
-  uint32_t i,i2;
+  EApiStatusCode_t StatusCode;
+  unsigned i,i2;
   for(i=0;i<ARRAY_SIZE(EApiValues);i++){
-    if((ReturnValue=EApiBoardGetValue(EApiValues[i].Id, &Value))==EAPI_STATUS_SUCCESS)
+    if((StatusCode=EApiBoardGetValue(EApiValues[i].Id, &Value))==EAPI_STATUS_SUCCESS)
     {
-      EApiValues[i].CreatString(Value, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+      EApiValues[i].CreateString(Value, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
       EAPI_MSG_OUT(TEXT("%-30s : %s\n"), EApiValues[i].Desc, TmpStrBuf);
     }else{
-      EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+      EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
       EAPI_MSG_OUT(TEXT("%-30s : %s\n"), EApiValues[i].Desc, TmpStrBuf);
     }
   }
@@ -255,9 +294,8 @@ void EApiValidateValuesApi (void)
   {
     for(i2=0;i2<ARRAY_SIZE(BoardValueValidate);i2++) /* Iterated thought test cases */
     {
-      ReturnValue=EApiBoardGetValue(i, (uint32_t *)BoardValueValidate[i2].BufPtr);
-      EAPI_LOG_RETRUN_VALUE(EApiBoardGetValue, BoardValueValidate);
-
+      StatusCode=EApiBoardGetValue(i, (uint32_t *)BoardValueValidate[i2].BufPtr);
+      EAPI_LOG_RETURN_VALUE(EApiBoardGetValue, BoardValueValidate);
     }
   }
   return ;
@@ -275,52 +313,52 @@ typedef struct EApiI2CLLInterfaceValidate_s{
         void *    RBufPtr     ; /* Read  Buffer Pointer */
   const uint32_t  RBufPtrLen  ; /* Read  Buffer Length */
   const uint32_t  RByteCnt    ; /* Read  Byte Count  */
-  const uint32_t  ReturValue1 ; /* Allowed Return Value 1 */
-  const uint32_t  ReturValue2 ; /* Allowed Return Value 2 */
-  const uint32_t  ReturValue3 ; /* Allowed Return Value 3 */
+  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiI2CLLInterfaceValidate_t;
 const EApiI2CLLInterfaceValidate_t EApiI2CLLValidate[]={
-  {0xF8, NULL  ,   0, NULL  ,             0  ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
-  {0xF8, NULL  ,  10, NULL  ,             0  ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
-  {0xF8, NULL  ,   0, NULL  ,            10  ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
-  {0xF8, NULL  ,   0, NULL  ,             0  ,  10, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
-  {0xF8, NULL  ,   0, NULL  ,             0  ,  10, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
-  {0xF8, NULL  ,   0, NULL  ,            10  ,  20, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_MORE_DATA         , EAPI_STATUS_MORE_DATA         },
-  {0xF8, NULL  ,   0, Buffer,            10  ,  20, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_MORE_DATA         , EAPI_STATUS_UNSUPPORTED       },
-  {0xF8, Buffer,   0, NULL  ,             0  ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
-  {0xF8, Buffer,  10, NULL  ,             0  ,   0, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_UNSUPPORTED       },
-  {0xF8, NULL  ,   0, Buffer, ARRAY_SIZE(Buffer) ,  10, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_UNSUPPORTED       },
+  {0xF8, NULL  ,   0, NULL  ,                 0 ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
+  {0xF8, NULL  ,  10, NULL  ,                 0 ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
+  {0xF8, NULL  ,   0, NULL  ,                10 ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
+  {0xF8, NULL  ,   0, NULL  ,                 0 ,  10, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
+  {0xF8, NULL  ,   0, NULL  ,                 0 ,  10, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
+  {0xF8, NULL  ,   0, NULL  ,                10 ,  20, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_MORE_DATA         , EAPI_STATUS_MORE_DATA         },
+  {0xF8, NULL  ,   0, Buffer,                10 ,  20, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_MORE_DATA         , EAPI_STATUS_UNSUPPORTED       },
+  {0xF8, Buffer,   0, NULL  ,                 0 ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
+  {0xF8, Buffer,  10, NULL  ,                 0 ,   0, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_UNSUPPORTED       },
+  {0xF8, NULL  ,   0, Buffer, ARRAY_SIZE(Buffer),  10, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_UNSUPPORTED       },
 };
 
 typedef struct EApiI2CHLInterfaceValidate_s{
-  const uint32_t  Address     ; /* Address */
-  const uint32_t  Offset      ; /* Address */
-  void *          BufPtr      ; /* Buffer Pointer */
-  const uint32_t  BufPtrLen   ; /* Buffer Length */
-  const uint32_t  ByteCnt     ; /* Byte Count  */
-  const uint32_t  ReturValue1 ; /* Allowed Return Value 1 */
-  const uint32_t  ReturValue2 ; /* Allowed Return Value 2 */
-  const uint32_t  ReturValue3 ; /* Allowed Return Value 3 */
+  const uint32_t          Address     ; /* Address */
+  const uint32_t          Offset      ; /* Address */
+  void  *                 BufPtr      ; /* Buffer Pointer */
+  const uint32_t          BufPtrLen   ; /* Buffer Length */
+  const uint32_t          ByteCnt     ; /* Byte Count  */
+  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiI2CHLInterfaceValidate_t;
 const EApiI2CHLInterfaceValidate_t EApiI2CHLReadValidate[]={
-  {0xF8, 0x00, Buffer, ARRAY_SIZE(Buffer),  10, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_NOT_FOUND       },
+  {0xF8, 0x00, Buffer, ARRAY_SIZE(Buffer),  10, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_NOT_FOUND         },
   {0xF8, 0x00, NULL  , ARRAY_SIZE(Buffer),  10, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
-  {0xF8, 0x00, Buffer,         0x0000,  20, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
+  {0xF8, 0x00, Buffer,             0x0000,  20, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
   {0xF8, 0x00, Buffer, ARRAY_SIZE(Buffer),   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
-  {0xF8, 0x00, Buffer,         0x0010,  20, EAPI_STATUS_UNSUPPORTED      , EAPI_STATUS_MORE_DATA         , EAPI_STATUS_NOT_FOUND       },
-  {0xF8, 0x00, Buffer, ARRAY_SIZE(Buffer),  10, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_NOT_FOUND       },
+  {0xF8, 0x00, Buffer,             0x0010,  20, EAPI_STATUS_UNSUPPORTED      , EAPI_STATUS_MORE_DATA         , EAPI_STATUS_NOT_FOUND         },
+  {0xF8, 0x00, Buffer, ARRAY_SIZE(Buffer),  10, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_NOT_FOUND         },
 };
 const EApiI2CHLInterfaceValidate_t EApiI2CHLWriteValidate[]={
-  {0xF8, 0x00, Buffer,        0x0000 ,  10, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_NOT_FOUND       },
-  {0xF8, 0x00, NULL  ,        0x0000 ,  10, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
-  {0xF8, 0x00, Buffer,        0x0000 ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
+  {0xF8, 0x00, Buffer,            0x0000 ,  10, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_NOT_FOUND         },
+  {0xF8, 0x00, NULL  ,            0x0000 ,  10, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
+  {0xF8, 0x00, Buffer,            0x0000 ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
 };
 
 typedef struct EApiI2CCapValidate_s{
-        uint32_t *pValue      ; /* Value Pointer*/
-  const uint32_t  ReturValue1 ; /* Allowed Return Value 1 */
-  const uint32_t  ReturValue2 ; /* Allowed Return Value 2 */
-  const uint32_t  ReturValue3 ; /* Allowed Return Value 3 */
+        uint32_t         *pValue      ; /* Value Pointer*/
+  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiI2CCapValidate_t;
 uint32_t I2CMaxClk=0;
 const EApiI2CCapValidate_t EApiI2CInterfaceValidate[]={
@@ -328,7 +366,7 @@ const EApiI2CCapValidate_t EApiI2CInterfaceValidate[]={
   {NULL      , EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
 };
 typedef struct EApiI2CType_s{
-  const uint32_t      Id  ;
+  const EApiId_t      Id  ;
   const TCHAR *const  Desc;
 }EApiI2CType_t;
 
@@ -336,10 +374,11 @@ const I2CDeviceDesc_t I2CDevices[]={
 /*           Max                           Write           */
 /* Encoded  Write    Index/Cmd Type        Recover  Device */
 /* Address  Block   Standard/Extended      Time ms  Length */
-  {0x00A0,    16 , EApiAPI2CStdIndex,       5, 0x0200},
-  {0x00A4,    256, EApiAPI2CExtIndex,       5, 0x0200},
-  {0x00A6,    16 , EApiAPI2CStdIndex,       5, 0x0200},
-  {0xF255,    256, EApiAPI2CExtIndex,       5, 0x0200},
+  {0x00A0,    16 , EApiAPI2CExtIndex,       5, 0x0100},
+  {0x00A2,    256, EApiAPI2CExtIndex,       5, 0x0100},
+  {0x00A6,    16 , EApiAPI2CStdIndex,       5, 0x0100},
+  {0x00AE,    16 , EApiAPI2CExtIndex,       5, 0x0100},
+  {0xF255,    256, EApiAPI2CExtIndex,       5, 0x0100},
 };
 const EApiI2CType_t EApiI2CBuses[]={
   {EAPI_ID_I2C_EXTERNAL, TEXT("External I2C"  )},
@@ -348,80 +387,74 @@ const EApiI2CType_t EApiI2CBuses[]={
   {0x00000F00          , TEXT("Unsupported"   )},
 };
 void printHex(
-	__IN void * pBuffer,
+	__IN FILE*  OutStream,
+	__IN void * pBuffer  ,
 	__IN size_t ByteCount
 	)
 {
-  	size_t i;
-  	for(i=0; i<ByteCount; i++){
-		EAPI_MSG_OUT(
-		  	TEXT("%02")TEXT(PRIX8), 
-			((uint8_t*)pBuffer)[i]
-		);
+  for(; ByteCount --; ){
+    EAPI_fprintf(OutStream, TEXT("%02")TEXT(PRIX8), *((uint8_t*)pBuffer));
+    pBuffer=((uint8_t*)pBuffer)+1;
 	}
 }
 void EApiValidateI2CApi (void)
 {
-  TCHAR TmpStrBuf[1024];
-  uint32_t ReturnValue;
-  uint32_t i,i2;
+  TCHAR TmpStrBuf[0x0800];
+  EApiStatusCode_t StatusCode;
+  unsigned i,i2;
     
   for(i=0;i<ARRAY_SIZE(EApiI2CBuses);i++){
     for(i2=0;i2<ARRAY_SIZE(I2CDevices);i2++){
-      ReturnValue=EApiAHI2CReadEeprom(
-        EApiI2CBuses[i].Id, 
-        &I2CDevices[i2]   , 
-        0                 , 
-        TmpStrBuf         , 
-#if 0
-        sizeof(TmpStrBuf) , 
-#else
-        ARRAY_SIZE(TmpStrBuf) , /* For Debug Purposes */
-#endif
-        (uint32_t)I2CDevices[i2].DevSize
-        );
-      if(ReturnValue==EAPI_STATUS_SUCCESS)
+      StatusCode=EApiAHI2CReadEeprom(
+            EApiI2CBuses[i].Id, 
+            &I2CDevices[i2]   , 
+            0                 , 
+            TmpStrBuf         , 
+            ARRAY_SIZE(TmpStrBuf) , /* For Debug Purposes */
+            (uint32_t)I2CDevices[i2].DevSize
+          );
+      if(EAPI_STATUS_TEST_OK(StatusCode))
       {
         EAPI_MSG_OUT(
-          TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : "), 
-          EApiI2CBuses[i].Desc      , 
-          I2CDevices[i2].DeviceAddr
-          );
-	printHex(TmpStrBuf, 8);
+              TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : "), 
+              EApiI2CBuses[i].Desc      , 
+              I2CDevices[i2].DeviceAddr
+            );
+        printHex(stdout, TmpStrBuf, 16);
         EAPI_MSG_OUT(TEXT("\n"));
 #if DESTRUCTIVE_ALLOWED
-        ReturnValue=EApiAHI2CWriteEeprom(
-          EApiI2CBuses[i].Id, 
-          &I2CDevices[i2]   , 
-          13                , 
-          TmpStrBuf         , 
-          (uint32_t)I2CDevices[i2].DevSize/5
-          );
-        if(ReturnValue==EAPI_STATUS_SUCCESS)
+        StatusCode=EApiAHI2CWriteEeprom(
+              EApiI2CBuses[i].Id, 
+              &I2CDevices[i2]   , 
+              13                , 
+              TmpStrBuf         , 
+              (uint32_t)I2CDevices[i2].DevSize/5
+            );
+        if(EAPI_STATUS_TEST_NOK(StatusCode))
         {
           EAPI_MSG_OUT(
-            TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : "), 
-            EApiI2CBuses[i].Desc      , 
-            I2CDevices[i2].DeviceAddr
-            );
-          printHex(TmpStrBuf, 8);
+                TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : "), 
+                EApiI2CBuses[i].Desc      , 
+                I2CDevices[i2].DeviceAddr
+              );
+          printHex(stdout, TmpStrBuf, 16);
           EAPI_MSG_OUT(TEXT("\n"));
         }
         else
         {
-          EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+          EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
           EAPI_MSG_OUT(
-              TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : %s\n"), 
-              EApiI2CBuses[i].Desc      , 
-              I2CDevices[i2].DeviceAddr , 
-              TmpStrBuf
+                TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : %s\n"), 
+                EApiI2CBuses[i].Desc      , 
+                I2CDevices[i2].DeviceAddr , 
+                TmpStrBuf
               );
         }
 #endif
       }
       else
       {
-        EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+        EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
             TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : %s\n"), 
             EApiI2CBuses[i].Desc      , 
@@ -439,53 +472,53 @@ void EApiValidateI2CApi (void)
   {
     for(i2=0;i2<ARRAY_SIZE(EApiI2CLLValidate);i2++) /* Iterated thought test cases */
     {
-      ReturnValue=EApiI2CWriteReadRaw(
-        i                               , 
-        EApiI2CLLValidate[i2].Address   , 
-        EApiI2CLLValidate[i2].WBufPtr   , 
-        EApiI2CLLValidate[i2].WByteCnt  , 
-        EApiI2CLLValidate[i2].RBufPtr   , 
-        EApiI2CLLValidate[i2].RBufPtrLen, 
-        EApiI2CLLValidate[i2].RByteCnt
-        );
-      EAPI_LOG_RETRUN_VALUE(EApiI2CWriteReadRaw, EApiI2CLLValidate);
+      StatusCode=EApiI2CWriteReadRaw(
+            i                               , 
+            EApiI2CLLValidate[i2].Address   , 
+            EApiI2CLLValidate[i2].WBufPtr   , 
+            EApiI2CLLValidate[i2].WByteCnt  , 
+            EApiI2CLLValidate[i2].RBufPtr   , 
+            EApiI2CLLValidate[i2].RBufPtrLen, 
+            EApiI2CLLValidate[i2].RByteCnt
+          );
+      EAPI_LOG_RETURN_VALUE(EApiI2CWriteReadRaw, EApiI2CLLValidate);
     }
   }
   for(i=0;i<10;i++) /* Iterated thought Ids */
   {
     for(i2=0;i2<ARRAY_SIZE(EApiI2CHLReadValidate);i2++) /* Iterated thought test cases */
     {
-      ReturnValue=EApiI2CReadTransfer(
-        i                                   , 
-        EApiI2CHLReadValidate[i2].Address   , 
-        EApiI2CHLReadValidate[i2].Offset    , 
-        EApiI2CHLReadValidate[i2].BufPtr    , 
-        EApiI2CHLReadValidate[i2].BufPtrLen , 
-        EApiI2CHLReadValidate[i2].ByteCnt 
-        );
-      EAPI_LOG_RETRUN_VALUE(EApiI2CReadTransfer, EApiI2CHLReadValidate);
+      StatusCode=EApiI2CReadTransfer(
+            i                                   , 
+            EApiI2CHLReadValidate[i2].Address   , 
+            EApiI2CHLReadValidate[i2].Offset    , 
+            EApiI2CHLReadValidate[i2].BufPtr    , 
+            EApiI2CHLReadValidate[i2].BufPtrLen , 
+            EApiI2CHLReadValidate[i2].ByteCnt 
+          );
+      EAPI_LOG_RETURN_VALUE(EApiI2CReadTransfer, EApiI2CHLReadValidate);
     }
   }
   for(i=0;i<10;i++) /* Iterated thought Ids */
   {
     for(i2=0;i2<ARRAY_SIZE(EApiI2CHLWriteValidate);i2++) /* Iterated thought test cases */
     {
-      ReturnValue=EApiI2CWriteTransfer(
-        i                                   , 
-        EApiI2CHLWriteValidate[i2].Address  , 
-        EApiI2CHLWriteValidate[i2].Offset   , 
-        EApiI2CHLWriteValidate[i2].BufPtr   , 
-        EApiI2CHLWriteValidate[i2].ByteCnt 
-        );
-      EAPI_LOG_RETRUN_VALUE(EApiI2CWriteTransfer, EApiI2CHLWriteValidate);
+      StatusCode=EApiI2CWriteTransfer(
+            i                                   , 
+            EApiI2CHLWriteValidate[i2].Address  , 
+            EApiI2CHLWriteValidate[i2].Offset   , 
+            EApiI2CHLWriteValidate[i2].BufPtr   , 
+            EApiI2CHLWriteValidate[i2].ByteCnt 
+          );
+      EAPI_LOG_RETURN_VALUE(EApiI2CWriteTransfer, EApiI2CHLWriteValidate);
     }
   }
   for(i=0;i<10;i++) /* Iterated thought Ids */
   {
     for(i2=0;i2<ARRAY_SIZE(EApiI2CInterfaceValidate);i2++) /* Iterated thought test cases */
     {
-      ReturnValue=EApiI2CGetBusCap(i, EApiI2CInterfaceValidate[i2].pValue);
-      EAPI_LOG_RETRUN_VALUE(EApiI2CGetBusCap, EApiI2CInterfaceValidate);
+      StatusCode=EApiI2CGetBusCap(i, EApiI2CInterfaceValidate[i2].pValue);
+      EAPI_LOG_RETURN_VALUE(EApiI2CGetBusCap, EApiI2CInterfaceValidate);
     }
   }
   return ;
@@ -496,7 +529,7 @@ void EApiValidateI2CApi (void)
  */
 
 typedef struct EApiStorageType_s{
-  const uint32_t  Id     ;
+  const EApiId_t  Id     ;
   const TCHAR *const   Desc   ;
   const uint32_t  Length ;
 }EApiStorageType_t;
@@ -509,12 +542,12 @@ const EApiStorageType_t EApiStorageDevices[]={
 
 typedef struct EApiStorageValidate_s{
   const uint32_t  Offset      ; /* Read Offset */
-        void *         BufPtr      ; /* Buffer Pointer */
+        void *    BufPtr      ; /* Buffer Pointer */
   const uint32_t  BufPtrLen   ; /* Buffer Length */
   const uint32_t  ByteCnt     ; /* Byte Count  */
-  const uint32_t  ReturValue1 ; /* Allowed Return Value 1 */
-  const uint32_t  ReturValue2 ; /* Allowed Return Value 2 */
-  const uint32_t  ReturValue3 ; /* Allowed Return Value 3 */
+  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiStorageValidate_t;
 const EApiStorageValidate_t StorageValidate[]={
   {0x0000, Buffer, ARRAY_SIZE(Buffer),  10, EAPI_STATUS_SUCCESS             , EAPI_STATUS_UNSUPPORTED         , EAPI_STATUS_UNSUPPORTED       },
@@ -527,9 +560,9 @@ const EApiStorageValidate_t StorageValidate[]={
 typedef struct EApiStorageCapValidate_s{
         uint32_t *pStorgeSize ; /* Read Offset */
         uint32_t *pBlockLen   ; /* Buffer Pointer */
-  const uint32_t  ReturValue1 ; /* Allowed Return Value 1 */
-  const uint32_t  ReturValue2 ; /* Allowed Return Value 2 */
-  const uint32_t  ReturValue3 ; /* Allowed Return Value 3 */
+  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiStorageCapValidate_t;
 uint32_t StorageSize;
 uint32_t BlockLength;
@@ -542,48 +575,44 @@ const EApiStorageCapValidate_t StorageCapValidate[]={
 void EApiValidateStorageApi(void)
 {
   TCHAR TmpStrBuf[1024];
-  uint32_t i,i2;
-  uint32_t ReturnValue;
+  unsigned i,i2;
+  EApiStatusCode_t StatusCode;
     
   for(i=0;i<ARRAY_SIZE(EApiStorageDevices);i++){
-      ReturnValue=EApiStorageAreaRead(
+      StatusCode=EApiStorageAreaRead(
         EApiStorageDevices[i].Id, 
         0, 
         TmpStrBuf, 
-#if 0
-        sizeof(TmpStrBuf) , 
-#else
         ARRAY_SIZE(TmpStrBuf) , /* For Debug Purposes */
-#endif
         EApiStorageDevices[i].Length
         );
-      if(ReturnValue==EAPI_STATUS_SUCCESS)
+      if(EAPI_STATUS_TEST_OK(StatusCode))
       {
         EAPI_MSG_OUT(
-          TEXT("%-30s : "), 
-          EApiStorageDevices[i].Desc
-          );
-	printHex(TmpStrBuf, 8);
+              TEXT("%-30s : "), 
+              EApiStorageDevices[i].Desc
+            );
+        printHex(stdout, TmpStrBuf, 16);
         EAPI_MSG_OUT(TEXT("\n"));
 #if DESTRUCTIVE_ALLOWED
-        ReturnValue=EApiAHWriteStorage(
-          EApiStorageDevices[i].Id      , 
-          13                            , 
-          TmpStrBuf                     ,
-          EApiStorageDevices[i].Length/5
-          );
-        if(ReturnValue==EAPI_STATUS_SUCCESS)
+        StatusCode=EApiAHWriteStorage(
+              EApiStorageDevices[i].Id      , 
+              13                            , 
+              TmpStrBuf                     ,
+              EApiStorageDevices[i].Length/5
+            );
+        if(EAPI_STATUS_TEST_OK(StatusCode))
         {
           EAPI_MSG_OUT(
-            TEXT("%-30s : "), 
-            EApiStorageDevices[i].Desc
-            );
-	  printHex(TmpStrBuf, 8);
+                TEXT("%-30s : "), 
+                EApiStorageDevices[i].Desc
+              );
+          printHex(stdout, TmpStrBuf, 16);
           EAPI_MSG_OUT(TEXT("\n"));
         }
         else
         {
-          EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+          EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
           EAPI_MSG_OUT(
               TEXT("%-30s : %02")TEXT(PRIX8)TEXT(" %s\n")      , 
               EApiStorageDevices[i].Desc, 
@@ -595,33 +624,33 @@ void EApiValidateStorageApi(void)
       }
       else
       {
-        EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+        EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(TEXT("%-30s : %s\n"), EApiStorageDevices[i].Desc, TmpStrBuf);
       }
   }
   /*
    * More Rigorous Interfaces Verification
    */
-  for(i=0;i<10;i++) /* Iterated thought Ids */
+  for(i=0;i<10;i++) /* Iterate thought Ids */
   {
     for(i2=0;i2<ARRAY_SIZE(StorageValidate);i2++) /* Iterated thought test cases */
     {
-      ReturnValue=EApiStorageAreaRead(
+      StatusCode=EApiStorageAreaRead(
         i                             , 
         StorageValidate[i2].Offset    , 
         StorageValidate[i2].BufPtr    , 
         StorageValidate[i2].BufPtrLen , 
         StorageValidate[i2].ByteCnt
         );
-      EAPI_LOG_RETRUN_VALUE(EApiStorageAreaRead, StorageValidate);
+      EAPI_LOG_RETURN_VALUE(EApiStorageAreaRead, StorageValidate);
 #if DESTRUCTIVE_ALLOWED
-      ReturnValue=EApiStorageAreaWrite(
+      StatusCode=EApiStorageAreaWrite(
         i                           , 
         StorageValidate[i2].Offset  , 
         StorageValidate[i2].BufPtr  , 
         StorageValidate[i2].ByteCnt
         );
-      EAPI_LOG_RETRUN_VALUE(EApiStorageAreaWrite, StorageValidate);
+      EAPI_LOG_RETURN_VALUE(EApiStorageAreaWrite, StorageValidate);
 #endif
     }
   }
@@ -629,12 +658,12 @@ void EApiValidateStorageApi(void)
   {
     for(i2=0;i2<ARRAY_SIZE(StorageCapValidate);i2++) /* Iterated thought test cases */
     {
-      ReturnValue=EApiStorageCap(
+      StatusCode=EApiStorageCap(
         i                                 , 
         StorageCapValidate[i2].pStorgeSize, 
         StorageCapValidate[i2].pBlockLen
         );
-      EAPI_LOG_RETRUN_VALUE(EApiStorageCap, StorageCapValidate);
+      EAPI_LOG_RETURN_VALUE(EApiStorageCap, StorageCapValidate);
     }
   }
   return ;
@@ -648,9 +677,9 @@ void EApiValidateStorageApi(void)
 typedef struct EApiGpioValidate_s{
         uint32_t *pInputs     ; /* Value Pointer*/
         uint32_t *pOutputs    ; /* Value Pointer*/
-  const uint32_t  ReturValue1 ; /* Allowed Return Value 1 */
-  const uint32_t  ReturValue2 ; /* Allowed Return Value 2 */
-  const uint32_t  ReturValue3 ; /* Allowed Return Value 3 */
+  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiGpioValidate_t;
 uint32_t GpioInputs;
 uint32_t GpioOutputs;
@@ -662,7 +691,7 @@ const EApiGpioValidate_t EApiGpioterfaceValidate[]={
 };
 
 typedef struct EApiGpioType_s{
-  const uint32_t  Id     ;
+  const EApiId_t  Id     ;
   const TCHAR *const   Desc   ;
 }EApiGpioType_t;
 
@@ -685,18 +714,18 @@ const EApiGpioType_t EApiGpioDevices[]={
 void EApiValidateGPIOApi(void)
 {
   TCHAR TmpStrBuf[1024];
-  uint32_t i,i2;
+  unsigned i,i2;
   uint32_t Direction;
   uint32_t Level;
   uint32_t Inputs;
   uint32_t Outputs;
-  uint32_t ReturnValue;
+  EApiStatusCode_t StatusCode;
   for(i=0;i<ARRAY_SIZE(EApiGpioDevices);i++){
-/*       *((int_least8_t*)NULL)=0; */
-      ReturnValue=EApiGPIOGetDirectionCaps(EApiGpioDevices[i].Id, &Inputs, &Outputs);
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
+/*       *((int*)NULL)=0; */
+      StatusCode=EApiGPIOGetDirectionCaps(EApiGpioDevices[i].Id, &Inputs, &Outputs);
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
       {
-        EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+        EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
         TEXT("%-15s %-25s : %s\n"), 
         EApiGpioDevices[i].Desc, 
@@ -712,10 +741,10 @@ void EApiValidateGPIOApi(void)
         Inputs, 
         Outputs
       );
-      ReturnValue=EApiGPIOGetDirection(EApiGpioDevices[i].Id, Inputs|Outputs, &Direction);
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
+      StatusCode=EApiGPIOGetDirection(EApiGpioDevices[i].Id, Inputs|Outputs, &Direction);
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
       {
-        EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+        EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
           TEXT("%-15s %-25s : %s\n"), 
           EApiGpioDevices[i].Desc, 
@@ -730,10 +759,10 @@ void EApiValidateGPIOApi(void)
         TEXT("EApiGPIOGetDirection"), 
         Direction
         );
-      ReturnValue=EApiGPIOGetLevel(EApiGpioDevices[i].Id, Inputs|Outputs, &Level);
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
+      StatusCode=EApiGPIOGetLevel(EApiGpioDevices[i].Id, Inputs|Outputs, &Level);
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
       {
-        EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+        EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
           TEXT("%-15s %-25s : %s\n"), 
           EApiGpioDevices[i].Desc, 
@@ -748,14 +777,14 @@ void EApiValidateGPIOApi(void)
         TEXT("EApiGPIOGetLevel"), 
         Level
         );
-      ReturnValue=EApiGPIOSetDirection(
+      StatusCode=EApiGPIOSetDirection(
         EApiGpioDevices[i].Id, 
         Inputs|Outputs, 
         ((Inputs&0xFFFF))|((Outputs&0x0000))
         );
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
       {
-        EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+        EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
           TEXT("%-15s %-25s : %s\n"), 
           EApiGpioDevices[i].Desc, 
@@ -764,10 +793,10 @@ void EApiValidateGPIOApi(void)
           );
         continue;
       }
-      ReturnValue=EApiGPIOGetDirection(EApiGpioDevices[i].Id, Inputs|Outputs, &Direction);
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
+      StatusCode=EApiGPIOGetDirection(EApiGpioDevices[i].Id, Inputs|Outputs, &Direction);
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
       {
-        EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+        EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
             TEXT("%-15s %-25s : %s\n"), 
             EApiGpioDevices[i].Desc, 
@@ -782,10 +811,10 @@ void EApiValidateGPIOApi(void)
           TEXT("EApiGPIOGetDirection"), 
           Direction
           );
-      ReturnValue=EApiGPIOSetLevel(EApiGpioDevices[i].Id, Outputs, Outputs);
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
+      StatusCode=EApiGPIOSetLevel(EApiGpioDevices[i].Id, Outputs, Outputs);
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
       {
-        EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+        EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
             TEXT("%-15s %-25s : %s\n"), 
             EApiGpioDevices[i].Desc, 
@@ -794,10 +823,10 @@ void EApiValidateGPIOApi(void)
             );
         continue;
       }
-      ReturnValue=EApiGPIOGetLevel(EApiGpioDevices[i].Id, Inputs|Outputs, &Level);
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
+      StatusCode=EApiGPIOGetLevel(EApiGpioDevices[i].Id, Inputs|Outputs, &Level);
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
       {
-        EApiAHCreateErrorString(ReturnValue, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
+        EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
             TEXT("%-15s %-25s : %s\n"), 
             EApiGpioDevices[i].Desc, 
@@ -812,16 +841,16 @@ void EApiValidateGPIOApi(void)
           TEXT("EApiGPIOSetLevel"), 
           Level);
   }
-  for(i=0;i<10;i++) /* Iterated thought Ids */
+  for(i=0;i<10;i++) /* Iterated throught Ids */
   {
     for(i2=0;i2<ARRAY_SIZE(EApiGpioterfaceValidate);i2++) /* Iterated thought test cases */
     {
-      ReturnValue=EApiGPIOGetDirectionCaps(
+      StatusCode=EApiGPIOGetDirectionCaps(
         i, 
         EApiGpioterfaceValidate[i2].pInputs, 
         EApiGpioterfaceValidate[i2].pOutputs
         );
-      EAPI_LOG_RETRUN_VALUE(EApiGPIOGetDirectionCaps, EApiGpioterfaceValidate);
+      EAPI_LOG_RETURN_VALUE(EApiGPIOGetDirectionCaps, EApiGpioterfaceValidate);
     }
   }
   return ;
@@ -842,12 +871,12 @@ const TestFunctionsTbl_t TestFunctions[]={
   {EApiValidateGPIOApi    , TEXT("Gpio Function"       )},
 };
 /* void __cdecl main( __IN  char *const *const  argv, __IN const int argc) */
-typedef enum ProgramReturnValues_e{
+typedef enum ProgramStatusCodes_e{
     PRG_RETURN_OK             =0,
     PRG_RETURN_ERROR            ,
     PRG_RETURN_LIB_INIT_ERROR   ,
     PRG_RETURN_LIB_UNINIT_ERROR
-}ProgramReturnValues_t;
+}ProgramStatusCodes_t;
 int 
 __cdecl 
 main(void)
@@ -856,18 +885,18 @@ main(void)
   LogStream=EAPI_fopen(TEXT("EApiValidateAPI.log"), TEXT("w"));
   if(LogStream==NULL)
     LogStream=stdout;
-  if(EApiLibInitialize()!=EAPI_STATUS_SUCCESS)
+  if(EAPI_STATUS_TEST_NOK(EApiLibInitialize()))
   {
     exit(PRG_RETURN_LIB_INIT_ERROR);
   }
   EAPI_fprintf(
       LogStream, 
-      TEXT("L%04u %-30s : %5s %5s    : %-35s [%s]\n"), 
+      TEXT("L%04u %-30s | %-25s | %5s %5s    [%s]\n"), 
       __LINE__              , 
       TEXT("Function Name") , 
+      TEXT("Status Code")   , 
       TEXT("Id")            , 
       TEXT("Test#")         , 
-      TEXT("Return Value")  , 
       TEXT("Status")
       );
 
@@ -889,7 +918,7 @@ main(void)
 
     TestFunctions[i].TestHandler();
   }
-  if(EApiLibUnInitialize()!=EAPI_STATUS_SUCCESS)
+  if(EAPI_STATUS_TEST_NOK(EApiLibInitialize()))
   {
     exit(PRG_RETURN_LIB_UNINIT_ERROR);
   }

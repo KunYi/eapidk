@@ -71,7 +71,26 @@
   #else
     #define EAPI_CALLTYPE
   #endif
-  #define __cdecl
+#endif
+#ifdef __GNUC__ 
+#  ifndef _fastcall
+#  define _fastcall __attribute__((fastcall))
+#  endif
+#  ifndef __fastcall
+#  define __fastcall __attribute__((fastcall))
+#  endif
+#  ifndef _stdcall
+#  define _stdcall __attribute__((stdcall))
+#  endif
+#  ifndef __stdcall
+#  define __stdcall __attribute__((stdcall))
+#  endif
+#  ifndef _cdecl
+#  define _cdecl __attribute__((cdecl))
+#  endif
+#  ifndef __cdecl
+#  define __cdecl __attribute__((cdecl))
+#  endif
 #endif
 
 void EApiSleepns(unsigned long ns);
@@ -81,7 +100,6 @@ void EApiSleepns(unsigned long ns);
 #  define EApiSleep(x) usleep(x*1000)
 #endif
 
-#define EAPI_strdup         strdup
 
 
 #ifdef UNICODE
@@ -103,6 +121,10 @@ void EApiSleepns(unsigned long ns);
 #  define EAPI_fopen          fopen
 #  define EAPI_printf         printf
 #endif
+
+#define EAPI_vsnprintfA     vsnprintf
+#define EAPI_strdup         strdup
+#define EAPI_strncpyA       strncpy
 
 #endif /* _EAPIOS_H_ */
 

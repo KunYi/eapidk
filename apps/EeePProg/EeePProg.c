@@ -479,8 +479,7 @@ FreeFilePtr(
 #define DO_MAIN(x) \
   EApiStatusCode=x;\
   if(!EAPI_STATUS_TEST_OK(EApiStatusCode)){ \
-    EApiAHCreateErrorString(EApiStatusCode, ErrBuf, ARRAY_SIZE(ErrBuf));\
-    EAPI_FORMATED_MES1(E, main, ErrBuf, TEXT(#x));\
+    EAPI_FORMATED_MES('E', main, EApiStatusCode, #x);\
     exit(EApiStatusCode);\
   }
 
@@ -495,12 +494,11 @@ main(
   )
 {
   EeePHandel_t BHandel;
-  TCHAR ErrBuf[64];
   FILE *lclStream=NULL;
   EApiStatusCode_t EApiStatusCode;
   DO_MAIN(EApiLibInitialize());
 
-  EApiStatusCode=ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc));
+  EApiStatusCode=ParseArgs(argc - 1, argv + 1, ArgsDesc, ARRAY_SIZE(ArgsDesc));
   switch(EApiStatusCode){
     case EAPI_STATUS_INVALID_PARAMETER:
       printf("%s", syntaxErrMes);
@@ -509,8 +507,7 @@ main(
     case EAPI_STATUS_SUCCESS:
       break;
     default:
-      EApiAHCreateErrorString(EApiStatusCode, ErrBuf, ARRAY_SIZE(ErrBuf));
-      EAPI_FORMATED_MES1(E, main, ErrBuf, TEXT("ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc))"));
+      EAPI_FORMATED_MES('E', main, EApiStatusCode, TEXT("ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc))"));
       exit(EApiStatusCode);
       break;
   }

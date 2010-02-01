@@ -52,7 +52,7 @@
 #define I2C_EMUL_FREQ  100000
 #define I2C_EMUL_BYTE_DELAY_NS (1000000000/I2C_EMUL_FREQ*(8+1))
 typedef 
-uint32_t 
+EApiStatusCode_t 
 I2CDevEmulator(
     __IN uint32_t Arg1, 
     __IN void *pWBuffer, 
@@ -104,7 +104,7 @@ char * StdExt[]={
 };
 #endif
 
-uint32_t 
+EApiStatusCode_t 
 EmulateEepromFS(
     __IN unsigned long Arg1, 
     __IN EepromCfgData_t *CfgData, 
@@ -116,24 +116,26 @@ EmulateEepromFS(
 {
   
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT((
-        "O%04u %-30s : %-30s : %3s CIDX=%04lX Arg1=%1lX DLEN=%04lX PLEN=%04lX"
-        " WLEN=%04lX RLEN=%04lX %02"PRIX8",%02"PRIX8",%02"PRIX8",%02"PRIX8"\n", 
-        __LINE__, 
-        "EmulateEepromFS", 
-        CfgData->cszFilename, 
-        StdExt[CfgData->ExtendedCmd], 
-        CfgData->CurIndx, 
-        Arg1, 
-        CfgData->ByteLen, 
-        CfgData->PageLength, 
-        WriteBCnt, 
-        ReadBCnt, 
-        pWBuffer[0],
-        pWBuffer[1],
-        pWBuffer[2],
-        pWBuffer[3]
-      ));
+        siFormattedMessage_M2(
+              'L'                   ,
+              __FILE__              ,
+              "EmulateEepromFS"     ,
+              __LINE__              ,
+              CfgData->cszFilename,
+              "%3s CIDX=%04lX Arg1=%1lX DLEN=%04lX PLEN=%04lX"
+              " WLEN=%04lX RLEN=%04lX %02"PRIX8",%02"PRIX8",%02"PRIX8",%02"PRIX8"\n", 
+              StdExt[CfgData->ExtendedCmd], 
+              CfgData->CurIndx, 
+              Arg1, 
+              CfgData->ByteLen, 
+              CfgData->PageLength, 
+              WriteBCnt, 
+              ReadBCnt, 
+              pWBuffer[0],
+              pWBuffer[1],
+              pWBuffer[2],
+              pWBuffer[3]
+            );
 #endif
   if(WriteBCnt)
   {
@@ -152,7 +154,7 @@ EmulateEepromFS(
             EmulateEepromFS, 
             WriteBCnt<2, 
             EAPI_STATUS_READ_ERROR, 
-            " STD INDEX Sent to EXT INDEX EEPROM"
+            "STD INDEX Sent to EXT INDEX EEPROM"
             );
 
         CfgData->CurIndx =pWBuffer[0]<<8;
@@ -166,15 +168,17 @@ EmulateEepromFS(
         break;
     }
 #if (STRICT_VALIDATION>1)
-    EAPI_LIB_MSG_OUT((
-          "O%04u %-30s : %-30s : CINDX=%04lX PLEN=%04lX EPLEN=%04lX\n", 
-          __LINE__, 
-          "EmulateEepromFS", 
-          CfgData->cszFilename, 
-          CfgData->CurIndx, 
-          CfgData->CurIndx%CfgData->PageLength, 
-          (CfgData->CurIndx%CfgData->PageLength)+WriteBCnt)
-        );
+        siFormattedMessage_M2(
+              'L'                   ,
+              __FILE__                              ,
+              "EmulateEepromFS"                     ,
+              __LINE__                              ,
+              CfgData->cszFilename                  ,
+              "CINDX=%04lX PLEN=%04lX EPLEN=%04lX\n",
+              CfgData->CurIndx                      , 
+              CfgData->CurIndx%CfgData->PageLength  ,
+              (CfgData->CurIndx%CfgData->PageLength)+WriteBCnt
+            );
 #endif
     if(WriteBCnt)
     {
@@ -226,7 +230,7 @@ EmulateEepromFS(
 }
 
 
-uint32_t 
+EApiStatusCode_t 
 EmulateCmdDevice(
     __IN unsigned long  Arg1, 
     __IN CmdDeviceCfgData_t *CfgData, 
@@ -240,22 +244,24 @@ EmulateCmdDevice(
     CmdDesc_t *pCurCmd;
   
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT((
-        "O%04u %-30s : %-30s : %3s CCMD=%04lX Arg1=%1lX "
-        " WLEN=%04lX RLEN=%04lX %02"PRIX8",%02"PRIX8",%02"PRIX8",%02"PRIX8"\n", 
-        __LINE__, 
-        "EmulateCmdDevice", 
-        CfgData->cszDeviceName, 
-        StdExt[CfgData->ExtendedCmd], 
-        CfgData->CurrentCmd, 
-        Arg1, 
-        WriteBCnt, 
-        ReadBCnt, 
-        pWBuffer[0],
-        pWBuffer[1],
-        pWBuffer[2],
-        pWBuffer[3]
-      ));
+        siFormattedMessage_M2(
+              'L'                   ,
+              __FILE__              ,
+              "EmulateCmdDevice"    ,
+              __LINE__              ,
+              CfgData->cszDeviceName,
+              "%3s CCMD=%04lX Arg1=%1lX WLEN=%04lX RLEN=%04lX %02"PRIX8
+              ",%02"PRIX8",%02"PRIX8",%02"PRIX8"\n", 
+              StdExt[CfgData->ExtendedCmd], 
+              CfgData->CurrentCmd, 
+              Arg1, 
+              WriteBCnt, 
+              ReadBCnt, 
+              pWBuffer[0],
+              pWBuffer[1],
+              pWBuffer[2],
+              pWBuffer[3]
+            );
 #endif
   if(WriteBCnt)
   {
@@ -272,7 +278,7 @@ EmulateCmdDevice(
             EmulateEepromFS, 
             WriteBCnt<2, 
             EAPI_STATUS_READ_ERROR, 
-            " STD INDEX Sent to EXT INDEX EEPROM"
+            "STD INDEX Sent to EXT INDEX EEPROM"
             );
 
         CfgData->CurrentCmd =pWBuffer[0]<<8;
@@ -328,7 +334,7 @@ static EepromCfgData_t DIDEEPromData={
   "DID.EEPROM.EMUL",
   NULL
 };
-uint32_t 
+EApiStatusCode_t 
 EmulateDIDEeprom(
     __IN uint32_t Arg1, 
     __IN void *pWBuffer, 
@@ -351,14 +357,14 @@ EmulateDIDEeprom(
 #undef bin_data
 static EepromCfgData_t UDSEEPromData={
   sizeof(UDSEEPROM),  /* EEPROM Length */
-  STD_INDEX        ,  /* Ext/Std Index */
+  EXT_INDEX        ,  /* Ext/Std Index */
   16               ,  /* Device Page Length */
   0                ,  /* Current Index Value */
   UDSEEPROM        ,  /* EEPROM pBuffer Pointer */
   "UDS.EEPROM.EMUL",
   NULL
 };
-uint32_t 
+EApiStatusCode_t 
 EmulateUDSEeprom(
     __IN uint32_t Arg1, 
     __IN void *pWBuffer, 
@@ -381,7 +387,7 @@ EmulateUDSEeprom(
 #undef bin_data
 static EepromCfgData_t EPIEEPromData={
   sizeof(EPIEEPROM),  /* EEPROM Length */
-  STD_INDEX        ,  /* Ext/Std Index */
+  EXT_INDEX        ,  /* Ext/Std Index */
   16               ,  /* Device Page Length */
   0                ,  /* Current Index Value */
   EPIEEPROM        ,  /* EEPROM pBuffer Pointer */ 
@@ -389,7 +395,7 @@ static EepromCfgData_t EPIEEPromData={
   NULL
 };
 
-uint32_t 
+EApiStatusCode_t 
 EmulateEPIEeprom(
     __IN uint32_t Arg1, 
     __IN void *pWBuffer, 
@@ -451,7 +457,7 @@ EepromCfgData_t *OpenFiles[]={
 };
 
 
-uint32_t 
+EApiStatusCode_t 
 OpenI2CEepromFiles(void)
 {
   int i;
@@ -471,7 +477,7 @@ OpenI2CEepromFiles(void)
   }
   return EAPI_STATUS_SUCCESS;
 }
-uint32_t 
+EApiStatusCode_t 
 CloseI2CEepromFiles(void)
 {
   int i;
@@ -485,7 +491,7 @@ CloseI2CEepromFiles(void)
   return EAPI_STATUS_SUCCESS;
 }
 
-uint32_t 
+EApiStatusCode_t 
 EmulateEeePExpEeprom(
     __IN uint32_t Arg1, 
     __IN void *pWBuffer, 
@@ -505,7 +511,7 @@ EmulateEeePExpEeprom(
 }
 
 
-uint32_t 
+EApiStatusCode_t 
 EmulateCOM0CBEeprom(
     __IN uint32_t Arg1, 
     __IN void *pWBuffer, 
@@ -524,7 +530,7 @@ EmulateCOM0CBEeprom(
       );
 }
 
-uint32_t 
+EApiStatusCode_t 
 EmulateCOM0MEeprom(
     __IN uint32_t Arg1, 
     __IN void *pWBuffer, 
@@ -559,7 +565,7 @@ CmdDeviceCfgData_t HWMon={
   "ADT7447",
   HwmonCmdIndx
 };
-uint32_t 
+EApiStatusCode_t 
 EmulateHWMonDevice(
     __IN  uint32_t Arg1, 
     __IN  void    *pWBuffer, 
@@ -594,7 +600,6 @@ const BusDevicesTbl_t LVDS_1I2CDevices[]={
 /* Device      Device         BLCK*/
 /* Address    Emulator        CNT */
   {0x00A0, EmulateUDSEeprom, 0},
-  {0x00A2, EmulateUDSEeprom, 1},
   {0x00A4, EmulateDIDEeprom, 0},
   {0xF255, EmulateDIDEeprom, 0},
   {END_OF_LIST_MARK, NULL, 0}
@@ -603,13 +608,12 @@ const BusDevicesTbl_t LVDS_2I2CDevices[]={
 /* Device      Device         BLCK*/
 /* Address    Emulator        CNT */
   {0x00A0, EmulateEPIEeprom, 0},
-  {0x00A2, EmulateEPIEeprom, 1},
   {0x00A4, EmulateDIDEeprom, 0},
   {END_OF_LIST_MARK, NULL, 0}
 };
 
 typedef struct InterfaceIdsTbl_s{
-  const uint32_t         Id         ; /* I2C EAPI Bus Id */
+  const EApiId_t         Id         ; /* I2C EAPI Bus Id */
   const BusDevicesTbl_t *DevicesList; /* Pointer to Device List for 
                                        * Emulated I2C Bus */
   uint32_t               MaxBlockLen; /* Max Block Length Supported 
@@ -624,10 +628,10 @@ const InterfaceIdsTbl_t EmulatedInterfaces[]={
   {EAPI_ID_I2C_LVDS_1,   LVDS_1I2CDevices  , 0x00100},
   {EAPI_ID_I2C_LVDS_2,   LVDS_2I2CDevices  , 0x00020}
 };
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiI2CGetBusCapEmul(
-    __IN  uint32_t  Id, 
+    __IN  EApiId_t  Id, 
     __OUT uint32_t *pMaxBlkLen
     )
 {
@@ -661,10 +665,10 @@ EApiI2CGetBusCapEmul(
  *
  *
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiI2CWriteReadEmul(
-    __IN      uint32_t Id         , 
+    __IN      EApiId_t Id         , 
     __IN      uint8_t  Addr       , 
     __INOPT   void    *pWBuffer  , 
     __IN      uint32_t WriteBCnt  , 
@@ -701,13 +705,15 @@ EApiI2CWriteReadEmul(
           LclAddr=Addr;
 
 #if (STRICT_VALIDATION>1)
-        EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : ADDR=%02"PRIX16
-            " \n", 
-            __LINE__, 
-            "EApiI2CWriteReadEmul", 
-            "Info", 
-            LclAddr
-            ));
+        siFormattedMessage_M2(
+              'L'                   ,
+              __FILE__              ,
+              "EApiI2CWriteReadEmul",
+              __LINE__              ,
+              "Info"                ,
+              "ADDR=%02"PRIX16"\n"  ,
+              LclAddr
+            );
 #endif
         for(i2=0;
             EmulatedInterfaces[i].DevicesList[i2].EncAddr!=END_OF_LIST_MARK;

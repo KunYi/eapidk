@@ -46,48 +46,48 @@ Handlers_t  COM0PCIe_Element_funcs ={ COM0PCIe_Element , GenClear_Element , COM0
 Handlers_t  SMBIOS_CE_Element_funcs={ SMBIOS_CE_Element, GenClear_Element , SMBIOS_CE_Help  , No_Default_Txt};
 
 TokenDesc_t  SmbiosStructureTypesTokens[]={
-  {"BIOS_INFORMATION"                               ,  0},
-  {"SYSTEM_INFORMATION"                             ,  1},
-  {"BASE_BOARD_(OR_MODULE)_INFORMATION"             ,  2},
-  {"SYSTEM_ENCLOSURE_OR_CHASSIS"                    ,  3},
-  {"PROCESSOR_INFORMATION"                          ,  4},
-  {"MEMORY_CONTROLLER_INFORMATION"                  ,  5},
-  {"MEMORY_MODULE_INFORMATION"                      ,  6},
-  {"CACHE_INFORMATION"                              ,  7},
-  {"PORT_CONNECTOR_INFORMATION"                     ,  8},
-  {"SYSTEM_SLOTS"                                   ,  9},
-  {"ON_BOARD_DEVICES_INFORMATION"                   ,  10},
-  {"OEM_STRINGS"                                    ,  11},
-  {"SYSTEM_CONFIGURATION_OPTIONS"                   ,  12},
-  {"BIOS_LANGUAGE_INFORMATION"                      ,  13},
-  {"GROUP_ASSOCIATIONS"                             ,  14},
-  {"SYSTEM_EVENT_LOG"                               ,  15},
-  {"PHYSICAL_MEMORY_ARRAY"                          ,  16},
-  {"MEMORY_DEVICE"                                  ,  17},
-  {"32_BIT_MEMORY_ERROR_INFORMATION"                ,  18},
-  {"MEMORY_ARRAY_MAPPED_ADDRESS"                    ,  19},
-  {"MEMORY_DEVICE_MAPPED_ADDRESS"                   ,  20},
-  {"BUILT_IN_POINTING_DEVICE"                       ,  21},
-  {"PORTABLE_BATTERY"                               ,  22},
-  {"SYSTEM_RESET"                                   ,  23},
-  {"HARDWARE_SECURITY"                              ,  24},
-  {"SYSTEM_POWER_CONTROLS"                          ,  25},
-  {"VOLTAGE_PROBE"                                  ,  26},
-  {"COOLING_DEVICE"                                 ,  27},
-  {"TEMPERATURE_PROBE"                              ,  28},
-  {"ELECTRICAL_CURRENT_PROBE"                       ,  29},
-  {"OUT_OF_BAND_REMOTE_ACCESS"                      ,  30},
-  {"BOOT_INTEGRITY_SERVICES_(BIS)_ENTRY_POINT"      ,  31},
-  {"SYSTEM_BOOT_INFORMATION"                        ,  32},
-  {"64_BIT_MEMORY_ERROR_INFORMATION"                ,  33},
-  {"MANAGEMENT_DEVICE"                              ,  34},
-  {"MANAGEMENT_DEVICE_COMPONENT"                    ,  35},
-  {"MANAGEMENT_DEVICE_THRESHOLD_DATA"               ,  36},
-  {"MEMORY_CHANNEL"                                 ,  37},
-  {"IPMI_DEVICE_INFORMATION"                        ,  38},
-  {"SYSTEM_POWER_SUPPLY"                            ,  39},
-  {"INACTIVE"                                       ,  126},
-  {"END_OF_TABLE"                                   ,  127},
+  {"BIOS_INFORMATION"                               ,  SMBIOS_TypeBIOS_INFORMATION                    },
+  {"SYSTEM_INFORMATION"                             ,  SMBIOS_TypeSYSTEM_INFORMATION                  },
+  {"BASE_BOARD_(OR_MODULE)_INFORMATION"             ,  SMBIOS_TypeBASE_BOARD_MODULE_INFORMATION       },
+  {"SYSTEM_ENCLOSURE_OR_CHASSIS"                    ,  SMBIOS_TypeSYSTEM_ENCLOSURE_OR_CHASSIS         },
+  {"PROCESSOR_INFORMATION"                          ,  SMBIOS_TypePROCESSOR_INFORMATION               },
+  {"MEMORY_CONTROLLER_INFORMATION"                  ,  SMBIOS_TypeMEMORY_CONTROLLER_INFORMATION       },
+  {"MEMORY_MODULE_INFORMATION"                      ,  SMBIOS_TypeMEMORY_MODULE_INFORMATION           },
+  {"CACHE_INFORMATION"                              ,  SMBIOS_TypeCACHE_INFORMATION                   },
+  {"PORT_CONNECTOR_INFORMATION"                     ,  SMBIOS_TypePORT_CONNECTOR_INFORMATION          },
+  {"SYSTEM_SLOTS"                                   ,  SMBIOS_TypeSYSTEM_SLOTS                        },
+  {"ON_BOARD_DEVICES_INFORMATION"                   ,  SMBIOS_TypeON_BOARD_DEVICES_INFORMATION        },
+  {"OEM_STRINGS"                                    ,  SMBIOS_TypeOEM_STRINGS                         },
+  {"SYSTEM_CONFIGURATION_OPTIONS"                   ,  SMBIOS_TypeSYSTEM_CONFIGURATION_OPTIONS        },
+  {"BIOS_LANGUAGE_INFORMATION"                      ,  SMBIOS_TypeBIOS_LANGUAGE_INFORMATION           },
+  {"GROUP_ASSOCIATIONS"                             ,  SMBIOS_TypeGROUP_ASSOCIATIONS                  },
+  {"SYSTEM_EVENT_LOG"                               ,  SMBIOS_TypeSYSTEM_EVENT_LOG                    },
+  {"PHYSICAL_MEMORY_ARRAY"                          ,  SMBIOS_TypePHYSICAL_MEMORY_ARRAY               },
+  {"MEMORY_DEVICE"                                  ,  SMBIOS_TypeMEMORY_DEVICE                       },
+  {"32_BIT_MEMORY_ERROR_INFORMATION"                ,  SMBIOS_Type32_BIT_MEMORY_ERROR_INFORMATION     },
+  {"MEMORY_ARRAY_MAPPED_ADDRESS"                    ,  SMBIOS_TypeMEMORY_ARRAY_MAPPED_ADDRESS         },
+  {"MEMORY_DEVICE_MAPPED_ADDRESS"                   ,  SMBIOS_TypeMEMORY_DEVICE_MAPPED_ADDRESS        },
+  {"BUILT_IN_POINTING_DEVICE"                       ,  SMBIOS_TypeBUILT_IN_POINTING_DEVICE            },
+  {"PORTABLE_BATTERY"                               ,  SMBIOS_TypePORTABLE_BATTERY                    },
+  {"SYSTEM_RESET"                                   ,  SMBIOS_TypeSYSTEM_RESET                        },
+  {"HARDWARE_SECURITY"                              ,  SMBIOS_TypeHARDWARE_SECURITY                   },
+  {"SYSTEM_POWER_CONTROLS"                          ,  SMBIOS_TypeSYSTEM_POWER_CONTROLS               },
+  {"VOLTAGE_PROBE"                                  ,  SMBIOS_TypeVOLTAGE_PROBE                       },
+  {"COOLING_DEVICE"                                 ,  SMBIOS_TypeCOOLING_DEVICE                      },
+  {"TEMPERATURE_PROBE"                              ,  SMBIOS_TypeTEMPERATURE_PROBE                   },
+  {"ELECTRICAL_CURRENT_PROBE"                       ,  SMBIOS_TypeELECTRICAL_CURRENT_PROBE            },
+  {"OUT_OF_BAND_REMOTE_ACCESS"                      ,  SMBIOS_TypeOUT_OF_BAND_REMOTE_ACCESS           },
+  {"BOOT_INTEGRITY_SERVICES_(BIS)_ENTRY_POINT"      ,  SMBIOS_TypeBOOT_INTEGRITY_SERVICES_ENTRY_POINT },
+  {"SYSTEM_BOOT_INFORMATION"                        ,  SMBIOS_TypeSYSTEM_BOOT_INFORMATION             },
+  {"64_BIT_MEMORY_ERROR_INFORMATION"                ,  SMBIOS_Type64_BIT_MEMORY_ERROR_INFORMATION     },
+  {"MANAGEMENT_DEVICE"                              ,  SMBIOS_TypeMANAGEMENT_DEVICE                   },
+  {"MANAGEMENT_DEVICE_COMPONENT"                    ,  SMBIOS_TypeMANAGEMENT_DEVICE_COMPONENT         },
+  {"MANAGEMENT_DEVICE_THRESHOLD_DATA"               ,  SMBIOS_TypeMANAGEMENT_DEVICE_THRESHOLD_DATA    },
+  {"MEMORY_CHANNEL"                                 ,  SMBIOS_TypeMEMORY_CHANNEL                      },
+  {"IPMI_DEVICE_INFORMATION"                        ,  SMBIOS_TypeIPMI_DEVICE_INFORMATION             },
+  {"SYSTEM_POWER_SUPPLY"                            ,  SMBIOS_TypeSYSTEM_POWER_SUPPLY                 },
+  {"INACTIVE"                                       ,  SMBIOS_TypeINACTIVE                            },
+  {"END_OF_TABLE"                                   ,  SMBIOS_TypeEND_OF_TABLE                        },
 };
 PCFG_TOKEN_LIST_DESC(SmbiosStructureTypesTL, SmbiosStructureTypesTokens);
 
@@ -158,16 +158,14 @@ SMBIOS_CE_Element(
   if(pszMaxCount==NULL                  ) return EAPI_STATUS_ERROR;
   *pszMaxCount++='\0';
 
-  EApiStatusCode=GetTokenValue(
-      SmbiosStructureTypesTokens, 
-      ARRAY_SIZE(SmbiosStructureTypesTokens), 
+  EApiStatusCode=GetTokenValueStrip(
+      &SmbiosStructureTypesTL, 
       pszCEType, 
       &uiCEType
     );
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode))
-    EApiStatusCode=GetTokenValue(
-        SmbiosBoardTypesTokens, 
-        ARRAY_SIZE(SmbiosBoardTypesTokens), 
+    EApiStatusCode=GetTokenValueStrip(
+        &SmbiosBoardTypesTL, 
         pszCEType, 
         &uiCEType
       );
@@ -214,12 +212,14 @@ TokenDesc_t  PCIeLaneWidths[]={
   {"x16", 5  },
   {"x32", 6  },
 };
+PCFG_TOKEN_LIST_DESC(PCIeLaneWidthsTL, PCIeLaneWidths);
 
 TokenDesc_t  PCIeGeneration[]={
   {"Gen1"	, COM0R20_PCIe_GEN1  },
   {"Gen2"	, COM0R20_PCIe_GEN2  },
   {"Gen3"	, COM0R20_PCIe_GEN3  },
 };
+PCFG_TOKEN_LIST_DESC(PCIeGenerationTL, PCIeGeneration);
 
 
 EApiStatusCode_t
@@ -277,25 +277,23 @@ COM0PCIe_Element(
     return EAPI_STATUS_ERROR;
   }
 
-  EApiStatusCode=GetTokenValue(
-      PCIeLaneWidths, 
-      ARRAY_SIZE(PCIeLaneWidths), 
+  EApiStatusCode=GetTokenValueStrip(
+      &PCIeLaneWidthsTL, 
       pszWidth, 
       &uiWidth
     );
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
-    printf("COM0PCIe_Element = Unknown Token, %s\n", pszValue);
+    printf("COM0PCIe_Element = Unknown Token, %s\n", pszWidth);
     return EApiStatusCode;
   }
 
-  EApiStatusCode=GetTokenValue(
-      PCIeGeneration, 
-      ARRAY_SIZE(PCIeGeneration), 
+  EApiStatusCode=GetTokenValueStrip(
+      &PCIeGenerationTL, 
       pszGen, 
       &uiGen
     );
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
-    printf("COM0PCIe_Element = Unknown Token, %s\n", pszValue);
+    printf("COM0PCIe_Element = Unknown Token, %s\n", pszGen);
     return EApiStatusCode;
   }
   if(uiStartingLane&((1<<(uiWidth - 1))-1)){
@@ -458,7 +456,7 @@ typedef struct SmbiosSystem_s{
   char *        aszProduct        [1];
   char *        aszVersion        [1];
   char *        aszSerialNum      [1];
-  uint8_t       aUUID             [1][16];
+  EeePGUID_t    aUUID             [1];
   char *        aszSKU_Number     [1];
   unsigned long aulInsideCrc      [1];
   char *        aszFamily         [1];
@@ -469,7 +467,7 @@ SmbiosSystem_t COM0_SMBIOS_System={{0xE002},{NULL},{NULL},{NULL},{NULL},{{0}},{N
 typedef struct SmbiosChassis_s{
   unsigned long aulHandle         [1];
   char *        aszManuf          [1];
-  unsigned long aulType           [1];
+  unsigned long aulChassisType    [1];
   char *        aszVersion        [1];
   char *        aszSerialNum      [1];
   char *        aszAssetTag       [1];
@@ -525,8 +523,8 @@ EeePCustomBlock_t EeeP_CustomBlock6_Cfg;
 typedef struct EeePExtI2CDevice_s{
   unsigned long aulAddr      [1];
   unsigned long aulBus       [1];
-  unsigned long aulType      [1];
-  unsigned long aulSize      [1];
+  unsigned long aulDeviceType      [1];
+  unsigned long aulDeviceSize      [1];
   unsigned long aulInsideCrc [1];
 }EeePExtI2CDevice_t;
 
@@ -534,8 +532,8 @@ EeePExtI2CDevice_t EeePExtI2CDevice0;
 EeePExtI2CDevice_t EeePExtI2CDevice1;
 
 typedef struct EeePI2CDevice_s{
-  unsigned long aulType         [1];
-  unsigned long aulSize         [1];
+  unsigned long aulDeviceType         [1];
+  unsigned long aulDeviceSize         [1];
   unsigned long aulWriteLength  [1];
   unsigned long aulInsideCrc    [1];
 }EeePI2CDevice_t;
@@ -676,7 +674,7 @@ CfgElementDesc_t SmbiosSystemDesc[]={
 CfgElementDesc_t SmbiosChassisDesc[]={                     
   ELEMENT_DESC("InsideCRC"     , COM0_SMBIOS_Chassis.aulInsideCrc     , &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
   ELEMENT_DESC("Manufacturer"  , COM0_SMBIOS_Chassis.aszManuf         , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
-  ELEMENT_DESC("Type"          , COM0_SMBIOS_Chassis.aulType          , &Token_Element_funcs , &SmbiosChassisTypesTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("Type"          , COM0_SMBIOS_Chassis.aulChassisType   , &Token_Element_funcs , &SmbiosChassisTypesTL          , ELEMENT_REQUIRED)
   ELEMENT_DESC("Version"       , COM0_SMBIOS_Chassis.aszVersion       , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_REQUIRED)
   ELEMENT_DESC("SerialNumber"  , COM0_SMBIOS_Chassis.aszSerialNum     , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
   ELEMENT_DESC("AssetTag"      , COM0_SMBIOS_Chassis.aszAssetTag      , &String_Element_funcs, &PreserveTrailingSpaces        , ELEMENT_OPTIONAL)
@@ -830,20 +828,20 @@ CfgElementDesc_t ExtI2CDevice0Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeePExtI2CDevice0.aulInsideCrc, &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceBus"     , EeePExtI2CDevice0.aulBus      , &Token_Element_funcs  , &I2CBusTL             , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceAddr"    , EeePExtI2CDevice0.aulAddr     , &I2C_EEPROM_Addr_funcs, NULL                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DeviceType"    , EeePExtI2CDevice0.aulType     , &Token_Element_funcs  , &StandardExtendedTL   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DeviceSize"    , EeePExtI2CDevice0.aulSize     , &Token_Element_funcs  , &EEPDeviceSizeTL      , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceType"    , EeePExtI2CDevice0.aulDeviceType     , &Token_Element_funcs  , &StandardExtendedTL   , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceSize"    , EeePExtI2CDevice0.aulDeviceSize     , &Token_Element_funcs  , &EEPDeviceSizeTL      , ELEMENT_REQUIRED)
 };
 CfgElementDesc_t ExtI2CDevice1Desc[]={
   ELEMENT_DESC("InsideCRC"     , EeePExtI2CDevice1.aulInsideCrc, &Token_Element_funcs , &InsideCrcTL                   , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceBus"     , EeePExtI2CDevice1.aulBus      , &Token_Element_funcs  , &I2CBusTL             , ELEMENT_REQUIRED)
   ELEMENT_DESC("DeviceAddr"    , EeePExtI2CDevice1.aulAddr     , &I2C_EEPROM_Addr_funcs, NULL                  , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DeviceType"    , EeePExtI2CDevice1.aulType     , &Token_Element_funcs  , &StandardExtendedTL   , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DeviceSize"    , EeePExtI2CDevice1.aulSize     , &Token_Element_funcs  , &EEPDeviceSizeTL      , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceType"    , EeePExtI2CDevice1.aulDeviceType     , &Token_Element_funcs  , &StandardExtendedTL   , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceSize"    , EeePExtI2CDevice1.aulDeviceSize     , &Token_Element_funcs  , &EEPDeviceSizeTL      , ELEMENT_REQUIRED)
 };
 
 CfgElementDesc_t I2CDeviceDesc[]={
-  ELEMENT_DESC("DeviceType"    , EeePI2CDevice.aulType        , &Token_Element_funcs , &StandardExtendedTL    , ELEMENT_REQUIRED)
-  ELEMENT_DESC("DeviceSize"    , EeePI2CDevice.aulSize        , &Token_Element_funcs , &EEPDeviceSizeTL       , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceType"    , EeePI2CDevice.aulDeviceType        , &Token_Element_funcs , &StandardExtendedTL    , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DeviceSize"    , EeePI2CDevice.aulDeviceSize        , &Token_Element_funcs , &EEPDeviceSizeTL       , ELEMENT_REQUIRED)
   ELEMENT_DESC("WriteLength"   , EeePI2CDevice.aulWriteLength , &Token_Element_funcs , &EeePEEPWriteLenTL     , ELEMENT_REQUIRED)
 };
 NumberRange_t ValidUsbHSRange[]={
@@ -1114,7 +1112,7 @@ HandleEeePExpI2CBlock(
   )
 {
   EApiStatusCode_t EApiStatusCode;
-  ExtI2CDeviceDesc_t Header;
+  EeePExtI2CDeviceDesc_t Header;
   EeePExtI2CDevice_t *pExtI2C_cgf=pDesc->pDataContainer;
   size_t stBlockLength=EeePAlignLength(sizeof(Header));
 
@@ -1124,8 +1122,8 @@ HandleEeePExpI2CBlock(
 
   Header.DeviceBus  =(uint8_t)pExtI2C_cgf->aulBus[0];
 
-  Header.DeviceDesc =(uint8_t)pExtI2C_cgf->aulType[0]<<4;
-  Header.DeviceDesc|=pExtI2C_cgf->aulSize[0]<<5;
+  Header.DeviceDesc =(uint8_t)pExtI2C_cgf->aulDeviceSize[0];
+  Header.DeviceDesc|=pExtI2C_cgf->aulDeviceType[0];
 
   DO(EeePAddBlock(BHandel, &Header, NULL, pExtI2C_cgf->aulInsideCrc[0]));
 
@@ -1230,7 +1228,7 @@ HandleSmbiosChassisBlock(
   )
 {
   EApiStatusCode_t EApiStatusCode;
-  ChassisInfo_t *pHeader;
+  EeePChassisInfo_t *pHeader;
   unsigned int i;
   SmbiosChassis_t *pSmbiosChassis_cgf=pDesc->pDataContainer;
   size_t stHeaderLength=sizeof(*pHeader)- sizeof(pHeader->CElement[0]);
@@ -1256,8 +1254,8 @@ HandleSmbiosChassisBlock(
         pHeader
       );
 
-  pHeader->Type         =(uint8_t)pSmbiosChassis_cgf->aulType[0]     ;
-  EeeP_Set32BitValue_BE(pHeader->OEM  , (uint32_t)pSmbiosChassis_cgf->aulOEM[0]);
+  pHeader->Type         =(uint8_t)pSmbiosChassis_cgf->aulChassisType[0]     ;
+  EeeP_Set32BitValue_BE(pHeader->OEM.b  , (uint32_t)pSmbiosChassis_cgf->aulOEM[0]);
   pHeader->Height       =(uint8_t)pSmbiosChassis_cgf->aulHeight[0]     ;
   pHeader->NumPowerCords=(uint8_t)pSmbiosChassis_cgf->aulNumPowerCords[0]     ;
   pHeader->CElementCnt  =(uint8_t)pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount;
@@ -1285,7 +1283,7 @@ HandleSmbiosChassisBlock(
 
   DO(SetDynBlockHeader(pHeader, EEEP_BLOCK_ID_SMBIOS, stBlockLength));
 
-  pHeader->SDBHdr.Type=SMBIOS_TypeChassisDesc;
+  pHeader->SDBHdr.Type=SMBIOS_TypeSYSTEM_ENCLOSURE_OR_CHASSIS;
   pHeader->SDBHdr.Length=(uint8_t)stHeaderLength;
   EeeP_Set16BitValue_BE(pHeader->SDBHdr.Handle.b, (uint16_t)pSmbiosChassis_cgf->aulHandle[0]);
 
@@ -1303,7 +1301,7 @@ HandleSmbiosSystemBlock(
   )
 {
   EApiStatusCode_t EApiStatusCode;
-  SystemInfo_t *pHeader;
+  EeePSystemInfo_t *pHeader;
   unsigned int i;
   SmbiosSystem_t *pSmbiosSystem_cgf=pDesc->pDataContainer;
   size_t stHeaderLength=sizeof(*pHeader);
@@ -1329,7 +1327,7 @@ HandleSmbiosSystemBlock(
       );
 
 
-  memcpy(pHeader->UUID, pSmbiosSystem_cgf->aUUID[0], sizeof(pHeader->UUID));
+  pHeader->UUID=pSmbiosSystem_cgf->aUUID[0];
   
   pszStrBuffer=(char*)pHeader;
   pszStrBuffer+=sizeof(*pHeader);
@@ -1344,7 +1342,7 @@ HandleSmbiosSystemBlock(
 
   DO(SetDynBlockHeader(pHeader, EEEP_BLOCK_ID_SMBIOS, stBlockLength));
 
-  pHeader->SDBHdr.Type=SMBIOS_TypeSystemDesc;
+  pHeader->SDBHdr.Type=SMBIOS_TypeSYSTEM_INFORMATION;
   pHeader->SDBHdr.Length=(uint8_t)stHeaderLength;
   EeeP_Set16BitValue_BE(pHeader->SDBHdr.Handle.b, (uint16_t)pSmbiosSystem_cgf->aulHandle[0]);
 
@@ -1363,7 +1361,7 @@ HandleSmbiosModuleBlock(
   )
 {
   EApiStatusCode_t EApiStatusCode;
-  ModuleInfo_t *pHeader;
+  EeePModuleInfo_t *pHeader;
   unsigned int i;
   SmbiosModule_t *pSmbiosModule_cgf=pDesc->pDataContainer;
   size_t stHeaderLength=sizeof(*pHeader)- sizeof(pHeader->Handles[0].b);
@@ -1431,7 +1429,7 @@ HandleSmbiosModuleBlock(
 
   DO(SetDynBlockHeader(pHeader, EEEP_BLOCK_ID_SMBIOS, stBlockLength));
 
-  pHeader->SDBHdr.Type=SMBIOS_TypeModuleDesc;
+  pHeader->SDBHdr.Type=SMBIOS_TypeBASE_BOARD_MODULE_INFORMATION;
   pHeader->SDBHdr.Length=(uint8_t)stHeaderLength;
   EeeP_Set16BitValue_BE(pHeader->SDBHdr.Handle.b, (uint16_t)pSmbiosModule_cgf->aulHandle[0]);
 
@@ -1450,14 +1448,14 @@ HandleVendorBlock(
   )
 {
   EApiStatusCode_t EApiStatusCode;
-  VendBlockHdr_t *pHeader;
+  EeePVendBlockHdr_t *pHeader;
   void *pvFileBuffer;
   size_t stFileSize;
   size_t stBlockLength;
   EeePVendorBlock_t *pVendorBlock=pDesc->pDataContainer;
   EApiStatusCode=ReadBinaryFile(pVendorBlock->aszFilename[0], &pvFileBuffer, &stFileSize);
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
-        fprintf(stderr, "ERROR: Opening %s", pVendorBlock->aszFilename[0]);
+        fprintf(stderr, "ERROR: Opening %s\n", pVendorBlock->aszFilename[0]);
         return EApiStatusCode;
   }
   stBlockLength=EeePAlignLength(stFileSize+sizeof(*pHeader));
@@ -1495,14 +1493,14 @@ HandleLFPDescBlock(
   )
 {
   EApiStatusCode_t EApiStatusCode;
-  LFPDataBlock_t *pHeader;
+  EeePLFPDataBlock_t *pHeader;
   void *pvFileBuffer;
   size_t stFileSize;
   size_t stBlockLength;
   EeePLFP_t *pLfpBlock=pDesc->pDataContainer;
   EApiStatusCode=ReadBinaryFile(pLfpBlock->aszFilename[0], &pvFileBuffer, &stFileSize);
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
-        fprintf(stderr, "ERROR: Opening %s", pLfpBlock->aszFilename[0]);
+        fprintf(stderr, "ERROR: Opening %s\n", pLfpBlock->aszFilename[0]);
         return EApiStatusCode;
   }
   stBlockLength=EeePAlignLength(stFileSize+sizeof(*pHeader) - sizeof(pHeader->RawData));
@@ -1542,7 +1540,7 @@ HandleCustomBlock(
   EeePCustomBlock_t *pCustomBlock=pDesc->pDataContainer;
   EApiStatusCode=ReadBinaryFile(pCustomBlock->aszFilename[0], &pvFileBuffer, &stFileSize);
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
-        fprintf(stderr, "ERROR: Opening %s", pCustomBlock->aszFilename[0]);
+        fprintf(stderr, "ERROR: Opening %s\n", pCustomBlock->aszFilename[0]);
         return EApiStatusCode;
   }
   stBlockLength=EeePAlignLength(stFileSize+sizeof(*pHeader));

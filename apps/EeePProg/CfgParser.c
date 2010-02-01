@@ -246,7 +246,7 @@ ParseCfgFile(
 
 #if TEST_EEPCFG
 /*       sprintf(ErrorBuffer, "%-15s : %s", "Block", LineBuffer); */
-/*       EAPI_FORMATED_MES( L, ParseCfgFile, 0, ErrorBuffer); */
+/*       EAPI_FORMATED_MES( 'L', ParseCfgFile, 0, ErrorBuffer); */
 #endif
       pCurBlockDesc=NULL;
       ulBlockStartLine=ulLineNum;
@@ -275,7 +275,7 @@ ParseCfgFile(
             TEXT("Invalid Block"), 
             LineBuffer
           );
-        EAPI_FORMATED_MES( W, ParseCfgFile, 0, ErrorBuffer);
+        EAPI_FORMATED_MES( 'W', ParseCfgFile, 0, ErrorBuffer);
         continue;
       }
       szValue=strchr(szName, '=');
@@ -288,7 +288,7 @@ ParseCfgFile(
             TEXT("Invalid line"), 
             LineBuffer
           );
-        EAPI_FORMATED_MES( W, ParseCfgFile, 0, ErrorBuffer);
+        EAPI_FORMATED_MES( 'W', ParseCfgFile, 0, ErrorBuffer);
         continue;
       }
       *szValue++='\0';
@@ -296,7 +296,7 @@ ParseCfgFile(
       skipWhiteSpaces(&szValue);
 #if TEST_EEPCFG
 /*       sprintf(ErrorBuffer, "%-15s : %-20s = %s", pCurBlockDesc->pszBlockName, szName, szValue); */
-/*       EAPI_FORMATED_MES( L, ParseCfgFile, 0, ErrorBuffer); */
+/*       EAPI_FORMATED_MES( 'L', ParseCfgFile, 0, ErrorBuffer); */
 #endif
       for(i=pCurBlockDesc->stElementCount, pCurElement=pCurBlockDesc->pElementsDesc; i; i--, pCurElement++){
         if(!strcmp(szName, pCurElement->pcszElementName)){

@@ -310,7 +310,7 @@ EeePCreateNewBuffer(
    */
   if(u32Flags&EEEP_INIT_INCLUDE_CRC){
     DBlockIdHdr_t   *plclEeePBlock; 
-    CRC16ChkBlock_t *pEeePCRCBlock;
+    EeePCRC16ChkBlock_t *pEeePCRCBlock;
     /*
      * Allocate CRC BLOCK
      */
@@ -320,7 +320,7 @@ EeePCreateNewBuffer(
           &plclEeePBlock,
           0
         ));
-   pEeePCRCBlock=(CRC16ChkBlock_t*)plclEeePBlock;
+   pEeePCRCBlock=(EeePCRC16ChkBlock_t*)plclEeePBlock;
 
     /*
      * Initialise CRC Block Values
@@ -457,7 +457,7 @@ EeePMapBuffer(
             EAPI_STATUS_ERROR,
             TEXT("More than 1 CRC Block Not Supported")
           );
-        pBufMap->pEeePCRCBlock=(CRC16ChkBlock_t *)pCurBlock;
+        pBufMap->pEeePCRCBlock=(EeePCRC16ChkBlock_t *)pCurBlock;
         break;
       case EEEP_BLOCK_ID_IGNORE:
         pCurBlock=NULL;
@@ -780,8 +780,8 @@ EeePFindVendorBlock(
   DO(EeePGetFirstDB(BHandel, &pCurBlock));
   for(;pCurBlock!=NULL;pCurBlock=GetNextBlock(pCurBlock)){
     if(pCurBlock->DBlockId==EEEP_BLOCK_ID_VENDOR_SPECIFIC&&
-       ((VendBlockHdr_t*)pCurBlock)->VendBlockId==VendorBlockId&&
-       EeeP_Get16BitValue_BE(((VendBlockHdr_t*)pCurBlock)->VendId)==VendorId
+       ((EeePVendBlockHdr_t*)pCurBlock)->VendBlockId==VendorBlockId&&
+       EeeP_Get16BitValue_BE(((EeePVendBlockHdr_t*)pCurBlock)->VendId)==VendorId
       )
     {
       if(!-- Instance){
@@ -792,6 +792,45 @@ EeePFindVendorBlock(
   }
   EAPI_APP_RETURN_ERROR(
       EeePFindVendorBlock,
+      EAPI_STATUS_ERROR,
+      TEXT("Block Not Found")
+    );
+}
+EApiStatusCode_t
+EeePFindSmbiosBlock(
+    __IN  EeePHandel_t   BHandel,
+    __IN  SMBIOS_BlockId_t Type,
+    __IN  uint16_t       Handle,
+    __OUT void         **pvFBlock
+    )
+{
+  DBlockIdHdr_t   *pCurBlock;
+  EApiStatusCode_t EApiStatusCode;
+
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      EeePFindSmbiosBlock,
+      EAPI_STATUS_INVALID_PARAMETER,
+      BHandel
+    );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      EeePFindSmbiosBlock,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pvFBlock
+    );
+
+  DO(EeePGetFirstDB(BHandel, &pCurBlock));
+  for(;pCurBlock!=NULL;pCurBlock=GetNextBlock(pCurBlock)){
+    if(pCurBlock->DBlockId==EEEP_BLOCK_ID_SMBIOS&&
+       ((EeePSmbiosHdr_t*)pCurBlock)->Type==Type&&
+       EeeP_Get16BitValue_BE(((EeePSmbiosHdr_t*)pCurBlock)->Handle.b)==Handle
+      )
+    {
+      *pvFBlock=pCurBlock;
+      return EAPI_STATUS_SUCCESS;
+    }
+  }
+  EAPI_APP_RETURN_ERROR(
+      EeePFindSmbiosBlock,
       EAPI_STATUS_ERROR,
       TEXT("Block Not Found")
     );

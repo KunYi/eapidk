@@ -46,7 +46,7 @@ typedef void * EeePHandel_t;
 #define EEEP_SIZE_UNITS        2
 #define EEEP_ALIGN_LENGTH(x)  EEEP_ALIGN_VALUE_B(x, EEEP_SIZE_UNITS)
 #define EEEP_MIN_BLOCK_LENGTH EEEP_ALIGN_LENGTH(sizeof(DBlockIdHdr_t))
-#define EEEP_CRC_BLOCK_LENGTH EEEP_ALIGN_LENGTH(sizeof(CRC16ChkBlock_t))
+#define EEEP_CRC_BLOCK_LENGTH EEEP_ALIGN_LENGTH(sizeof(EeePCRC16ChkBlock_t))
 
 
 size_t 
@@ -113,7 +113,7 @@ EeePFreeBuffer(
 typedef struct EeePBufferMap_s{
   EeePCmn_t       *pCmnHdr          ;
   DBlockIdHdr_t   *pEmptyBlock      ;
-  CRC16ChkBlock_t *pEeePCRCBlock    ;
+  EeePCRC16ChkBlock_t *pEeePCRCBlock    ;
 }EeePBufferMap_t;
 
 
