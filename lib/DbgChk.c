@@ -166,7 +166,7 @@ siFormattedMessage_SC(
       cszFuncName
     );
   if(szStatusDesc==NULL){
-    fprintf(OutputStream, "               0x08lX | ", StatusCode);
+    fprintf(OutputStream, "               0x%08"PRIX32" | ", StatusCode);
   }else{
     fprintf(OutputStream, "%-25s | ", szStatusDesc);
   }

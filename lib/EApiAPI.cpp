@@ -154,7 +154,7 @@ EApiI2CWriteReadRaw(
   if(ErrorCode2!=EAPI_STATUS_SUCCESS)
     EApiStatusCode=ErrorCode2;
 ErrorExit:
-// ExitSuccess:
+/* ExitSuccess: */
   return EApiStatusCode;
 
 }

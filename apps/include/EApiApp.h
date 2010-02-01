@@ -86,7 +86,7 @@
 #if (STRICT_VALIDATION>0)
 #define EAPI_FORMATED_MES(type, func, err, desc) \
     siFormattedMessage_SC(type, __FILE__, #func, __LINE__, \
-        (EApiStatusCode_t)(((uintptr_t)err)&UINT32_MAX), "%s\n", desc );
+        (EApiStatusCode_t)(((uintptr_t)(err))&UINT32_MAX), "%s\n", desc );
 
 #else
 #define EAPI_FORMATED_MES(type, func, err, desc)
@@ -94,16 +94,16 @@
 
 #define EAPI_APP_RETURN_SUCCESS(func, desc)  \
 	do{\
-  EAPI_FORMATED_MES('L', func, EAPI_RETURN_SUCCESS, desc );\
-      EApiStatusCode=err; \
-      goto ExitSuccess; \
+		EAPI_FORMATED_MES('L', func, EAPI_RETURN_SUCCESS, desc );\
+		EApiStatusCode=err; \
+		goto ExitSuccess; \
 	}while(0)
 
 #define EAPI_APP_RETURN_ERROR(func, err, desc)  \
 	do{ \
-  	  EAPI_FORMATED_MES('E', func, err, desc );\
-      EApiStatusCode=err; \
-      goto ErrorExit; \
+		EAPI_FORMATED_MES('E', func, err, desc );\
+		EApiStatusCode=err; \
+		goto ErrorExit; \
 	}while(0)
 
 #define EAPI_APP_RETURN_ERROR_IF(func, exp, err, desc)  \

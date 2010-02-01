@@ -45,11 +45,21 @@ typedef void EApiValidateTestFunction(void);
 /*  */
 FILE *LogStream;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 EApiStatusCode_t
 EApiGetErrorStringA(
     __OUT const char  **const pszString     , 
     __IN EApiStatusCode_t StatusCode
     );
+
+#ifdef __cplusplus
+}
+#endif
+
 
 signed int
 __cdecl
@@ -78,7 +88,7 @@ siFFormattedMessage_SC(
       cszFuncName 
     );
   if(szStatusDesc==NULL){
-    fprintf(OutStream, "               0x08lX | ", StatusCode);
+    fprintf(OutStream, "               0x%08"PRIX32" | ", StatusCode);
   }else{
     fprintf(OutStream, "%-25s | ", szStatusDesc);
   }
