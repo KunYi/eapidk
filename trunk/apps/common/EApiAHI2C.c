@@ -35,7 +35,7 @@
  */
   #include <EApiApp.h>
 
-uint32_t 
+EApiStatusCode_t 
 EApiAHI2CCCreateAddrOffset(
     __IN  const I2CDeviceDesc_t *const pDDesc     , 
     __IN  size_t                       Offset     , 
@@ -85,16 +85,15 @@ EApiAHI2CCCreateAddrOffset(
     }
   return EAPI_STATUS_SUCCESS;
 }
-uint32_t
+EApiStatusCode_t
 EApiAHI2CWriteEeprom(
-    __IN uint32_t               Id          , 
+    __IN EApiId_t               Id          , 
     __IN const I2CDeviceDesc_t *const pDDesc, 
     __IN const size_t           ByteOffset  , 
     __IN void *                 pBuffer     , 
     __IN size_t                 ByteCnt 
     )
 {
-/*     char TmpStrBuf[256]; */
     uint32_t IntMaxBlckLen;
     size_t BlockEndAddress;
     size_t BlockLength;
@@ -102,7 +101,7 @@ EApiAHI2CWriteEeprom(
     size_t CurOffset;
     size_t EncAddr;
     size_t EncOffset;
-    uint32_t ReturnValue;
+    EApiStatusCode_t StatusCode;
     
     EAPI_APP_ASSERT_PARAMATER_NULL(
         EApiAHI2CWriteEeprom, 
@@ -151,9 +150,9 @@ EApiAHI2CWriteEeprom(
 #endif
     
     /* Get Storage Capabilities */
-    ReturnValue=EApiI2CGetBusCap(Id, &IntMaxBlckLen);
-    if(ReturnValue!=EAPI_STATUS_SUCCESS)
-      return ReturnValue;
+    StatusCode=EApiI2CGetBusCap(Id, &IntMaxBlckLen);
+    if(EAPI_STATUS_TEST_NOK(StatusCode))
+      return StatusCode;
 
     BlockEndAddress=ByteOffset+ByteCnt;
     /* Just use BlockLength as write overhead calculator briefly 
@@ -235,29 +234,29 @@ EApiAHI2CWriteEeprom(
         BlockLength-=(CurOffset+BlockLength)%pDDesc->PageSize;
       }
       /* Get Encoded Device and Offset */
-      ReturnValue=EApiAHI2CCCreateAddrOffset(pDDesc, CurOffset, &EncAddr, &EncOffset);
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
-        return ReturnValue;
+      StatusCode=EApiAHI2CCCreateAddrOffset(pDDesc, CurOffset, &EncAddr, &EncOffset);
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
+        return StatusCode;
       /* Do the actual transfer */
-      ReturnValue=EApiI2CWriteTransfer(
+      StatusCode=EApiI2CWriteTransfer(
           Id, 
           (uint32_t)EncAddr, 
           (uint32_t)EncOffset, 
           ((int8_t *)pBuffer)+(CurOffset-ByteOffset), 
           (uint32_t)BlockLength
           );
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
-        return ReturnValue;
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
+        return StatusCode;
       CurOffset+=BlockLength;
       BlockLength=BlockLengthStd; /* Restore Standard Block Length */
       if(pDDesc->WRecTimems)
         EApiSleep((uint32_t)pDDesc->WRecTimems); /* Allow Device Time to Recover */
     }
-    return ReturnValue;
+    return StatusCode;
 }
-uint32_t
+EApiStatusCode_t
 EApiAHI2CReadEeprom(
-    __IN uint32_t              Id           , 
+    __IN EApiId_t              Id           , 
     __IN const I2CDeviceDesc_t *const pDDesc, 
     __IN const size_t          ByteOffset   , 
     __IN void *                pBuffer      , 
@@ -265,14 +264,13 @@ EApiAHI2CReadEeprom(
     __IN size_t                ByteCnt 
     )
 {
-/*     char TmpStrBuf[256]; */
     uint32_t IntMaxBlckLen;
     size_t   BlockEndAddress;
     size_t   BlockLength;
     size_t   CurOffset;
     size_t   EncAddr;
     size_t   EncOffset;
-    uint32_t ReturnValue;
+    EApiStatusCode_t StatusCode;
     
     EAPI_APP_ASSERT_PARAMATER_NULL(
         EApiAHI2CReadEeprom, 
@@ -307,9 +305,9 @@ EApiAHI2CReadEeprom(
 #endif
     
     /* Get Storage Capabilities */
-    ReturnValue=EApiI2CGetBusCap(Id, &IntMaxBlckLen);
-    if(ReturnValue!=EAPI_STATUS_SUCCESS)
-      return ReturnValue;
+    StatusCode=EApiI2CGetBusCap(Id, &IntMaxBlckLen);
+    if(EAPI_STATUS_TEST_NOK(StatusCode))
+      return StatusCode;
 
     BlockEndAddress=ByteOffset+ByteCnt;
 
@@ -327,11 +325,11 @@ EApiAHI2CReadEeprom(
         BlockLength=BlockEndAddress-CurOffset;
       }
       /* Get Encoded Device and Offset */
-      ReturnValue=EApiAHI2CCCreateAddrOffset(pDDesc, CurOffset, &EncAddr, &EncOffset);
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
-        return ReturnValue;
+      StatusCode=EApiAHI2CCCreateAddrOffset(pDDesc, CurOffset, &EncAddr, &EncOffset);
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
+        return StatusCode;
       /* Do the actual transfer */
-      ReturnValue=EApiI2CReadTransfer(
+      StatusCode=EApiI2CReadTransfer(
           Id, 
           (uint32_t)EncAddr, 
           (uint32_t)EncOffset, 
@@ -339,12 +337,12 @@ EApiAHI2CReadEeprom(
           (uint32_t)BlockLength, 
           (uint32_t)BlockLength
           );
-      if(ReturnValue!=EAPI_STATUS_SUCCESS)
-        return ReturnValue;
+      if(EAPI_STATUS_TEST_NOK(StatusCode))
+        return StatusCode;
       CurOffset+=BlockLength;
     }
 
 
-    return ReturnValue;
+    return StatusCode;
 }
 

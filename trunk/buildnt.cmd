@@ -62,7 +62,7 @@ REM MAIN PROGRAM
 REM ########################################################################
 :Main_Program
 :BUILD_LIB
-  SET LIBFILES="EApi.cpp" "EApiEmulGPIO.c" "EApiEmulI2C.c" "EApiInitLib.c" "EApiEmulBacklight.c" "EApiEmulBoardInfo.c" "EApiEmulStorage.c" "EApiEmulWDT.c"
+  SET LIBFILES="EApi.cpp" "EApiEmulGPIO.c" "EApiEmulI2C.c" "EApiInitLib.c" "EApiEmulBacklight.c" "EApiEmulBoardInfo.c" "EApiEmulStorage.c" "EApiEmulWDT.c" "DbgChk.c"
   call :CopyFiles "%EAPILIBBASE%" "%EAPILIBBASE%\WINNT" %LIBFILES%
   for %%a in (%TARGETARCHS%) do @(
     call :BUILD_LIB_GENERIC %%a
@@ -82,7 +82,7 @@ IF /I "%~1"=="BUILD_LIB" GOTO Exit
   GOTO :EOF
 
 :BUILD_APP2
-  CALL :BUILD_APP_S EeePProg "EeePProg.c BinFuncs.c EeePDB.c EeePCfg.c StrFuncs.c CfgParser.c CfgPHelper.c ArgParse.c "
+  CALL :BUILD_APP_S EeePProg "EeePProg.c BinFuncs.c EeePDB.c EeePCfg.c StrFuncs.c CfgParser.c CfgPHelper.c ArgParse.c TokenFunc.c RangeFunc.c"
   GOTO :EOF
 
 :PACK_BUILD
@@ -146,7 +146,7 @@ REM ########################################################################
 REM PROCEDURES
 REM ########################################################################
 :BUILD_APP_S 
-  SET APPHELPFILES="EApiAHI2C.c" "EApiAHStorage.c" "EApiAHStr.c"
+  SET APPHELPFILES="EApiAHI2C.c" "EApiAHStorage.c" "EApiAHStr.c" "DbgChk.c"
   call :CopyFiles "%APPSBASE%\common" "%APPSBASE%\%~1\WINNT" %APPHELPFILES%
   for %%a in (%TARGETARCHS%) do @(
     call :BUILD_APP_GENERIC "%~1" %2 %%a

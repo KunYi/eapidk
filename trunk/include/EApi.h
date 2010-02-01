@@ -140,6 +140,12 @@ extern "C" {
 /* Embedded Application System Interface */
 
 /*
+ *  EApi Types
+ */
+typedef uint32_t EApiStatusCode_t;
+typedef uint32_t EApiId_t;
+
+/*
  *
  *
  *  S T A T U S   C O D E S
@@ -329,7 +335,7 @@ extern "C" {
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiLibInitialize(void)   ; /* Should be called before 
                              * calling any other API 
@@ -344,7 +350,7 @@ EApiLibInitialize(void)   ; /* Should be called before
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE 
 EApiLibUnInitialize(void) ; /* Should be called before 
                              * program exit 
@@ -421,10 +427,10 @@ EApiLibUnInitialize(void) ; /* Should be called before
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE
 EApiBoardGetStringA(
-    __IN      uint32_t  Id      , /* Name Id */
+    __IN      EApiId_t  Id      , /* Name Id */
     __OUT     char     *pBuffer , /* Destination pBuffer */
     __INOUT   uint32_t *pBufLen   /* pBuffer Length */
     );
@@ -495,10 +501,10 @@ EApiBoardGetStringA(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiBoardGetValue(
-    __IN  uint32_t  Id      , /* Value Id */
+    __IN  EApiId_t  Id      , /* Value Id */
     __OUT uint32_t *pValue    /* Return Value */
     );
 
@@ -530,10 +536,10 @@ EApiBoardGetValue(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE
 EApiVgaGetBacklightEnable( 
-    __IN  uint32_t  Id      , /* Backlight Id */
+    __IN  EApiId_t  Id      , /* Backlight Id */
     __OUT uint32_t *pEnable   /* Backlight Enable */
     );
 /* 
@@ -548,10 +554,10 @@ EApiVgaGetBacklightEnable(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE
 EApiVgaSetBacklightEnable(
-    __IN  uint32_t  Id      , /* Backlight Id */
+    __IN  EApiId_t  Id      , /* Backlight Id */
     __IN  uint32_t  Enable    /* Backlight Enable */
     );
 /* 
@@ -565,10 +571,10 @@ EApiVgaSetBacklightEnable(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE
 EApiVgaGetBacklightBrightness( 
-    __IN  uint32_t  Id      , /* Backlight Id */
+    __IN  EApiId_t  Id      , /* Backlight Id */
     __OUT uint32_t *pBright   /* Backlight Brightness */
     );
 /* 
@@ -582,10 +588,10 @@ EApiVgaGetBacklightBrightness(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiVgaSetBacklightBrightness(
-    __IN  uint32_t  Id      , /* Backlight Id */
+    __IN  EApiId_t  Id      , /* Backlight Id */
     __IN  uint32_t  Bright    /* Backlight Brightness */
     );
 
@@ -610,10 +616,10 @@ EApiVgaSetBacklightBrightness(
  * Common Error                                 | Common Error Code
  * Else                                         | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiStorageCap(
-    __IN  uint32_t  Id            , /* Storage Area Id */
+    __IN  EApiId_t  Id            , /* Storage Area Id */
     __OUT uint32_t  *pStorageSize , /* Total */
     __OUT uint32_t  *pBlockLength   /* Write Block Length
                                      * & Alignment 
@@ -635,10 +641,10 @@ EApiStorageCap(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiStorageAreaRead(
-    __IN  uint32_t  Id      , /* Storage Area Id */
+    __IN  EApiId_t  Id      , /* Storage Area Id */
     __IN  uint32_t  Offset  , /* Byte Offset */
     __OUT     void *pBuffer , /* Pointer to Data pBuffer */
     __IN  uint32_t  BufLen  , /* Data pBuffer Size in 
@@ -662,10 +668,10 @@ EApiStorageAreaRead(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiStorageAreaWrite(
-    __IN  uint32_t  Id      , /* Storage Area Id */
+    __IN  EApiId_t  Id      , /* Storage Area Id */
     __IN  uint32_t  Offset  , /* Byte Offset */
     __IN      void *pBuffer , /* Pointer to Data pBuffer */
     __IN  uint32_t  ByteCnt   /* Number of bytes to write */
@@ -726,10 +732,10 @@ EApiStorageAreaWrite(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiI2CGetBusCap(
-    __IN  uint32_t  Id         , /* I2C Bus Id */
+    __IN  EApiId_t  Id         , /* I2C Bus Id */
     __OUT uint32_t *pMaxBlkLen   /* Max Block Length 
                                   * Supported on this
                                   * interface 
@@ -761,10 +767,10 @@ EApiI2CGetBusCap(
  * Common Error                             | Common Error Code
  * Else                                     | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiI2CWriteReadRaw(
-    __IN     uint32_t  Id       , /* I2C Bus Id */
+    __IN     EApiId_t  Id       , /* I2C Bus Id */
     __IN     uint8_t   Addr     , /* Encoded 7Bit I2C
                                    * Device Address 
                                    */
@@ -909,10 +915,10 @@ EApiI2CWriteReadRaw(
  * Common Error                             | Common Error Code
  * Else                                     | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiI2CReadTransfer(
-    __IN  uint32_t  Id      , /* I2C Bus Id */
+    __IN  EApiId_t  Id      , /* I2C Bus Id */
     __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C
                                * Device Address
                                */
@@ -946,10 +952,10 @@ EApiI2CReadTransfer(
  * Common Error                             | Common Error Code
  * Else                                     | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiI2CWriteTransfer(
-    __IN  uint32_t  Id      , /* I2C Bus Id */
+    __IN  EApiId_t  Id      , /* I2C Bus Id */
     __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C 
                                * Device Address 
                                */
@@ -993,10 +999,10 @@ EApiI2CWriteTransfer(
  * Common Error                                 | Common Error Code
  * Else                                         | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiI2CProbeDevice(
-    __IN  uint32_t  Id   , /* I2C Bus Id */
+    __IN  EApiId_t  Id   , /* I2C Bus Id */
     __IN  uint32_t  Addr   /* Encoded 7/10Bit 
                             * I2C Device Address 
                             */
@@ -1059,7 +1065,7 @@ EApiI2CProbeDevice(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiWDogGetCap(
     __OUTOPT uint32_t *pMaxDelay       , /* Maximum Supported 
@@ -1089,7 +1095,7 @@ EApiWDogGetCap(
  * Common Error                     | Common Error Code
  * Else                             | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiWDogStart(
     __IN  uint32_t Delay       , /* Delay in milliseconds */
@@ -1112,7 +1118,7 @@ EApiWDogStart(
  * Common Error                     | Common Error Code
  * Else                             | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiWDogTrigger(void);
 
@@ -1126,7 +1132,7 @@ EApiWDogTrigger(void);
  * Common Error                     | Common Error Code
  * Else                             | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiWDogStop(void);
 
@@ -1286,10 +1292,10 @@ EApiWDogStop(void);
  * Common Error                       | Common Error Code
  * Else                               | EAPI_STATUS_SUCCESS
  */
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE 
 EApiGPIOGetDirectionCaps(
-    __IN     uint32_t Id        , /* GPIO Id */
+    __IN     EApiId_t Id        , /* GPIO Id */
     __OUTOPT uint32_t *pInputs  , /* Supported GPIO Input
                                    * Bit Mask 
                                    */
@@ -1309,10 +1315,10 @@ EApiGPIOGetDirectionCaps(
  * Common Error                       | Common Error Code
  * Else                               | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiGPIOGetDirection(
-    __IN  uint32_t Id          , /* GPIO Id */
+    __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected
                                   * Bits 
                                   */
@@ -1332,10 +1338,10 @@ EApiGPIOGetDirection(
  * Common Error                       | Common Error Code
  * Else                               | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiGPIOSetDirection(
-    __IN  uint32_t Id          , /* GPIO Id */
+    __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected 
                                   * Bits 
                                   */
@@ -1353,10 +1359,10 @@ EApiGPIOSetDirection(
  * Common Error                       | Common Error Code
  * Else                               | EAPI_STATUS_SUCCESS
  */
-uint32_t 
+EApiStatusCode_t
 EAPI_CALLTYPE 
 EApiGPIOGetLevel(
-    __IN  uint32_t Id          , /* GPIO Id */
+    __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected
                                   * Bits 
                                   */
@@ -1373,10 +1379,10 @@ EApiGPIOGetLevel(
  * Common Error                       | Common Error Code
  * Else                               | EAPI_STATUS_SUCCESS
  */
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE 
 EApiGPIOSetLevel(
-    __IN  uint32_t Id          , /* GPIO Id */
+    __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected 
                                   * Bits 
                                   */

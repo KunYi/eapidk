@@ -36,9 +36,9 @@
   #include <EApiApp.h>
 
 
-uint32_t 
+EApiStatusCode_t 
 EApiAHWriteStorage(
-    __IN  uint32_t         Id          , 
+    __IN  EApiId_t         Id          , 
     __IN  const uint32_t   ByteOffset  , 
     __IN  void *           pBuffer     , 
     __IN  const uint32_t   ByteCnt 
@@ -48,7 +48,7 @@ EApiAHWriteStorage(
     uint32_t AdjOffset=ByteOffset, AdjLength=ByteCnt;
     int_least8_t * pLclBuffer;
     uint32_t BufferOffset=0;
-    uint32_t ReturnValue;
+    EApiStatusCode_t ReturnValue;
     
     EAPI_APP_ASSERT_PARAMATER_NULL(
         EApiAHWriteStorage, 

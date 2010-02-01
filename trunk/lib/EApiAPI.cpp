@@ -65,7 +65,7 @@ int Initialized=0;
 uint32_t 
 EAPI_CALLTYPE
 EApiI2CGetBusCap(
-    __IN  uint32_t  Id         , /* I2C Bus Id */
+    __IN  EApiId_t  Id         , /* I2C Bus Id */
     __OUT uint32_t *pMaxBlkLen   /* Max Block Length 
                                   * Supported on this
                                   * interface 
@@ -78,10 +78,10 @@ EApiI2CGetBusCap(
   return EApiI2CGetBusCapEmul(Id, pMaxBlkLen);
 }
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiI2CWriteReadRaw(
-    __IN     uint32_t  Id       , /* I2C Bus Id */
+    __IN     EApiId_t  Id       , /* I2C Bus Id */
     __IN     uint8_t   Addr     , /* Encoded 7Bit I2C
                                    * Device Address 
                                    */
@@ -96,8 +96,8 @@ EApiI2CWriteReadRaw(
                                    */
     )
 {
-  uint32_t ErrorCode=EAPI_STATUS_SUCCESS;
-  uint32_t ErrorCode2;
+  EApiStatusCode_t ErrorCode=EAPI_STATUS_SUCCESS;
+  EApiStatusCode_t ErrorCode2;
   EAPI_CHECK_INITIALIZED(EApiI2CWriteReadRaw);
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
       EApiI2CWriteReadRaw, 
@@ -105,12 +105,17 @@ EApiI2CWriteReadRaw(
       "pWBuffer is NULL"          
       );
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : ADDR=%02hhX WriteBCnt=%04"PRIX32
-        " RBufLen=%04"PRIX32" WriteBCnt=%04"PRIX32
-        " ReadBCnt=%04"PRIX32" %08"PRIX32"\n", 
-        __LINE__, "EApiI2CWriteReadRaw", "Info", 
-        Addr, WriteBCnt, RBufLen, WriteBCnt, ReadBCnt, 
-        (WriteBCnt?((uint32_t*)pWBuffer)[0]:0))
+  siFormattedMessage_M2(
+          'L'                   ,
+          __FILE__              ,
+          "EApiI2CWriteTransfer",
+          __LINE__              ,
+          "Info"                ,
+          "ADDR=%02hhX WriteBCnt=%04"PRIX32
+          " RBufLen=%04"PRIX32" WriteBCnt=%04"PRIX32
+          " ReadBCnt=%04"PRIX32" %08"PRIX32"\n", 
+          Addr, WriteBCnt, RBufLen, WriteBCnt, ReadBCnt, 
+          (WriteBCnt?((uint32_t*)pWBuffer)[0]:0)
       );
 #endif
   EAPI_LIB_ASSERT_PARAMATER_CHECK(
@@ -150,10 +155,10 @@ EApiI2CWriteReadRaw(
 }
 
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiI2CReadTransfer(
-    __IN  uint32_t  Id      , /* I2C Bus Id */
+    __IN  EApiId_t  Id      , /* I2C Bus Id */
     __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C
                                * Device Address
                                */
@@ -171,10 +176,15 @@ EApiI2CReadTransfer(
   EAPI_CHECK_INITIALIZED(EApiI2CReadTransfer);
 
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : Id=%08"PRIX32" ADDR=%04"PRIX32
-        " CMD=%04"PRIX32" BCNT=%04"PRIX32"\n", 
-        __LINE__, "EApiI2CReadTransfer", "Info", 
-        Id, Addr, Cmd, ByteCnt)
+  siFormattedMessage_M2(
+          'L'                   ,
+          __FILE__              ,
+          "EApiI2CWriteTransfer",
+          __LINE__              ,
+          "Info"                ,
+          "Id=%08"PRIX32" ADDR=%04"PRIX32
+          " CMD=%04"PRIX32" BCNT=%04"PRIX32"\n", 
+          Id, Addr, Cmd, ByteCnt
       );
 #endif
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiI2CReadTransfer, pBuffer);
@@ -216,10 +226,10 @@ EApiI2CReadTransfer(
 
 
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiI2CWriteTransfer(
-    __IN  uint32_t  Id      , /* I2C Bus Id */
+    __IN  EApiId_t  Id      , /* I2C Bus Id */
     __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C 
                                * Device Address 
                                */
@@ -236,10 +246,15 @@ EApiI2CWriteTransfer(
 
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiI2CWriteTransfer, pBuffer);
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : Id=%08"PRIX32" ADDR=%04"PRIX32
-                    " CMD=%04"PRIX32" BCNT=%04"PRIX32" %08"PRIX32"\n", 
-                    __LINE__, "EApiI2CWriteTransfer", "Info", 
-                    Id, Addr, Cmd, ByteCnt, ((uint32_t*)pBuffer)[0])
+  siFormattedMessage_M2(
+          'L'                   ,
+          __FILE__              ,
+          "EApiI2CWriteTransfer",
+          __LINE__              ,
+          "Info"                ,
+          "Id=%08"PRIX32" ADDR=%04"PRIX32
+          " CMD=%04"PRIX32" BCNT=%04"PRIX32" %08"PRIX32"\n", 
+          Id, Addr, Cmd, ByteCnt, ((uint32_t*)pBuffer)[0]
       );
 #endif
   EAPI_LIB_ASSERT_PARAMATER_ZERO(EApiI2CWriteTransfer, ByteCnt);
@@ -283,13 +298,17 @@ EApiI2CWriteTransfer(
     pLclBuffer=(uint8_t *)pBuffer;
   }
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : Id=%08"PRIX32
-                    " ADDR=%04"PRIX32" CMD=%04"PRIX32
-                    " BCNT=%04"PRIX32" %08"PRIX32"\n", 
-                    __LINE__, "EApiI2CWriteTransfer", 
-                    "Info", Id, Addr, Cmd, ByteCnt, 
-                    ((uint32_t*)pLclBuffer)[0])
-      );
+  siFormattedMessage_M2(
+          'L'                   ,
+          __FILE__              ,
+          "EApiI2CWriteTransfer",
+          __LINE__              ,
+          "Info"                ,
+          "Id=%08"PRIX32" ADDR=%04"PRIX32" CMD=%04"PRIX32
+          " BCNT=%04"PRIX32" %08"PRIX32"\n", 
+          Id, Addr, Cmd, ByteCnt, 
+          ((uint32_t*)pLclBuffer)[0]
+        );
 #endif
   ReturnValue=EApiI2CWriteReadRaw(
       Id, 
@@ -305,16 +324,16 @@ EApiI2CWriteTransfer(
   return ReturnValue;
 }
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiI2CProbeDevice(
-    __IN  uint32_t  Id   , /* I2C Bus Id */
+    __IN  EApiId_t  Id   , /* I2C Bus Id */
     __IN  uint32_t  Addr   /* Encoded 7/10Bit 
                             * I2C Device Address 
                             */
     )
 {
-  uint32_t ReturnValue;
+  EApiStatusCode_t ReturnValue;
   uint8_t LclpBuffer[8]={0};
   int LclByteCnt=0;
   EAPI_CHECK_INITIALIZED(EApiI2CWriteTransfer);
@@ -346,10 +365,10 @@ EApiI2CProbeDevice(
  *
  */
 
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE
 EApiBoardGetStringA(
-    __IN      uint32_t  Id      , /* Name Id */
+    __IN      EApiId_t  Id      , /* Name Id */
     __OUT     char     *pBuffer , /* Destination pBuffer */
     __INOUT   uint32_t *pBufLen   /* pBuffer Length */
     )
@@ -374,10 +393,10 @@ EApiBoardGetStringA(
  *
  *
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiBoardGetValue(
-    __IN  uint32_t  Id      , /* Value Id */
+    __IN  EApiId_t  Id      , /* Value Id */
     __OUT uint32_t *pValue    /* Return Value */
     )
 {
@@ -401,10 +420,10 @@ EApiBoardGetValue(
  *
  *
  */
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE
 EApiVgaGetBacklightEnable( 
-    __IN  uint32_t  Id      , /* Backlight Id */
+    __IN  EApiId_t  Id      , /* Backlight Id */
     __OUT uint32_t *pEnable   /* Backlight Enable */
     )
 {
@@ -414,10 +433,10 @@ EApiVgaGetBacklightEnable(
   return EApiVgaGetBacklightEnableEmul(Id, pEnable);
 }
 
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE
 EApiVgaSetBacklightEnable(
-    __IN  uint32_t  Id      , /* Backlight Id */
+    __IN  EApiId_t  Id      , /* Backlight Id */
     __IN  uint32_t  Enable    /* Backlight Enable */
     )
 {
@@ -431,10 +450,10 @@ EApiVgaSetBacklightEnable(
 
   return EApiVgaSetBacklightEnableEmul(Id, Enable);
 }
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE
 EApiVgaGetBacklightBrightness( 
-    __IN  uint32_t  Id      , /* Backlight Id */
+    __IN  EApiId_t  Id      , /* Backlight Id */
     __OUT uint32_t *pBright   /* Backlight Brightness */
     )
 {
@@ -444,10 +463,10 @@ EApiVgaGetBacklightBrightness(
   return EApiVgaGetBacklightBrightnessEmul(Id, pBright);
 }
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiVgaSetBacklightBrightness(
-    __IN  uint32_t  Id      , /* Backlight Id */
+    __IN  EApiId_t  Id      , /* Backlight Id */
     __IN  uint32_t  Bright    /* Backlight Brightness */
     )
 {
@@ -473,10 +492,10 @@ EApiVgaSetBacklightBrightness(
  *
  */
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiGPIOGetLevel(
-    __IN  uint32_t Id          , /* GPIO Id */
+    __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected
                                   * Bits 
                                   */
@@ -490,10 +509,10 @@ EApiGPIOGetLevel(
   return EApiGPIOGetLevelEmul(Id, Bitmask, pLevel);
 }
 
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE 
 EApiGPIOSetLevel(
-    __IN  uint32_t Id          , /* GPIO Id */
+    __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected 
                                   * Bits 
                                   */
@@ -506,10 +525,10 @@ EApiGPIOSetLevel(
   return EApiGPIOSetLevelEmul(Id, Bitmask, Level);
 }
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiGPIOGetDirection(
-    __IN  uint32_t Id          , /* GPIO Id */
+    __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected
                                   * Bits 
                                   */
@@ -523,10 +542,10 @@ EApiGPIOGetDirection(
   return EApiGPIOGetDirectionEmul(Id, Bitmask, pDirection);
 }
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiGPIOSetDirection(
-    __IN  uint32_t Id          , /* GPIO Id */
+    __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected 
                                   * Bits 
                                   */
@@ -539,10 +558,10 @@ EApiGPIOSetDirection(
   return EApiGPIOSetDirectionEmul(Id, Bitmask, Direction);
 }
 
-uint32_t
+EApiStatusCode_t
 EAPI_CALLTYPE 
 EApiGPIOGetDirectionCaps(
-    __IN     uint32_t Id        , /* GPIO Id */
+    __IN     EApiId_t Id        , /* GPIO Id */
     __OUTOPT uint32_t *pInputs  , /* Supported GPIO Input
                                    * Bit Mask 
                                    */
@@ -578,7 +597,7 @@ EApiGPIOGetDirectionCaps(
  *
  *
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiLibInitialize(void)
 {
@@ -587,7 +606,7 @@ EApiLibInitialize(void)
   EApiInitLib();
   EAPI_LIB_RETURN_SUCCESS(EApiLibInitialize, "");
 }
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiLibUnInitialize(void)
 {
@@ -608,7 +627,7 @@ EApiLibUnInitialize(void)
  *
  *
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE
 EApiWDogGetCap(
     __OUTOPT uint32_t *pMaxDelay       ,/* Maximum Supported 
@@ -639,7 +658,7 @@ EApiWDogGetCap(
   return EApiWDogGetCapEmul(pMaxDelay, pMaxEventTimeout, pMaxResetTimeout);
 }
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiWDogStart(
     __IN  uint32_t Delay       , /* Delay in milliseconds */
@@ -654,14 +673,14 @@ EApiWDogStart(
   EAPI_CHECK_INITIALIZED(EApiWDogStart);
   return EApiWDogStartEmul(Delay, EventTimeout, ResetTimeout);
 }
-uint32_t 
+EApiStatusCode_t
 EAPI_CALLTYPE 
 EApiWDogTrigger(void)
 {
   EAPI_CHECK_INITIALIZED(EApiWDogTrigger);
   return EApiWDogTriggerEmul();
 }
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiWDogStop(void)
 {
@@ -678,10 +697,10 @@ EApiWDogStop(void)
  *
  *
  */
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiStorageCap(
-    __IN  uint32_t  Id            , /* Storage Area Id */
+    __IN  EApiId_t  Id            , /* Storage Area Id */
     __OUT uint32_t  *pStorageSize , /* Total */
     __OUT uint32_t  *pBlockLength   /* Write Block Length & Alignment */
     )
@@ -701,24 +720,30 @@ EApiStorageCap(
 
   return EApiStorageCapEmul(Id, pStorageSize, pBlockLength);
 }
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiStorageAreaRead(
-    __IN  uint32_t  Id      , /* Storage Area Id */
+    __IN  EApiId_t  Id      , /* Storage Area Id */
     __IN  uint32_t  Offset  , /* Byte Offset */
     __OUT     void *pBuffer , /* Pointer to Date pBuffer */
     __IN  uint32_t  BufLen  , /* Data pBuffer Size in bytes */
     __IN  uint32_t  ByteCnt   /* Number of bytes to read */
     )
 {
-  uint32_t ErrorCode=EAPI_STATUS_SUCCESS;
-  uint32_t ErrorCode2;
+  EApiStatusCode_t ErrorCode=EAPI_STATUS_SUCCESS;
+  EApiStatusCode_t ErrorCode2;
   EAPI_CHECK_INITIALIZED(EApiStorageAreaRead);
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : Id=%08"PRIX32" Offset=%04"PRIX32
-        " BufLen=%04"PRIX32" ByteCnt=%04"PRIX32"\n", 
-        __LINE__, "EApiStorageAreaRead", "Info", Id, Offset, BufLen, ByteCnt
-        ));
+  siFormattedMessage_M2(
+          'L'                   ,
+          __FILE__              ,
+          "EApiI2CWriteTransfer",
+          __LINE__              ,
+          "Info"                ,
+          "Id=%08"PRIX32" Offset=%04"PRIX32
+          " BufLen=%04"PRIX32" ByteCnt=%04"PRIX32"\n", 
+          Id, Offset, BufLen, ByteCnt
+        );
 #endif
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiStorageAreaRead, pBuffer);
   EAPI_LIB_ASSERT_PARAMATER_ZERO(EApiStorageAreaRead, ByteCnt);
@@ -732,10 +757,10 @@ EApiStorageAreaRead(
   return ErrorCode;
 }
 
-uint32_t 
+EApiStatusCode_t 
 EAPI_CALLTYPE 
 EApiStorageAreaWrite(
-    __IN  uint32_t  Id      , /* Storage Area Id */
+    __IN  EApiId_t  Id      , /* Storage Area Id */
     __IN  uint32_t  Offset  , /* Byte Offset */
     __IN      void *pBuffer , /* Pointer to Date pBuffer */
     __IN  uint32_t  ByteCnt   /* Number of bytes to write */
@@ -744,10 +769,16 @@ EApiStorageAreaWrite(
 
   EAPI_CHECK_INITIALIZED(EApiStorageAreaWrite);
 #if (STRICT_VALIDATION>1)
-  EAPI_LIB_MSG_OUT(("O%04u %-30s : %-30s : Id=%08"PRIX32" Offset=%04"PRIX32
-        " ByteCnt=%04"PRIX32"\n", __LINE__, "EApiStorageAreaWrite", "Info", 
-        Id, Offset, ByteCnt
-        ));
+  siFormattedMessage_M2(
+          'L'                   ,
+          __FILE__              ,
+          "EApiI2CWriteTransfer",
+          __LINE__              ,
+          "Info"                ,
+          "Id=%08"PRIX32" Offset=%04"PRIX32
+          " ByteCnt=%04"PRIX32"\n",
+          Id, Offset, ByteCnt
+        );
 #endif
   EAPI_LIB_ASSERT_PARAMATER_NULL(EApiStorageAreaWrite, pBuffer);
   EAPI_LIB_ASSERT_PARAMATER_ZERO(EApiStorageAreaWrite, ByteCnt);

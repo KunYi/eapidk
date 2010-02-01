@@ -146,7 +146,7 @@ PrintHexAsciiTableEx(
 
 
     if(pcvBuffer==NULL){
-      EAPI_FORMATED_MES(E, PrintHexAsciiTableEx, EAPI_STATUS_INVALID_PARAMETER, TEXT("(pcvBuffer==NULL)"));
+      EAPI_FORMATED_MES('E', PrintHexAsciiTableEx, EAPI_STATUS_INVALID_PARAMETER, TEXT("(pcvBuffer==NULL)"));
       return ;
     }
     if(pcvBase==NULL)
@@ -252,39 +252,42 @@ PrintHexAsciiTable(
 
 
 
+
+
 EApiStatusCode_t 
-WriteBinaryFile(
-    __IN const char *pcszFilename, 
-    __IN const void *pcvBuffer   , 
-    __IN size_t      stWriteBCnt
+LclWriteFile(
+    __IN const char *cszFilename, 
+    __IN const void *pcvBuffer  , 
+    __IN size_t      stWriteBCnt,
+    __IN const char *cszWriteType
   )
 {
   FILE *LclFilePtr;
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      WriteBinaryFile,
+      LclWriteFile,
       EAPI_STATUS_INVALID_PARAMETER,
-      pcszFilename
+      cszFilename
     );
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      WriteBinaryFile,
+      LclWriteFile,
       EAPI_STATUS_INVALID_PARAMETER,
       pcvBuffer
     );
   EAPI_APP_ASSERT_PARAMATER_ZERO(
-      WriteBinaryFile,
+      LclWriteFile,
       EAPI_STATUS_INVALID_PARAMETER,
       stWriteBCnt
     );
 
-  LclFilePtr=fopen(pcszFilename, "wb");
+  LclFilePtr=fopen(cszFilename, cszWriteType);
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      WriteBinaryFile,
+      LclWriteFile,
       EAPI_STATUS_WRITE_ERROR,
       LclFilePtr
     );
   EAPI_APP_RETURN_ERROR_IF_S(
-      ReadBinaryFile,
-      (stWriteBCnt!=fwrite(pcvBuffer, sizeof(uint8_t), stWriteBCnt, LclFilePtr))*sizeof(uint8_t),
+      LclWriteFile,
+      (stWriteBCnt!=fwrite(pcvBuffer, sizeof(uint8_t), stWriteBCnt, LclFilePtr)),
       EAPI_STATUS_WRITE_ERROR
     );
   fclose(LclFilePtr);
@@ -292,62 +295,105 @@ WriteBinaryFile(
 }
 
 EApiStatusCode_t
-ReadBinaryFile(
-    __IN  const char *pcszFilename, 
+LclReadFile(
+    __IN  const char *cszFilename, 
     __OUT void      **pvBuffer, 
-    __OUT size_t     *pstReadBCnt
+    __OUT size_t     *pstReadBCnt,
+    __IN  const char *cszReadType 
   )
 {
   FILE *LclFilePtr;
   size_t stFileLen;
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      ReadBinaryFile,
+      LclReadFile,
       EAPI_STATUS_INVALID_PARAMETER,
-      pcszFilename
+      cszFilename
     );
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      ReadBinaryFile,
+      LclReadFile,
       EAPI_STATUS_INVALID_PARAMETER,
       pvBuffer
     );
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      ReadBinaryFile,
+      LclReadFile,
       EAPI_STATUS_INVALID_PARAMETER,
       pstReadBCnt
     );
   *pstReadBCnt=0;
-  LclFilePtr=fopen(pcszFilename, "rb");
+  LclFilePtr=fopen(cszFilename, cszReadType);
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      ReadBinaryFile,
+      LclReadFile,
       EAPI_STATUS_READ_ERROR,
       LclFilePtr
     );
 
   fseek(LclFilePtr, 0, SEEK_END);
   stFileLen=ftell(LclFilePtr);
-  rewind(LclFilePtr);
   *pvBuffer=malloc(stFileLen);
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      WriteBinaryFile,
+      LclReadFile,
       EAPI_STATUS_ALLOC_ERROR,
       *pvBuffer
     );
 
-  if(stFileLen!=fread(*pvBuffer, sizeof(uint8_t), stFileLen, LclFilePtr)*sizeof(uint8_t)){
+  rewind(LclFilePtr);
+#if 0
+  if(stFileLen!=fread(*pvBuffer, sizeof(uint8_t), stFileLen, LclFilePtr)){
     free(*pvBuffer);
     *pvBuffer=NULL;
     EAPI_APP_RETURN_ERROR(
-        ReadBinaryFile,
+        LclReadFile,
         EAPI_STATUS_READ_ERROR,
-        TEXT("(stFileLen!=fread(*pvBuffer, sizeof(uint8_t), stFileLen, LclFilePtr)*sizeof(uint8_t))")
+        TEXT("(stFileLen!=fread(*pvBuffer, sizeof(uint8_t), stFileLen, LclFilePtr))")
       );
   }
+#else
+  fread(*pvBuffer, sizeof(uint8_t), stFileLen, LclFilePtr);
+#endif
   *pstReadBCnt=stFileLen;
   fclose(LclFilePtr);
 
   return EAPI_STATUS_SUCCESS;
 }
 
+EApiStatusCode_t 
+WriteBinaryFile(
+    __IN const char *cszFilename, 
+    __IN const void *pcvBuffer   , 
+    __IN size_t      stWriteBCnt
+  )
+{
+  return LclWriteFile(cszFilename, pcvBuffer, stWriteBCnt, "wb");
+}
+
+EApiStatusCode_t
+ReadBinaryFile(
+    __IN  const char *cszFilename, 
+    __OUT void      **pvBuffer, 
+    __OUT size_t     *pstReadBCnt
+  )
+{
+  return LclReadFile(cszFilename, pvBuffer, pstReadBCnt, "rb");
+}
+EApiStatusCode_t 
+WriteTextFile(
+    __IN const char *cszFilename, 
+    __IN const void *pcvBuffer   , 
+    __IN size_t      stWriteBCnt
+  )
+{
+  return LclWriteFile(cszFilename, pcvBuffer, stWriteBCnt, "w");
+}
+
+EApiStatusCode_t
+ReadTextFile(
+    __IN  const char *cszFilename, 
+    __OUT void      **pvBuffer, 
+    __OUT size_t     *pstReadBCnt
+  )
+{
+  return LclReadFile(cszFilename, pvBuffer, pstReadBCnt, "r");
+}
 
 /*
  * CPU Independent Multi Byte 
@@ -359,7 +405,7 @@ EeeP_Set16BitValue_BE(
     uint16_t Value
      )
 {
-  pBuffer[1]=EEEP_LO_UINT8(Value   );
+  pBuffer[1]=EEEP_LO_UINT8(Value       );
   pBuffer[0]=EEEP_LO_UINT8(Value>>(8*1));
 }
 uint16_t
@@ -367,7 +413,7 @@ EeeP_Get16BitValue_BE(
     const uint8_t *pBuffer
      )
 {
-  return (pBuffer[1]    ) |
+  return (pBuffer[1]       ) |
          (pBuffer[0]<<(8*1)) ;
 }
 void
@@ -376,7 +422,7 @@ EeeP_Set32BitValue_BE(
     uint32_t Value
      )
 {
-  pBuffer[3]=EEEP_LO_UINT8(Value    );
+  pBuffer[3]=EEEP_LO_UINT8(Value       );
   pBuffer[2]=EEEP_LO_UINT8(Value>>(8*1));
   pBuffer[1]=EEEP_LO_UINT8(Value>>(8*2));
   pBuffer[0]=EEEP_LO_UINT8(Value>>(8*3));
@@ -386,7 +432,7 @@ EeeP_Get32BitValue_BE(
     const uint8_t *pBuffer
      )
 {
-  return (pBuffer[3]    ) |
+  return (pBuffer[3]       ) |
          (pBuffer[2]<<(8*1)) |
          (pBuffer[1]<<(8*2)) |
          (pBuffer[0]<<(8*3)) ;
@@ -438,7 +484,7 @@ EeeP_Get16BitValue_LE(
     const uint8_t *pBuffer
      )
 {
-  return (pBuffer[0]    ) |
+  return (pBuffer[0]       ) |
          (pBuffer[1]<<(8*1)) ;
 }
 void
@@ -447,7 +493,7 @@ EeeP_Set32BitValue_LE(
     uint32_t Value
      )
 {
-  pBuffer[0]=EEEP_LO_UINT8(Value    );
+  pBuffer[0]=EEEP_LO_UINT8(Value       );
   pBuffer[1]=EEEP_LO_UINT8(Value>>(8*1));
   pBuffer[2]=EEEP_LO_UINT8(Value>>(8*2));
   pBuffer[3]=EEEP_LO_UINT8(Value>>(8*3));
@@ -457,7 +503,7 @@ EeeP_Get32BitValue_LE(
     const uint8_t *pBuffer
      )
 {
-  return (pBuffer[0]    ) |
+  return (pBuffer[0]       ) |
          (pBuffer[1]<<(8*1)) |
          (pBuffer[2]<<(8*2)) |
          (pBuffer[3]<<(8*3)) ;

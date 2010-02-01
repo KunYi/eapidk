@@ -35,6 +35,7 @@
  */
 
 #include <EApiLib.h>
+#include <stdio.h>
 
 
 
@@ -49,32 +50,54 @@
  *
  */
 typedef struct StorageAreaMapping_s{
-  uint32_t Id          ; /* EAPI Storage Area Id */
+  EApiId_t Id          ; /* EAPI Storage Area Id */
   uint32_t StorageSize ; /* Storage Area Size */
   uint32_t WBlockLength; /* Block Lenght/Alignment */
-  uint8_t *pBuffer     ; /* Pointer to Storage pBuffer */
+  uint8_t *pu8Buffer   ; /* Pointer to Storage pu8Buffer */
+  const char *const cszFilename;
+  FILE     *FStream;
 }StorageAreaMapping_t;
 static uint8_t StorageID0[32]={0};
 static uint8_t StorageID1[1024*4]={0};
-const StorageAreaMapping_t StorageAreaTbl[]={
-  {EAPI_ID_STORAGE_STD, sizeof(StorageID0), sizeof(StorageID0[0])       , StorageID0  },
-  {EAPI_PMG_ID_STORAGE_SAMPLE, sizeof(StorageID1), sizeof(StorageID1[0])*1024  , StorageID1  }
+StorageAreaMapping_t StorageAreaTbl[]={
+  {
+    EAPI_ID_STORAGE_STD        , 
+    sizeof(StorageID0)         , 
+    ELEMENT_SIZE(StorageID0)   , 
+    StorageID0                 ,
+    "EApiStorage0.EMUL"        ,
+    NULL
+  },
+  {
+    EAPI_PMG_ID_STORAGE_SAMPLE , 
+    sizeof(StorageID1)         , 
+    ELEMENT_SIZE(StorageID1)*1024 , 
+    StorageID1                 ,
+    "EApiStorage1.EMUL"        ,
+    NULL
+  },
 };
-uint32_t 
+
+EApiStatusCode_t 
 EApiStorageCapEmul (
-    __IN      uint32_t  Id          , 
+    __IN      EApiId_t  Id          , 
     __OUTOPT  uint32_t *pStorageSize, 
     __OUTOPT  uint32_t *pBlockLength
     )
 {
-  uint32_t i;
+  StorageAreaMapping_t *pCurStorageDesc;
+  unsigned i;
 
-  for(i=0;i<ARRAY_SIZE(StorageAreaTbl);i++)
+  for(
+      i=ARRAY_SIZE(StorageAreaTbl),
+      pCurStorageDesc=StorageAreaTbl;
+      i--;
+      pCurStorageDesc++)
   {
-      if(StorageAreaTbl[i].Id==Id)
+      if(pCurStorageDesc->Id==Id)
       {
-        *pStorageSize=StorageAreaTbl[i].StorageSize;
-        *pBlockLength=StorageAreaTbl[i].WBlockLength;
+        *pStorageSize=pCurStorageDesc->StorageSize;
+        *pBlockLength=pCurStorageDesc->WBlockLength;
         EAPI_LIB_RETURN_SUCCESS(EApiStorageCap, "");
       }
   }
@@ -84,28 +107,38 @@ EApiStorageCapEmul (
     "Unrecognised Storage ID"
     );
 }
-uint32_t 
+EApiStatusCode_t 
 EApiStorageAreaReadEmul(
-  __IN  uint32_t Id     , 
+  __IN  EApiId_t Id     , 
   __IN  uint32_t Offset , 
-  __OUT    void *pBuffer, 
+  __OUT    void *pvBuffer, 
   __IN  uint32_t ByteCnt
   )
 {
-  uint32_t i;
+  StorageAreaMapping_t *pCurStorageDesc;
+  unsigned i;
 
-  for(i=0;i<ARRAY_SIZE(StorageAreaTbl);i++)
+  for(
+      i=ARRAY_SIZE(StorageAreaTbl),
+      pCurStorageDesc=StorageAreaTbl;
+      i--;
+      pCurStorageDesc++)
   {
-      if(StorageAreaTbl[i].Id==Id)
+      if(pCurStorageDesc->Id==Id)
       {
         EAPI_LIB_RETURN_ERROR_IF(
           EApiStorageAreaReadEmul                         , 
-          (Offset+ByteCnt)>StorageAreaTbl[i].StorageSize  , 
+          (Offset+ByteCnt)>pCurStorageDesc->StorageSize  , 
           EAPI_STATUS_INVALID_BLOCK_LENGTH                , 
           "Read Len extends beyond End of Storage Area"
           );
         
-        memcpy(pBuffer, StorageAreaTbl[i].pBuffer, ByteCnt);
+#if 0
+        memcpy(pvBuffer, pCurStorageDesc->pu8Buffer+Offset, ByteCnt);
+#else
+        fseek(pCurStorageDesc->FStream, Offset, SEEK_SET);
+        fread(pvBuffer, sizeof(uint8_t), ByteCnt, pCurStorageDesc->FStream);
+#endif
 
         EAPI_LIB_RETURN_SUCCESS(EApiStorageAreaRead, "");
       }
@@ -117,39 +150,49 @@ EApiStorageAreaReadEmul(
       );
 }
 
-uint32_t 
+EApiStatusCode_t 
 EApiStorageAreaWriteEmul(
-    __IN uint32_t Id, 
+    __IN EApiId_t Id, 
     __IN uint32_t Offset, 
-    __IN void *pBuffer, 
+    __IN void *pvBuffer, 
     __IN uint32_t ByteCnt
     )
 {
-  uint32_t i;
-  for(i=0;i<ARRAY_SIZE(StorageAreaTbl);i++)
+  StorageAreaMapping_t *pCurStorageDesc;
+  unsigned i;
+  for(
+      i=ARRAY_SIZE(StorageAreaTbl),
+      pCurStorageDesc=StorageAreaTbl;
+      i--;
+      pCurStorageDesc++)
   {
-      if(StorageAreaTbl[i].Id==Id)
+      if(pCurStorageDesc->Id==Id)
       {
         EAPI_LIB_RETURN_ERROR_IF(
           EApiStorageAreaWriteEmul, 
-          (ByteCnt%StorageAreaTbl[i].WBlockLength)       , 
+          (ByteCnt%pCurStorageDesc->WBlockLength)       , 
           EAPI_STATUS_INVALID_BLOCK_ALIGNMENT, 
           "Write length Not Aligned"        
           );
         EAPI_LIB_RETURN_ERROR_IF(
           EApiStorageAreaWriteEmul, 
-          (Offset%StorageAreaTbl[i].WBlockLength)        , 
+          (Offset%pCurStorageDesc->WBlockLength)        , 
           EAPI_STATUS_INVALID_BLOCK_ALIGNMENT, 
           "Write Base Address Not Aligned"        
           );
         EAPI_LIB_RETURN_ERROR_IF(
             EApiStorageAreaWriteEmul, 
-            (Offset+ByteCnt)>StorageAreaTbl[i].StorageSize , 
+            (Offset+ByteCnt)>pCurStorageDesc->StorageSize , 
             EAPI_STATUS_INVALID_BLOCK_LENGTH, 
             "Write Len extends beyond End of Storage Area"
             );
 
-        memcpy(StorageAreaTbl[i].pBuffer, pBuffer, ByteCnt);
+#if 0
+        memcpy(pCurStorageDesc->pu8Buffer, pvBuffer+Offset, ByteCnt);
+#else
+        fseek(pCurStorageDesc->FStream, Offset, SEEK_SET);
+        fwrite(pvBuffer, sizeof(uint8_t), ByteCnt, pCurStorageDesc->FStream);
+#endif
         EAPI_LIB_RETURN_SUCCESS(EApiStorageAreaWriteEmul, "");
       }
   }
@@ -158,5 +201,55 @@ EApiStorageAreaWriteEmul(
       EAPI_STATUS_UNSUPPORTED  , 
       "Unrecognised Storage ID"
       );
+}
+
+
+
+
+
+
+
+EApiStatusCode_t 
+OpenEepromFiles(void)
+{
+  StorageAreaMapping_t *pCurStorageDesc;
+  unsigned i;
+  for(
+      i=ARRAY_SIZE(StorageAreaTbl),
+      pCurStorageDesc=StorageAreaTbl;
+      i--;
+      pCurStorageDesc++)
+  {
+    pCurStorageDesc->FStream=fopen(pCurStorageDesc->cszFilename, "rb+");
+    if(pCurStorageDesc->FStream==NULL){
+      pCurStorageDesc->FStream=fopen(pCurStorageDesc->cszFilename, "wb+");
+    }
+    if(pCurStorageDesc->FStream!=NULL){
+        fseek(pCurStorageDesc->FStream, 0, SEEK_END);
+        if(ftell(pCurStorageDesc->FStream)<(signed)pCurStorageDesc->StorageSize){
+          rewind(pCurStorageDesc->FStream);
+          fwrite(pCurStorageDesc->pu8Buffer, sizeof(uint8_t), pCurStorageDesc->StorageSize, pCurStorageDesc->FStream);
+      }
+    }
+  }
+  return EAPI_STATUS_SUCCESS;
+}
+EApiStatusCode_t 
+CloseEepromFiles(void)
+{
+  StorageAreaMapping_t *pCurStorageDesc;
+  unsigned i;
+  for(
+      i=ARRAY_SIZE(StorageAreaTbl),
+      pCurStorageDesc=StorageAreaTbl;
+      i--;
+      pCurStorageDesc++)
+  {
+    if(pCurStorageDesc->FStream!=NULL){
+      fclose(pCurStorageDesc->FStream);
+      pCurStorageDesc->FStream=NULL;
+    }
+  }
+  return EAPI_STATUS_SUCCESS;
 }
 

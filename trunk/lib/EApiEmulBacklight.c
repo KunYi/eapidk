@@ -47,7 +47,7 @@
  *
  */
 typedef struct BackLightDevice_s{
-  uint32_t Id                ; /* EAPI Temperature Id */
+  EApiId_t Id                ; /* EAPI Temperature Id */
   uint32_t Enabled           ; /* Current Enabled State */
   uint32_t Brightness        ; /* Current Brightness */
 }BackLightDevice_t;
@@ -56,9 +56,9 @@ static BackLightDevice_t BacklightLookup[]={
   {EAPI_ID_BACKLIGHT_2  , EAPI_BACKLIGHT_SET_OFF , EAPI_BACKLIGHT_SET_BRIGHTEST },
 };
 
-uint32_t 
+EApiStatusCode_t 
 EApiVgaGetBacklightEnableEmul( 
-    __IN  uint32_t Id       , 
+    __IN  EApiId_t Id       , 
     __OUT uint32_t *pEnable
     )
 {
@@ -82,9 +82,9 @@ EApiVgaGetBacklightEnableEmul(
     );
 }
 
-uint32_t 
+EApiStatusCode_t 
 EApiVgaSetBacklightEnableEmul( 
-    __IN  uint32_t Id       , 
+    __IN  EApiId_t Id       , 
     __OUT uint32_t Enable
     )
 {
@@ -107,9 +107,9 @@ EApiVgaSetBacklightEnableEmul(
     "Unrecognised Backlight ID"
     );
 }
-uint32_t 
+EApiStatusCode_t 
 EApiVgaGetBacklightBrightnessEmul( 
-    __IN  uint32_t Id           , 
+    __IN  EApiId_t Id           , 
     __OUT uint32_t *pBrightness
     )
 {
@@ -133,9 +133,9 @@ EApiVgaGetBacklightBrightnessEmul(
     );
 }
 
-uint32_t 
+EApiStatusCode_t 
 EApiVgaSetBacklightBrightnessEmul( 
-    __IN  uint32_t Id           , 
+    __IN  EApiId_t Id           , 
     __OUT uint32_t Brightness
     )
 {

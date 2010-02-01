@@ -279,7 +279,7 @@ const GPIOMappingsTbl_t GpioMappingID8[]={
   {END_OF_LIST_MARK, NULL}
 };
 typedef struct GPIOIDMappingsTbl_s{
-  const uint32_t Id          ; /* EAPI Temperature Id */
+  const EApiId_t Id          ; /* EAPI Temperature Id */
   const GPIOMappingsTbl_t *const MapTbl   ; /* Gpio Mapping Table API Interface Bitmask -> Port Bitmask */
   const uint32_t OutputMask  ; /* Bitmask Supported Bits For Output  */
   const uint32_t InputMask   ; /* Bitmask Supported Bits for Input */
@@ -302,9 +302,9 @@ const GPIOIDMappingsTbl_t GPIOIDMapping[]={
 #endif
 };
 
-uint32_t 
+EApiStatusCode_t 
 EApiGPIOGetLevelEmul( 
-    __IN  uint32_t  Id      , 
+    __IN  EApiId_t  Id      , 
     __IN  uint32_t  BitMask , 
     __OUT uint32_t *pLevel
     )
@@ -351,9 +351,9 @@ EApiGPIOGetLevelEmul(
     );
 }
 
-uint32_t 
+EApiStatusCode_t 
 EApiGPIOSetLevelEmul( 
-  __IN uint32_t Id      , 
+  __IN EApiId_t Id      , 
   __IN uint32_t BitMask , 
   __IN uint32_t Level
   )
@@ -422,9 +422,9 @@ EApiGPIOSetLevelEmul(
     );
 }
 
-uint32_t 
+EApiStatusCode_t 
 EApiGPIOGetDirectionEmul( 
-  __IN  uint32_t  Id        ,
+  __IN  EApiId_t  Id        ,
   __IN  uint32_t  BitMask   ,
   __OUT uint32_t *pDirection
   )
@@ -470,9 +470,9 @@ EApiGPIOGetDirectionEmul(
     );
 }
 
-uint32_t 
+EApiStatusCode_t 
 EApiGPIOSetDirectionEmul( 
-    __IN uint32_t Id        , 
+    __IN EApiId_t Id        , 
     __IN uint32_t BitMask   , 
     __IN uint32_t Direction
     )
@@ -544,9 +544,9 @@ EApiGPIOSetDirectionEmul(
     );
 }
 
-uint32_t 
+EApiStatusCode_t 
 EApiGPIOGetDirectionCapsEmul( 
-  __IN      uint32_t  Id      , 
+  __IN      EApiId_t  Id      , 
   __OUTOPT  uint32_t *pInputs , 
   __OUTOPT  uint32_t *pOutputs
   )

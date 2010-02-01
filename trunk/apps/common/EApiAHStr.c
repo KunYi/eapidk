@@ -39,7 +39,7 @@ typedef struct ErrorLookupTbl_S{
   const TCHAR *const  ErrorString;
 }ErrorLookupTbl_t;
 
-#define KUXE_INVALID_STRLEN ((size_t )-1)
+#define EAPI_INVALID_STRLEN ((size_t )-1)
 
 const ErrorLookupTbl_t ErrorLookup[]={
   {EAPI_STATUS_NOT_INITIALIZED        , TEXT("EAPI_STATUS_NOT_INITIALIZED"          )},
@@ -71,8 +71,8 @@ size_t EApiAHCreateErrorString(
 {
   unsigned i;
 
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateErrorString, KUXE_INVALID_STRLEN, pString);
-  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateErrorString, KUXE_INVALID_STRLEN, StrBufLen);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateErrorString, EAPI_INVALID_STRLEN, pString);
+  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateErrorString, EAPI_INVALID_STRLEN, StrBufLen);
 
   for(i=0; i<ARRAY_SIZE(ErrorLookup);i++)
   {
@@ -82,7 +82,7 @@ size_t EApiAHCreateErrorString(
         EApiStrCpy(pString, StrBufLen, ErrorLookup[i].ErrorString);
         return EAPI_strlen (pString);
       }
-      return KUXE_INVALID_STRLEN;
+      return EAPI_INVALID_STRLEN;
     }
   }
   if(pString!=NULL){
@@ -92,7 +92,7 @@ size_t EApiAHCreateErrorString(
       );
     return EAPI_strlen (pString);
   }
-  return KUXE_INVALID_STRLEN;
+  return EAPI_INVALID_STRLEN;
 }
 uint32_t
 EApiAHCreateErrorStringAlloc(
@@ -135,8 +135,8 @@ EApiAHGetString(
   uint32_t ReturnValue;
   uint32_t StringLenLcl=(uint32_t)StrBufLen;
   size_t StringBufferLenBck=StrBufLen;
-  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHGetString, KUXE_INVALID_STRLEN, pString);
-  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHGetString, KUXE_INVALID_STRLEN, StrBufLen);
+  EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHGetString, EAPI_INVALID_STRLEN, pString);
+  EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHGetString, EAPI_INVALID_STRLEN, StrBufLen);
 
   ReturnValue=EApiBoardGetString(StringID, pString, &StringLenLcl);
   if(ReturnValue!=EAPI_STATUS_SUCCESS)
@@ -145,15 +145,15 @@ EApiAHGetString(
   EAPI_APP_RETURN_ERROR_IF(
       EApiAHGetStringAlloc, 
       (StringLenLcl>StringBufferLenBck), 
-      KUXE_INVALID_STRLEN, 
-      TEXT("Interface Returning Different String Lengths")
+      EAPI_INVALID_STRLEN, 
+      "Interface Returning Different String Lengths"
       );
   if(EApiStrLen(pString, StringBufferLenBck)==StringBufferLenBck)
   {
-     EAPI_FORMATED_MES(E, 
+     EAPI_FORMATED_MES('E', 
          EApiAHGetString, 
-         KUXE_INVALID_STRLEN, 
-         TEXT("Returned String Missing Terminating \\0 Character." )
+         EAPI_INVALID_STRLEN, 
+         "Returned String Missing Terminating \\0 Character." 
          );
     pString[StringBufferLenBck-1]=TEXT('\0');
   }
@@ -184,7 +184,7 @@ EApiAHGetStringAlloc(
           EApiAHGetStringAlloc, 
           (*pString==NULL), 
           EAPI_STATUS_ALLOC_ERROR, 
-          TEXT("Memory Allocation Error")
+          "Memory Allocation Error"
           );
 
       ReturnValue=EApiBoardGetString(StringID, *pString, &StringLen);
@@ -193,14 +193,14 @@ EApiAHGetStringAlloc(
           EApiAHGetStringAlloc, 
           (StringLen>StringBufferLenBck), 
           EAPI_STATUS_ERROR, 
-          TEXT("Interface Returning Different String Lengths")
+          "Interface Returning Different String Lengths"
           );
       if(EApiStrLen(*pString, StringBufferLenBck)==StringBufferLenBck)
       {
-        EAPI_FORMATED_MES(E, 
+        EAPI_FORMATED_MES('E', 
             EApiAHGetStringAlloc, 
             EAPI_STATUS_ERROR, 
-            TEXT("Returned String Missing Terminating \\0 Character." )
+            "Returned String Missing Terminating \\0 Character." 
             );
         (*pString)[StringBufferLenBck-1]=TEXT('\0');
       }
@@ -358,7 +358,7 @@ EApiAHCreatePNPIDString(
 #ifdef UNICODE
 uint32_t 
 EApiAHBoardGetStringW(
-    __IN      uint32_t  Id      , /* Name Id */
+    __IN      EApiId_t  Id      , /* Name Id */
     __OUT     wchar_t  *pBuffer , /* Destination pBuffer */
     __INOUT   uint32_t *pBufLen   /* pBuffer Length */
     )
@@ -372,7 +372,7 @@ EApiAHBoardGetStringW(
       EApiAHBoardGetStringW, 
       pBufferPtr==NULL,
       EAPI_STATUS_ALLOC_ERROR, 
-      TEXT("Allocating ASCII Buffer")
+      "Allocating ASCII Buffer"
       );
   }
 
@@ -397,20 +397,72 @@ EApiAHBoardGetStringW(
  *
  ****************************************************************************/
 size_t 
+EApiStrLenA  ( 
+    __IN const char  *pBuffer    ,
+    __IN size_t       BufferLen
+    )
+{
+  const char *pszCurChar;
+  if(pBuffer   ==NULL) return 0;
+  if(BufferLen==0   ) return 0;
+
+  for(pszCurChar=pBuffer; BufferLen--; pszCurChar++)
+    if(*pszCurChar=='\0')
+      break;
+  return pszCurChar - pBuffer;
+}
+char * 
+EApiStrCpyA(
+    __OUT char *const      StringDest   ,
+    __IN size_t             StrBufLen    , 
+    __IN const char *const StringSource
+    )
+{
+  if(StringDest  ==NULL) return StringDest;
+  if(StringSource==NULL) return StringDest;
+  if(StrBufLen==0   ) return StringDest;
+
+  EAPI_strncpyA(StringDest, StringSource, StrBufLen);
+  StringDest[StrBufLen-1]=TEXT('\0');
+  return StringDest;
+}
+int 
+__cdecl 
+EApiSprintfA ( 
+    __IN char *const       pBuffer   ,
+    __IN const size_t       BufferLen ,
+    __IN const char *const fmt       ,
+    ...
+    )
+{
+  int ReturnValue;
+  va_list arg;
+  if(pBuffer  ==NULL) return -1;
+  if(fmt      ==NULL) return -1;
+  if(BufferLen==0   ) return -1;
+
+  va_start(arg, fmt);
+  ReturnValue=EAPI_vsnprintfA(pBuffer, BufferLen, fmt, arg);
+  pBuffer[BufferLen-1]='\0';
+  va_end(arg);
+  return ReturnValue;
+}
+size_t 
 EApiStrLen  ( 
     __IN const TCHAR *pBuffer    ,
     __IN size_t       BufferLen
     )
 {
-  uint32_t i;
+  const TCHAR *pszCurChar;
   if(pBuffer   ==NULL) return 0;
   if(BufferLen==0   ) return 0;
 
-  for(i=0; i<BufferLen; i++)
-    if(pBuffer[i]==TEXT('\0'))
+  for(pszCurChar=pBuffer; BufferLen--; pszCurChar++)
+    if(*pszCurChar=='\0')
       break;
-  return i;
+  return pszCurChar - pBuffer;
 }
+
 TCHAR * 
 EApiStrCpy(
     __OUT TCHAR *const      StringDest   ,

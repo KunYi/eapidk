@@ -175,12 +175,12 @@ typedef struct EeePCmn_s{
  * Identify Device Revisions
  *
  */
-typedef struct UDIdEep_s{
+typedef struct EeePUDId_s{
     uint8_t     VendId[2]  ; /* 0x00 Vendor Unique PNPID         */
     uint8_t     DeviceId[2]; /* 0x02 Vendor Specific Device ID   */
     uint8_t     DeviceFlav ; /* 0x04 Device Specific Flavor ID   */
     uint8_t     RevId      ; /* 0x05 Device Specific Revision ID */
-}UDIdEep_t; 
+}EeePUDId_t; 
 
 /*
  * EeeP
@@ -191,7 +191,7 @@ typedef struct Exp_EEP_s{
     EeePCmn_t   EeePHdr  ; /* 0x00 EeeP Common Header */
     uint8_t     GenId[4] ; /* 0x06 "EXP1"   */
     #define EEEP_EXP_HEADER_ID "EXP1"
-    UDIdEep_t   DevId    ; /* 0x06 Unique Device Id   */
+    EeePUDId_t  DevId    ; /* 0x06 Unique Device Id   */
 }Exp_EEP_t;
 
 
@@ -246,30 +246,84 @@ typedef struct DBlockIdHdr_s{
  * CRC Checksum Block
  *
  */
-typedef struct CRC16ChkBlock_s{
+typedef struct EeePCRC16ChkBlock_s{
     DBlockIdHdr_t CDBHdr        ; /* 0x00 Dynamic Block Header  */
     uint8_t       CrC16[2]      ; /* 0x03 CRC16 Checksum */
     uint8_t       Reserved0     ; /* 0x05 Alignment Byte */
-}CRC16ChkBlock_t;
+}EeePCRC16ChkBlock_t;
 
 
-typedef union SmbiosHandle_u{
-  uint8_t b[2];
-  uint16_t w;
-}SmbiosHandle_t;
+typedef union EeePuint16u_u{
+  uint8_t  b[2];
+  uint16_t n;     /* Native Architecture Access */
+}EeePuint16u_t;
+typedef union EeePuint32u_u{
+  uint8_t  b[4];
+  uint32_t n;     /* Native Architecture Access */
+}EeePuint32u_t;
+typedef union EeePuint64u_u{
+  uint8_t  b[8];
+  uint64_t n;     /* Native Architecture Access */
+}EeePuint64u_t;
+typedef struct EeePEeePGUID_s{
+  EeePuint32u_t  a;
+  EeePuint16u_t  b[2];
+  uint8_t        c[8];
+}EeePGUID_t;
+
+typedef EeePuint16u_t SmbiosHandle_t;
 /*
  *      DMI/SMBIOS Common Header Format
  *
  *  see http://www.dmtf.org/standards/published_documents/DSP0134_2.6.1.pdf
  */
 enum SMBIOS_BlockId_e{
-  SMBIOS_TypeSystemDesc=1,
-  SMBIOS_TypeModuleDesc=2,
-  SMBIOS_TypeChassisDesc=3
+  SMBIOS_TypeBIOS_INFORMATION                               =   0,
+  SMBIOS_TypeSYSTEM_INFORMATION                             =   1,
+  SMBIOS_TypeBASE_BOARD_MODULE_INFORMATION                  =   2,
+  SMBIOS_TypeSYSTEM_ENCLOSURE_OR_CHASSIS                    =   3,
+  SMBIOS_TypePROCESSOR_INFORMATION                          =   4,
+  SMBIOS_TypeMEMORY_CONTROLLER_INFORMATION                  =   5,
+  SMBIOS_TypeMEMORY_MODULE_INFORMATION                      =   6,
+  SMBIOS_TypeCACHE_INFORMATION                              =   7,
+  SMBIOS_TypePORT_CONNECTOR_INFORMATION                     =   8,
+  SMBIOS_TypeSYSTEM_SLOTS                                   =   9,
+  SMBIOS_TypeON_BOARD_DEVICES_INFORMATION                   =  10,
+  SMBIOS_TypeOEM_STRINGS                                    =  11,
+  SMBIOS_TypeSYSTEM_CONFIGURATION_OPTIONS                   =  12,
+  SMBIOS_TypeBIOS_LANGUAGE_INFORMATION                      =  13,
+  SMBIOS_TypeGROUP_ASSOCIATIONS                             =  14,
+  SMBIOS_TypeSYSTEM_EVENT_LOG                               =  15,
+  SMBIOS_TypePHYSICAL_MEMORY_ARRAY                          =  16,
+  SMBIOS_TypeMEMORY_DEVICE                                  =  17,
+  SMBIOS_Type32_BIT_MEMORY_ERROR_INFORMATION                =  18,
+  SMBIOS_TypeMEMORY_ARRAY_MAPPED_ADDRESS                    =  19,
+  SMBIOS_TypeMEMORY_DEVICE_MAPPED_ADDRESS                   =  20,
+  SMBIOS_TypeBUILT_IN_POINTING_DEVICE                       =  21,
+  SMBIOS_TypePORTABLE_BATTERY                               =  22,
+  SMBIOS_TypeSYSTEM_RESET                                   =  23,
+  SMBIOS_TypeHARDWARE_SECURITY                              =  24,
+  SMBIOS_TypeSYSTEM_POWER_CONTROLS                          =  25,
+  SMBIOS_TypeVOLTAGE_PROBE                                  =  26,
+  SMBIOS_TypeCOOLING_DEVICE                                 =  27,
+  SMBIOS_TypeTEMPERATURE_PROBE                              =  28,
+  SMBIOS_TypeELECTRICAL_CURRENT_PROBE                       =  29,
+  SMBIOS_TypeOUT_OF_BAND_REMOTE_ACCESS                      =  30,
+  SMBIOS_TypeBOOT_INTEGRITY_SERVICES_ENTRY_POINT            =  31,
+  SMBIOS_TypeSYSTEM_BOOT_INFORMATION                        =  32,
+  SMBIOS_Type64_BIT_MEMORY_ERROR_INFORMATION                =  33,
+  SMBIOS_TypeMANAGEMENT_DEVICE                              =  34,
+  SMBIOS_TypeMANAGEMENT_DEVICE_COMPONENT                    =  35,
+  SMBIOS_TypeMANAGEMENT_DEVICE_THRESHOLD_DATA               =  36,
+  SMBIOS_TypeMEMORY_CHANNEL                                 =  37,
+  SMBIOS_TypeIPMI_DEVICE_INFORMATION                        =  38,
+  SMBIOS_TypeSYSTEM_POWER_SUPPLY                            =  39,
+  SMBIOS_TypeINACTIVE                                       = 126,
+  SMBIOS_TypeEND_OF_TABLE                                   = 127
 };
 typedef uint8_t SMBIOS_BlockId_t;
 
-typedef struct SmbiosHdrDBlck_s{
+typedef struct EeePSmbiosHdr_s{
     DBlockIdHdr_t    CDBHdr     ; /* 0x00 Dynamic Block Header  */
     SMBIOS_BlockId_t Type       ; /* 0x03 Structure Type        */
     uint8_t          Length     ; /* 0x04 Specifies the length of
@@ -283,24 +337,24 @@ typedef struct SmbiosHdrDBlck_s{
                                    * handle, a unique 16-bit number 
                                    * in the range 0 to 0FEFFh 
                                    */
-}SmbiosHdrDBlck_t;
+}EeePSmbiosHdr_t;
 /*
  *      System Information
  *
  *  see http://www.dmtf.org/standards/published_documents/DSP0134_2.6.1.pdf
  *  Type 1 Block
  */
-typedef struct SystemInfo_s{
-    SmbiosHdrDBlck_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
+typedef struct EeePSystemInfo_s{
+    EeePSmbiosHdr_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
     uint8_t Manufacturer   ; /* 0x06 Number of ASCIIZ String */
     uint8_t ProductName    ; /* 0x07 Number of ASCIIZ String */
     uint8_t Version        ; /* 0x08 Number of ASCIIZ String */
     uint8_t SerialNumber   ; /* 0x09 Number of ASCIIZ String */
-    uint8_t UUID[16]       ; /* 0x0A Universal Unique ID number. */
+    EeePGUID_t UUID        ; /* 0x0A Universal Unique ID number. */
     uint8_t Reserved0      ; /* 0x1A Reserved Set to Zero    */
     uint8_t SKU_Number     ; /* 0x1B Number of ASCIIZ String */
     uint8_t Family         ; /* 0x1C Number of ASCIIZ String */
-}SystemInfo_t;
+}EeePSystemInfo_t;
 
 /*
  *     Base Board (or Module) Information
@@ -323,8 +377,8 @@ enum SMBIOS_BoardTypes_e{
   SMBIOS_BoardType_Interconnect_Board
 };
 typedef uint8_t SMBIOS_BoardTypes_t;
-typedef struct ModuleInfo_s{
-    SmbiosHdrDBlck_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
+typedef struct EeePModuleInfo_s{
+    EeePSmbiosHdr_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
     uint8_t Manufacturer   ; /* 0x06 Number of ASCIIZ String */
     uint8_t Product        ; /* 0x07 Number of ASCIIZ String */
     uint8_t Version        ; /* 0x08 Number of ASCIIZ String */
@@ -363,7 +417,7 @@ typedef struct ModuleInfo_s{
                               *      Follow
                               */
     SmbiosHandle_t Handles[1] ; /* 0x10 Handles */
-}ModuleInfo_t;
+}EeePModuleInfo_t;
 
 
 
@@ -418,15 +472,15 @@ enum ChassisTypes_e{
 };
 typedef uint8_t ChassisTypes_t;
 
-typedef struct ChassisInfo_s{
-    SmbiosHdrDBlck_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
+typedef struct EeePChassisInfo_s{
+    EeePSmbiosHdr_t SDBHdr; /* 0x00 Smbios Dynamic Block Header */
     uint8_t Manufacturer   ; /* 0x06 Number of ASCIIZ String */
     ChassisTypes_t Type    ; /* 0x07 ENUM */
     uint8_t Version        ; /* 0x08 Number of ASCIIZ String */
     uint8_t SerialNumber   ; /* 0x09 Number of ASCIIZ String */
     uint8_t AssetTagNumber ; /* 0x0A Number of ASCIIZ String */
     uint8_t Reserved0[4]   ; /* 0x0B Reserved */
-    uint8_t OEM[4]         ; /* 0x0F Contains OEM- or BIOS 
+    EeePuint32u_t OEM      ; /* 0x0F Contains OEM- or BIOS 
                               * vendor-specific information 
                               */
     uint8_t Height         ; /* 0x13 The height of the  
@@ -439,14 +493,14 @@ typedef struct ChassisInfo_s{
     uint8_t CElementCnt    ; /* 0x15 Contained Element Count */   
     uint8_t CElementSize   ; /* 0x16 Contained Element Size  */   
     CCElement_t CElement[1]; /* 0x17 Contained Element(s) */   
-}ChassisInfo_t;
+}EeePChassisInfo_t;
 
 
 /*
  * Local Flat Panel(LFP) Data Block
  *
  */
-typedef struct LFPDataBlock_s{
+typedef struct EeePLFPDataBlock_s{
     DBlockIdHdr_t CDBHdr     ; /* 0x00 Dynamic Block Header  */
     uint8_t	  Interface      ; /* 0x03 Display Interface */
 #	define 	  EEEP_DISP_INT_LVDS   EEEP_UINT8_C(0x02)
@@ -461,13 +515,13 @@ typedef struct LFPDataBlock_s{
 			                     *      UDS
 			                     *      EPI
     			                 */
-}LFPDataBlock_t;
+}EeePLFPDataBlock_t;
 
 /*
  * Vendor Specific Dynamic Block Header 
  *
  */
-typedef struct VendBlockHdr_s{
+typedef struct EeePVendBlockHdr_s{
     DBlockIdHdr_t CDBHdr     ; /* 0x00 Dynamic Block Header  */
     uint8_t       VendId[2]  ; /* 0x03 Compressed ASCII PNPID  */
     /* After This Point is only 
@@ -475,7 +529,7 @@ typedef struct VendBlockHdr_s{
      */
     uint8_t       VendBlockId; /* 0x05 Vendor Specific Block Id  */
     /*uint8_t       VendData[1]; * 0x06 Vendor Data */
-}VendBlockHdr_t;
+}EeePVendBlockHdr_t;
 
 
 /*
@@ -483,7 +537,7 @@ typedef struct VendBlockHdr_s{
  *
  * I.E. For Chassis/System/Base Board EEPROMs
  */
-typedef struct ExtI2CDeviceDesc_s{
+typedef struct EeePExtI2CDeviceDesc_s{
     DBlockIdHdr_t CDBHdr       ; /* 0x00 Dynamic Block Header  */
     uint8_t       DeviceAddr[2]; /* 0x03 Encoded 7/10 Bit Device Address */
     uint8_t       DeviceBus    ; /* 0x05 Device Bus       */
@@ -518,7 +572,7 @@ typedef struct ExtI2CDeviceDesc_s{
                                 * +========+========================+
                                 */
 #   define EEEP_EXT_INDX EEEP_UINT8_C(1<<4)
-}ExtI2CDeviceDesc_t;
+}EeePExtI2CDeviceDesc_t;
 
 
 /*

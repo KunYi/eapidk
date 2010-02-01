@@ -87,5 +87,5 @@ SOURCES=EApi.rc \
 	EApiEmulBacklight.c \
 	EApiEmulBoardInfo.c \
 	EApiEmulStorage.c \
-	EApiEmulWDT.c
+	EApiEmulWDT.c DbgChk.c
 

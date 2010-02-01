@@ -68,20 +68,36 @@ StringBlock(
     size_t     *pstLastPos
     )
 {
-  const char *cszLastPos;
-  *pstLastPos=strlen(cszStr);
-  if(*pstLastPos<stMaxBlockLen){
-    return EAPI_STATUS_SUCCESS;
-  } 
-  cszLastPos=cszStr + stMaxBlockLen;
-  *pstLastPos=stMaxBlockLen;
+  const char *cszLastPos=cszStr;
+  *pstLastPos=0;
+/*   printf("D%04u %s\n", __LINE__, cszLastPos); */
+
+  if(*cszLastPos=='\n')
+    cszLastPos++;
   while(stMaxBlockLen --){
-    if(*cszLastPos==' '||*cszLastPos=='\t'){
-      *pstLastPos=cszLastPos - cszStr;
-      return EAPI_STATUS_MORE_DATA;
+/*   printf("%c", *cszLastPos); */
+    switch(*cszLastPos++){
+      case '\t':
+        if(stMaxBlockLen>=7)
+          stMaxBlockLen -=7;
+        else
+          stMaxBlockLen=0;
+      case ' ':
+        *pstLastPos=cszLastPos - cszStr;
+        break;
+      case '\0':
+        *pstLastPos=cszLastPos - cszStr -1;
+        return EAPI_STATUS_SUCCESS;
+      case '\n':
+        *pstLastPos=cszLastPos - cszStr -1;
+        return EAPI_STATUS_MORE_DATA;
+      default:
+        break;
     }
-    cszLastPos --;
   }
+/*   printf("D%04u %s\n", __LINE__, cszLastPos); */
+  if(!*pstLastPos);
+    *pstLastPos=cszLastPos - cszStr;
   return EAPI_STATUS_MORE_DATA;
 }
 
@@ -178,6 +194,157 @@ PrintUsage(
   return EAPI_STATUS_SUCCESS;
 }
 
+EApiStatusCode_t
+ParseArgsBuffer(
+    const char *szCmdLine, 
+    char      **pszArgv, 
+    char       *szArgs, 
+    signed int *psiArgc, 
+    signed int *psiCharc 
+  )
+{
+  signed int siInString;
+  signed int siCopyChar;
+  signed int siSlashesCnt;
+  *psiArgc =0;
+  *psiCharc=0;
+  siInString=0;
+  for(;;){
+    while(*(szCmdLine)==' '||*(szCmdLine)=='\t'||*(szCmdLine)=='\n'){ ++(szCmdLine); }
+    if(*szCmdLine=='\0')
+      break;
+    if(pszArgv!=NULL)
+      *pszArgv++=szArgs;
+    ++*psiArgc;
+    for(;;){
+      siCopyChar=1;
+
+      siSlashesCnt=0;
+      while(*szCmdLine=='\\'){
+        szCmdLine++;
+        siSlashesCnt++;
+      }
+      if(*szCmdLine=='\"'){
+        if(!(siSlashesCnt%2)){
+          if(siInString && szCmdLine[1]=='\"'){
+            szCmdLine++;
+          }else{
+            siCopyChar=0;
+            siInString=!siInString;
+          }
+        }
+        siSlashesCnt/=2;
+      }
+      *psiCharc+=siSlashesCnt;
+      if(szArgs!=NULL){
+        while(siSlashesCnt --){
+          *szArgs++='\\'; 
+        }
+      }
+      if(*szCmdLine=='\0'||*szCmdLine=='\n'||(!siInString&&(*szCmdLine==' '||*szCmdLine=='\t')))
+        break;
+      if(siCopyChar){
+        if(szArgs!=NULL)
+          *szArgs++=*szCmdLine; 
+        ++*psiCharc;
+      }
+      ++szCmdLine;
+    }
+    if(szArgs!=NULL)
+      *szArgs++='\0'; 
+    ++*psiCharc;
+  }
+  if(pszArgv!=NULL)
+    *pszArgv++=NULL;
+  ++*psiArgc;
+  return EAPI_STATUS_SUCCESS;
+}
+
+EApiStatusCode_t
+CreateArgvArgcBuffer(
+    const char *szCmdLine, 
+    char      ***pszArgv, 
+    signed int *psiArgc 
+  )
+{
+  EApiStatusCode_t EApiStatusCode;
+  signed int siCharCnt;
+  DO(ParseArgsBuffer(szCmdLine, NULL, NULL, psiArgc, &siCharCnt));
+  *pszArgv=(char**)malloc(((*psiArgc)*sizeof(char*))+(siCharCnt*sizeof(char)));
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      CreateArgvArgcBuffer,
+      EAPI_STATUS_ALLOC_ERROR,
+      *pszArgv
+    );
+  (*psiArgc) --;
+  return ParseArgsBuffer(
+          szCmdLine, 
+          *pszArgv, 
+          (char *)((*pszArgv)+(*psiArgc)), 
+          psiArgc, 
+          &siCharCnt
+        );
+}
+
+EApiStatusCode_t
+ParseArgsFile(
+    const char*szFilename,
+    CmdDesc_t *pCmdDesc,
+    size_t    stArgDescCnt
+    )
+{
+  EApiStatusCode_t EApiStatusCode;
+  signed int siArgc;
+  char**pszArgv;
+  char *szFileBuffer;
+  size_t stFileSize;
+  char ErrBuffer[200];
+  EApiStatusCode=ReadTextFile(szFilename, &szFileBuffer, &stFileSize);
+
+  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+    EApiSprintfA(
+        ErrBuffer, ARRAY_SIZE(ErrBuffer),
+        "Error Reading %s", szFilename
+        );
+    EAPI_APP_RETURN_ERROR(
+        ParseArgs,
+        EApiStatusCode,
+        ErrBuffer
+      );
+  }
+  DO(CreateArgvArgcBuffer(szFileBuffer, &pszArgv, &siArgc));
+  if(szFileBuffer!=NULL) free(szFileBuffer);
+  szFileBuffer=NULL;
+
+  DO(ParseArgs(siArgc - 1, pszArgv, pCmdDesc, stArgDescCnt));
+
+  if(pszArgv  !=NULL) free(pszArgv  );
+  pszArgv=NULL;
+  return EAPI_STATUS_SUCCESS;
+}
+
+
+EApiStatusCode_t
+ParseSubArgs(
+      signed int *psiArgc    ,
+      const char***ppszArgv  ,
+      size_t     stArgCount,
+      ArgDesc_t *pArgDesc  
+    )
+{
+  EApiStatusCode_t EApiStatusCode;
+  while(stArgCount -- ){
+    if(!(*psiArgc)--){
+      printf("ERROR: Missing Required Argument (%s)\n", pArgDesc->cszHelp);
+      return EAPI_STATUS_ERROR;
+    }
+    ++(*ppszArgv);
+    DO(pArgDesc->Handle(pArgDesc, pArgDesc->pValue, **ppszArgv));
+    ++pArgDesc;
+  }
+  return EAPI_STATUS_SUCCESS;
+}
+
 
 EApiStatusCode_t
 ParseArgs(
@@ -192,59 +359,69 @@ ParseArgs(
   CmdDesc_t *pCurArgDesc;
   size_t stI;
   unsigned int uiValid,uiSyntaxError;
-  ArgDesc_t *pArgDesc;
-  size_t     stArgCount;
-  siArgc --;
-  pszCurArg ++;
+  const char *szCurOption;
   uiSyntaxError=0;
-  while(siArgc --){
-    uiValid=0;
+  while(siArgc -- && *pszCurArg!=NULL){
 /*     printf("DEBUG: Arg[%u] (%s)\n", siArgc, *pszCurArg); */
-    stI=stArgDescCnt;
-    pCurArgDesc=pCmdDesc;
-    if(pszCurArg[0][0]=='-'){
-      if(pszCurArg[0][1]=='-'){
-        while(stI --){
-          if( 
-              pCurArgDesc->cszLong!=NULL&&
-              !strcmp(pszCurArg[0]+2, pCurArgDesc->cszLong)
-              )
-          {
-/*             printf("[%u][%lu]--%s==--%s\n", siArgc, (unsigned long)stI, pszCurArg[0]+2, pCurArgDesc->cszLong); */
-            ++uiValid;
-            stI=0;
-            continue;
+    uiValid=0;
+    szCurOption=*pszCurArg;
+    switch(*szCurOption++){
+      case '@':
+        DO(ParseArgsFile(szCurOption, pCmdDesc, stArgDescCnt));
+        ++uiValid;
+        break;
+      case '-':
+        if(*szCurOption=='-'){
+          ++szCurOption;
+          /*
+          * Parse Long Commands
+          */
+          stI=stArgDescCnt;
+          pCurArgDesc=pCmdDesc;
+          while(stI --){
+            if( pCurArgDesc->cszLong!=NULL&&
+                !strcmp(szCurOption, pCurArgDesc->cszLong)
+                )
+            {
+              ++*pCurArgDesc->puiResult;
+              DO(ParseSubArgs(&siArgc, &pszCurArg, pCurArgDesc->stArgs, pCurArgDesc->pArgs));
+              ++uiValid;
+              break;
+            }
+            ++pCurArgDesc;
           }
-          ++pCurArgDesc;
-        }
-      }else{
-        while(stI --){
-          if(pszCurArg[0][1]==pCurArgDesc->cShort){
-/*             printf("[%u][%lu]-%c==-%c\n", siArgc, (unsigned long)stI, pszCurArg[0][1], pCurArgDesc->cShort); */
-            ++uiValid;
-            stI=0;
-            continue;
+        }else {
+          /*
+          * Parse Short Commands
+          */
+          while(*szCurOption){
+            stI=stArgDescCnt;
+            pCurArgDesc=pCmdDesc;
+            uiValid=0;
+            while(stI --){
+              if(*szCurOption==pCurArgDesc->cShort){
+                ++*pCurArgDesc->puiResult;
+                DO(ParseSubArgs(&siArgc, &pszCurArg, pCurArgDesc->stArgs, pCurArgDesc->pArgs));
+                ++uiValid;
+                break;
+              }
+              ++pCurArgDesc;
+            }
+            if(!uiValid){
+              ++uiSyntaxError;
+              printf("ERROR: Unknown Arg [%c] in (%s)\n", *szCurOption, *pszCurArg);
+              uiValid=0;
+            }
+            ++szCurOption;
           }
-          ++pCurArgDesc;
         }
-      }
+        break;
+      default:
+        break;
     }
     if(!uiValid){
       uiSyntaxError++;
       printf("ERROR: Unknown Arg (%s)\n", *pszCurArg);
-    }else{
-      ++*pCurArgDesc->puiResult;
-      stArgCount=pCurArgDesc->stArgs;
-      pArgDesc=pCurArgDesc->pArgs;
-      while(stArgCount -- ){
-        if(!siArgc --){
-          printf("ERROR: Missing Required Argument (%s)\n", pArgDesc->cszHelp);
-          return EAPI_STATUS_ERROR;
-        }
-        ++pszCurArg;
-        DO(pArgDesc->Handle(pArgDesc, pArgDesc->pValue, pszCurArg[0]));
-        ++pArgDesc;
-      }
     }
     ++pszCurArg;
   }
@@ -269,7 +446,7 @@ ArgDesc_t  COM0R20M_Cfg[]={
   },
 };
 
-CmdDesc_t Args[]={
+CmdDesc_t ArgsDesc[]={
   {
     'h'                                             , 
     "help"                                          , 
@@ -282,7 +459,10 @@ CmdDesc_t Args[]={
     'v'                                             , 
     "verbose"                                       , 
     &CurOptionsTest.uiVerbose                       , 
-    "Increases Verbosity Level"                     , 
+    "Increases Verbosity Level\n"
+    "      1\n"
+    "    2\n"
+    "  3\n"                                         , 
     NULL                                            ,
     0                          
   },
@@ -290,10 +470,17 @@ CmdDesc_t Args[]={
     0x00                                            , 
     "CREATE-COM0R20M-CFG"                           , 
     &CurOptionsTest.uiCreateCOM0R20M_CFG            , 
-    "Create COM0 Module Config File Template"       , 
+    "Create COM0 Module Config File Template\n\tTest Me "       , 
     COM0R20M_Cfg                                    ,
     ARRAY_SIZE(COM0R20M_Cfg)
   },
+};
+char szCmdLine[]={
+    "--CREATE-COM0R20CB-CFG\ttest -d -f -g\n"
+    "--CREATE-COM0R20CB-CFG\ttest -dsdfgh -f -g\n"
+    "--CREATE-COM0R20CB-CFG\\\"st -d -f -g\n"
+    "--\\\\\\\\\"\\\\\\\"FG\ttest -d -f -g\n"
+    "@Test.log\n"
 };
 char *DummyArgs1[]={
   "Program Name",
@@ -303,7 +490,7 @@ char *DummyArgs1[]={
   "-q",
   "--Arg1",
   "--Arg2",
-  "--CREATE-COM0R20CB-CFG",
+  "--CREATE-COM0R20M-CFG",
   "TestFile.cfg",
   "--Arg3",
 };
@@ -323,16 +510,33 @@ char *DummyArgs1[]={
  */
 int 
 __cdecl 
-main(void)
+main(
+    signed int siArgc, 
+    const char *pszArgv[]
+    )
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  signed int  siArgcTest;
+  char     **pszArgvTest;
 
 #ifdef _DEBUG
   _CrtSetDbgFlag( _CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag());
 #endif
 
-  PrintUsage(stderr, Args, ARRAY_SIZE(Args));
-  ParseArgs(ARRAY_SIZE(DummyArgs1), DummyArgs1, Args, ARRAY_SIZE(Args));
+  PrintUsage(stderr, ArgsDesc, ARRAY_SIZE(ArgsDesc));
+  ParseArgs(ARRAY_SIZE(DummyArgs1) - 1, DummyArgs1 + 1, ArgsDesc, ARRAY_SIZE(ArgsDesc));
+/*   printf(szCmdLine); */
+
+  ParseArgs(siArgc - 1, pszArgv + 1, ArgsDesc, ARRAY_SIZE(ArgsDesc));
+
+  CreateArgvArgcBuffer(szCmdLine, &pszArgvTest, &siArgcTest);
+
+
+
+  ParseArgs(siArgcTest , pszArgvTest, ArgsDesc, ARRAY_SIZE(ArgsDesc));
+
+/*   for(siCharCnt=siArgcTest;-- siCharCnt ; ){ printf("ARG[%02i]=%s\n", siCharCnt, pszArgvTest[siCharCnt]); } */
+  free(pszArgvTest);
 
   exit(EApiStatusCode);
 }

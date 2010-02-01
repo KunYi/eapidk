@@ -66,6 +66,19 @@ EeeP_CreateEeePExtEEPCfg(
     __OUT  FILE           * OutStream
     );
 
+extern TokenListDesc_t SmbiosStructureTypesTL;
+extern TokenListDesc_t SmbiosBoardTypesTL;
+extern TokenListDesc_t SmbiSmbiosModuleFeatureFlagsTL;
+extern TokenListDesc_t SmbiosChassisTypesTL;
+extern TokenListDesc_t IRQTL;
+extern TokenListDesc_t I2CBusTL;
+extern TokenListDesc_t DDI1TL;
+extern TokenListDesc_t DisplayInterfaceTL;
+extern TokenListDesc_t ImpNotImpTL;
+extern TokenListDesc_t SasTL;
+
+extern TokenDesc_t PCIeGeneration[];
+extern TokenDesc_t PCIeLaneWidths[];
 #ifdef __cplusplus
 }
 #endif
