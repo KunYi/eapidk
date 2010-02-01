@@ -142,7 +142,8 @@ EApiStorageAreaReadEmul(
         memcpy(pvBuffer, pCurStorageDesc->pu8Buffer+Offset, ByteCnt);
 #else
         fseek(pCurStorageDesc->FStream, Offset, SEEK_SET);
-        fread(pvBuffer, sizeof(uint8_t), ByteCnt, pCurStorageDesc->FStream);
+        if(ByteCnt!=fread(pvBuffer, sizeof(uint8_t), ByteCnt, pCurStorageDesc->FStream)){
+	}
 #endif
 
         EAPI_LIB_RETURN_SUCCESS(EApiStorageAreaRead, "");

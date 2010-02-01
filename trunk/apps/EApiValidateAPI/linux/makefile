@@ -118,7 +118,7 @@ endef
 OBJECTS=$(ExeName).o \
       EApiAHI2C.o \
       EApiAHStorage.o \
-      EApiAHStr.o
+      EApiAHStr.o DbgChk.o
 
 DefaultTgt: buildall
 

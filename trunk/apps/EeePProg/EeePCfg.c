@@ -462,7 +462,7 @@ typedef struct SmbiosSystem_s{
   char *        aszFamily         [1];
 }SmbiosSystem_t;
 
-SmbiosSystem_t COM0_SMBIOS_System={{0xE002},{NULL},{NULL},{NULL},{NULL},{{0}},{NULL},{0},{NULL}};
+SmbiosSystem_t COM0_SMBIOS_System={{0xE002},{NULL},{NULL},{NULL},{NULL},{{{{0}},{{{0}}},{0}}},{NULL},{0},{NULL}};
 
 typedef struct SmbiosChassis_s{
   unsigned long aulHandle         [1];

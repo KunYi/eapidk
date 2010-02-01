@@ -96,7 +96,7 @@ StringBlock(
     }
   }
 /*   printf("D%04u %s\n", __LINE__, cszLastPos); */
-  if(!*pstLastPos);
+  if(!*pstLastPos)
     *pstLastPos=cszLastPos - cszStr;
   return EAPI_STATUS_MORE_DATA;
 }
@@ -298,10 +298,12 @@ ParseArgsFile(
   EApiStatusCode_t EApiStatusCode;
   signed int siArgc;
   char**pszArgv=NULL;
+  void *pvFileBuffer;
   char *szFileBuffer;
   size_t stFileSize;
   char ErrBuffer[200];
-  EApiStatusCode=ReadTextFile(szFilename, &szFileBuffer, &stFileSize);
+  EApiStatusCode=ReadTextFile(szFilename, &pvFileBuffer, &stFileSize);
+  szFileBuffer=pvFileBuffer;
 
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
     EApiSprintfA(
@@ -318,7 +320,7 @@ ParseArgsFile(
   if(szFileBuffer!=NULL) free(szFileBuffer);
   szFileBuffer=NULL;
 
-  DO(ParseArgs(siArgc - 1, pszArgv, pCmdDesc, stArgDescCnt));
+  DO(ParseArgs(siArgc - 1, (const char **)pszArgv, pCmdDesc, stArgDescCnt));
 
 ErrorExit:
   if(pszArgv  !=NULL) free(pszArgv  );

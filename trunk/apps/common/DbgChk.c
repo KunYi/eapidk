@@ -107,7 +107,6 @@ const char *GetLastOccurance(
 const char cszLogFormat[]={"%c%04i %-12.12s %-30s | "};
 
 signed int
-__cdecl
 siFormattedMessage_M2(
     char          cType       ,
     const char *  cszFileName ,   
@@ -137,7 +136,6 @@ siFormattedMessage_M2(
 }
 
 signed int
-__cdecl
 siFormattedMessage_SC(
     char          cType       ,
     const char *  cszFileName ,   
@@ -161,7 +159,7 @@ siFormattedMessage_SC(
       cszFuncName
     );
   if(szStatusDesc==NULL){
-    printf("               0x08lX | ", StatusCode);
+    printf("               0x%08"PRIX32" | ", StatusCode);
   }else{
     printf("%-25s | ", szStatusDesc);
   }
