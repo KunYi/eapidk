@@ -94,7 +94,8 @@ ReduceBlockLength(
 EApiStatusCode_t
 EeePGetFirstDB(
     EeePHandel_t     BHandel,
-    DBlockIdHdr_t ** pFirstDB
+    DBlockIdHdr_t ** pFirstDB, 
+    size_t          *pstImageMaxSize
     );
 
 EApiStatusCode_t

@@ -97,8 +97,8 @@ PrintCfgFile(
     }
     pCfgBDesc++;
   }
+ErrorExit:
   return EApiStatusCode;
-
 }
 
 EApiStatusCode_t
@@ -132,8 +132,8 @@ CleanBlock(
       pCurElement->stElementCount=0;
       pCurElement++;
     }
+ErrorExit:
   return EApiStatusCode;
-
 }
 
 EApiStatusCode_t
@@ -158,8 +158,8 @@ CleanStruct(
     DO(CleanBlock(pCfgBDesc->pElementsDesc, pCfgBDesc->stElementCount));
     pCfgBDesc++;
   }
+ErrorExit:
   return EApiStatusCode;
-
 }
 #define MAX_LINE_LEN 2048
 EApiStatusCode_t
@@ -172,7 +172,7 @@ ParseCfgFile(
   FILE *pCfgFile;
   char LineBuffer[1024];
   TCHAR ErrorBuffer[1324];
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   char *szName;
   char *szValue;
   size_t i;
@@ -347,6 +347,7 @@ ParseCfgFile(
   fclose(pCfgFile);
   
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 

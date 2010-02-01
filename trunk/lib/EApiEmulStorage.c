@@ -85,6 +85,7 @@ EApiStorageCapEmul (
     __OUTOPT  uint32_t *pBlockLength
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   StorageAreaMapping_t *pCurStorageDesc;
   unsigned i;
 
@@ -106,6 +107,9 @@ EApiStorageCapEmul (
     EAPI_STATUS_UNSUPPORTED   , 
     "Unrecognised Storage ID"
     );
+ErrorExit:
+ExitSuccess:
+  return EApiStatusCode;
 }
 EApiStatusCode_t 
 EApiStorageAreaReadEmul(
@@ -115,6 +119,7 @@ EApiStorageAreaReadEmul(
   __IN  uint32_t ByteCnt
   )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   StorageAreaMapping_t *pCurStorageDesc;
   unsigned i;
 
@@ -148,6 +153,9 @@ EApiStorageAreaReadEmul(
       EAPI_STATUS_UNSUPPORTED  , 
       "Unrecognised Storage ID"
       );
+ErrorExit:
+ExitSuccess:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t 
@@ -158,6 +166,7 @@ EApiStorageAreaWriteEmul(
     __IN uint32_t ByteCnt
     )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   StorageAreaMapping_t *pCurStorageDesc;
   unsigned i;
   for(
@@ -201,6 +210,9 @@ EApiStorageAreaWriteEmul(
       EAPI_STATUS_UNSUPPORTED  , 
       "Unrecognised Storage ID"
       );
+ErrorExit:
+ExitSuccess:
+  return EApiStatusCode;
 }
 
 

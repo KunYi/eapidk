@@ -102,7 +102,7 @@ siBin2Ascii_s(
   );
 
 
-void 
+EApiStatusCode_t
 PrintHexAsciiTableEx(
 	__IN    const void *   pcvBuffer	,
 	__IN    const size_t   stBufSize	,

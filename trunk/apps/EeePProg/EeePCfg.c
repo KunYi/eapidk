@@ -143,7 +143,7 @@ SMBIOS_CE_Element(
     char          *pszValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   CCElement_t *pCurElement=pElement;
   char *pszCEType, *pszMinCount, *pszMaxCount;
   unsigned long uiCEType, uiMinCount, uiMaxCount;
@@ -257,7 +257,7 @@ COM0PCIe_Element(
     char          *pszValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   char *pszStartingLane, *pszWidth, *pszGen;
   unsigned long uiStartingLane, uiWidth, uiGen;
   pszStartingLane=pszValue;
@@ -1111,7 +1111,7 @@ HandleEeePExpI2CBlock(
     EeePHandel_t      BHandel
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePExtI2CDeviceDesc_t Header;
   EeePExtI2CDevice_t *pExtI2C_cgf=pDesc->pDataContainer;
   size_t stBlockLength=EeePAlignLength(sizeof(Header));
@@ -1127,7 +1127,8 @@ HandleEeePExpI2CBlock(
 
   DO(EeePAddBlock(BHandel, &Header, NULL, pExtI2C_cgf->aulInsideCrc[0]));
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -1137,7 +1138,7 @@ HandleCOM0R20SerialCfgBlock(
     EeePHandel_t      BHandel
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   SerPortCfgBlock_t Header;
   COM0R20_SERIAL_t *pCOM0Serial_cgf=pDesc->pDataContainer;
   size_t stBlockLength=EeePAlignLength(sizeof(Header));
@@ -1155,7 +1156,8 @@ HandleCOM0R20SerialCfgBlock(
 
   DO(EeePAddBlock(BHandel, &Header, NULL, pCOM0Serial_cgf->aulInsideCrc[0]));
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -1165,7 +1167,7 @@ HandleCOM0R20ExpCardCfgBlock(
     EeePHandel_t      BHandel
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   ExpCardBlock_t   *pHeader;
   COM0R20_ECard_t  *pCOM0ExpCard_cgf=pDesc->pDataContainer;
   size_t stElementCnt =pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount;
@@ -1207,7 +1209,8 @@ HandleCOM0R20ExpCardCfgBlock(
 
   DO(EeePAddBlock(BHandel, pHeader, NULL, pCOM0ExpCard_cgf->aulInsideCrc[0]));
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 #define COUNT_STRLEN(StrName) \
@@ -1227,7 +1230,7 @@ HandleSmbiosChassisBlock(
     EeePHandel_t      BHandel
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePChassisInfo_t *pHeader;
   unsigned int i;
   SmbiosChassis_t *pSmbiosChassis_cgf=pDesc->pDataContainer;
@@ -1291,7 +1294,8 @@ HandleSmbiosChassisBlock(
   free(pHeader);
   pHeader=NULL;
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t
@@ -1300,7 +1304,7 @@ HandleSmbiosSystemBlock(
     EeePHandel_t      BHandel
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePSystemInfo_t *pHeader;
   unsigned int i;
   SmbiosSystem_t *pSmbiosSystem_cgf=pDesc->pDataContainer;
@@ -1350,7 +1354,8 @@ HandleSmbiosSystemBlock(
   free(pHeader);
   pHeader=NULL;
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -1360,7 +1365,7 @@ HandleSmbiosModuleBlock(
     EeePHandel_t      BHandel
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePModuleInfo_t *pHeader;
   unsigned int i;
   SmbiosModule_t *pSmbiosModule_cgf=pDesc->pDataContainer;
@@ -1437,7 +1442,8 @@ HandleSmbiosModuleBlock(
   free(pHeader);
   pHeader=NULL;
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -1447,7 +1453,7 @@ HandleVendorBlock(
     EeePHandel_t      BHandel
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePVendBlockHdr_t *pHeader;
   void *pvFileBuffer;
   size_t stFileSize;
@@ -1482,7 +1488,8 @@ HandleVendorBlock(
   free(pHeader);
   pHeader=NULL;
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -1492,7 +1499,7 @@ HandleLFPDescBlock(
     EeePHandel_t      BHandel
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePLFPDataBlock_t *pHeader;
   void *pvFileBuffer;
   size_t stFileSize;
@@ -1522,7 +1529,8 @@ HandleLFPDescBlock(
   free(pHeader);
   pHeader=NULL;
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -1532,7 +1540,7 @@ HandleCustomBlock(
     EeePHandel_t      BHandel
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   DBlockIdHdr_t *pHeader;
   void *pvFileBuffer;
   size_t stFileSize;
@@ -1561,7 +1569,8 @@ HandleCustomBlock(
   free(pHeader);
   pHeader=NULL;
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -1654,7 +1663,7 @@ EeeP_CreateEEPROMImage(
     __IN   size_t           stHeaderSize 
     )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   CfgBlockDesc_t *pDesc;
   size_t i;
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -1712,7 +1721,8 @@ EeeP_CreateEEPROMImage(
    */
   DO(CleanStruct(pCfgBlockDesc, stCfgBlockCnt));
 
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 EApiStatusCode_t
 EeeP_CreateCOM0R20_CBImage(
@@ -1798,6 +1808,7 @@ EeeP_CreateEeePExtEEPCfg(
 
 #if TEST_EEPCFG
 #define DO_MAIN(x)  \
+  do{\
   EAPI_printf(        \
       TEXT("#####\n") \
       TEXT("#\t%s\n") \
@@ -1806,7 +1817,8 @@ EeeP_CreateEeePExtEEPCfg(
     );                \
   EApiStatusCode=x;   \
   if(!EAPI_STATUS_TEST_OK(EApiStatusCode)) \
-    return EApiStatusCode
+    goto ErrorExit \
+  }while(0);
 
 /*
  * Create Block Content
@@ -1815,7 +1827,7 @@ int
 __cdecl 
 main(void)
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t     BHandel ;
 
 #ifdef _DEBUG
@@ -1843,6 +1855,7 @@ main(void)
   DO_MAIN(EeeP_CreateCOM0R20_MEEPCfg(stdout));
   DO_MAIN(EeeP_CreateEeePExtEEPCfg(stdout));
 
+ErrorExit:
   exit(EApiStatusCode);
 }
 
