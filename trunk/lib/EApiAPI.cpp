@@ -114,7 +114,7 @@ EApiI2CWriteReadRaw(
           "EApiI2CWriteTransfer",
           __LINE__              ,
           "Info"                ,
-          "ADDR=%02hhX WriteBCnt=%04"PRIX32
+          "ADDR=%02"PRIX8" WriteBCnt=%04"PRIX32
           " RBufLen=%04"PRIX32" WriteBCnt=%04"PRIX32
           " ReadBCnt=%04"PRIX32" %08"PRIX32"\n", 
           Addr, WriteBCnt, RBufLen, WriteBCnt, ReadBCnt, 

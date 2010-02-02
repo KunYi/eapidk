@@ -53,12 +53,13 @@ AR = ar
 RANLIB = ranlib
 ARFLAGS = -ruv
 InstallDir=/usr/lib
+InstallDir=/usr/lib
 
 BinFolder=../../apps/bin/$(ARCH)/$(MACH)/rel
 DBinFolder=../../apps/bin/$(ARCH)/$(MACH)/dbg
 BuildDir=./build/$(MACH)/rel
 DBuildDir=./build/$(MACH)/dbg
-PrgFldr=..
+PrgFldr=$(join $(shell pwd)/, ..)
 OalFldr=.
 EAPI_INC=../../include/EApi.h
 GET_VAR_FROM_CFILE=$(shell grep "$(2)" $(1) |sed -rn "s/^\#\s*define\s+$2\s+([0-9]+).*/\1/p")
