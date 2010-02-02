@@ -104,9 +104,9 @@
 #    define _cdecl __cdecl
 #  endif
 
-#define EAPI_PRINTF_ARG(Format, Arg) ___attribute__((format(printf, Format, Arg)))
 #endif
 
+#define EAPI_PRINTF_ARG(Format, Arg) __attribute__((format(printf, Format, Arg)))
 void EApiSleepns(unsigned long ns);
 #define EAPI_EMUL_DELAY_NS(x) EApiSleepns(x)
 
