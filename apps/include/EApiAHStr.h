@@ -81,6 +81,7 @@ EApiStrCpy(
     __IN const TCHAR *const StringSource
     );
 int 
+__cdecl 
 EApiSprintf ( 
     __IN TCHAR *const       pBuffer   ,
     __IN const size_t       BufferLen ,
@@ -102,6 +103,7 @@ EApiStrCpyA(
     );
 
 int 
+__cdecl 
 EApiSprintfA ( 
     __IN char *const       pBuffer   ,
     __IN const size_t       BufferLen ,

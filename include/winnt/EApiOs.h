@@ -53,6 +53,7 @@ extern "C" {
 void EApiSleepus(unsigned long ms);
 #ifdef __cplusplus
 }
+#define EAPI_PRINTF_ARG(Format, Arg) 
 #endif
 
 #define EAPI_EMUL_DELAY_NS(x) EApiSleepus(x/1000)

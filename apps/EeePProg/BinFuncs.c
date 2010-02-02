@@ -358,6 +358,7 @@ LclReadFile(
 #else
   stFileLen=fread(*pvBuffer, sizeof(uint8_t), stFileLen, LclFilePtr);
 #endif
+  *pstReadBCnt=stFileLen;
   fclose(LclFilePtr);
 
 ErrorExit:

@@ -37,7 +37,6 @@
 #define _DBGCHK_H_
 
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -45,6 +44,7 @@ extern "C" {
 
 
 signed int
+__cdecl
 siFormattedMessage_M2(
     char          cType       ,
     const char *  cszFileName ,   
@@ -53,10 +53,12 @@ siFormattedMessage_M2(
     const char *  csz2ndValue ,   
     const char *  cszFormat   ,   
     ...
-    );
+    ) 
+EAPI_PRINTF_ARG(6, 7);
 
 
 signed int
+__cdecl
 siFormattedMessage_SC(
     char          cType       ,
     const char *  cszFileName ,   
@@ -65,7 +67,8 @@ siFormattedMessage_SC(
     EApiStatusCode_t  StatusCode  ,   
     const char *  cszFormat   ,   
     ...
-    );
+    )
+EAPI_PRINTF_ARG (6, 7);
 
 
 #ifdef __cplusplus
