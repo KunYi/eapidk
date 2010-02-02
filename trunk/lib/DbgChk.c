@@ -109,6 +109,7 @@ const char *GetLastOccurance(
 const char cszLogFormat[]={"%c%04i %-15.15s %-30s | "};
 
 signed int
+__cdecl
 siFormattedMessage_M2(
     char          cType       ,
     const char *  cszFileName ,   
@@ -140,6 +141,7 @@ siFormattedMessage_M2(
 
 
 signed int
+__cdecl
 siFormattedMessage_SC(
     char          cType       ,
     const char *  cszFileName ,   

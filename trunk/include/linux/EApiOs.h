@@ -73,24 +73,38 @@
   #endif
 #endif
 #ifdef __GNUC__ 
+#ifdef __i386__
+#    ifndef __fastcall
+#      define __fastcall __attribute__((fastcall))
+#    endif
+#    ifndef __stdcall
+#      define __stdcall __attribute__((stdcall))
+#    endif
+#    ifndef __cdecl
+#      define __cdecl __attribute__((cdecl))
+#    endif
+#else
+#    ifndef __fastcall
+#      define __fastcall
+#    endif
+#    ifndef __stdcall
+#      define __stdcall
+#    endif
+#    ifndef __cdecl
+#      define __cdecl
+#    endif
+#endif
 #  ifndef _fastcall
-#  define _fastcall __attribute__((fastcall))
-#  endif
-#  ifndef __fastcall
-#  define __fastcall __attribute__((fastcall))
+#    define _fastcall __fastcall
 #  endif
 #  ifndef _stdcall
-#  define _stdcall __attribute__((stdcall))
-#  endif
-#  ifndef __stdcall
-#  define __stdcall __attribute__((stdcall))
+#    define _stdcall __stdcall
 #  endif
 #  ifndef _cdecl
-#  define _cdecl __attribute__((cdecl))
+#    define _cdecl __cdecl
 #  endif
-#  ifndef __cdecl
-#  define __cdecl __attribute__((cdecl))
-#  endif
+
+#define EAPI_PRINTF_ARG(Format, Arg) ___attribute__((format(printf, Format, Arg)))
 #endif
 
 void EApiSleepns(unsigned long ns);

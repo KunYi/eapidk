@@ -37,7 +37,7 @@
   #include <stdio.h>
 FILE *OutputStream=NULL;
 
-void DebugMsg(__IN const char *const fmt, ...)
+void __cdecl DebugMsg(__IN const char *const fmt, ...)
 {
   va_list arg;
   va_start(arg, fmt);

@@ -44,6 +44,7 @@ extern "C" {
 
 
 signed int
+__cdecl
 siFormattedMessage_M2(
     char          cType       ,
     const char *  cszFileName ,   
@@ -53,10 +54,11 @@ siFormattedMessage_M2(
     const char *  cszFormat   ,   
     ...
     ) 
-__attribute__ ((format (printf, 6, 7)));
+EAPI_PRINTF_ARG(6, 7);
 
 
 signed int
+__cdecl
 siFormattedMessage_SC(
     char          cType       ,
     const char *  cszFileName ,   
@@ -66,7 +68,7 @@ siFormattedMessage_SC(
     const char *  cszFormat   ,   
     ...
     )
-__attribute__ ((format (printf, 6, 7)));
+EAPI_PRINTF_ARG (6, 7);
 
 
 #ifdef __cplusplus

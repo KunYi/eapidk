@@ -45,23 +45,14 @@ typedef void EApiValidateTestFunction(void);
 /*  */
 FILE *LogStream;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 EApiStatusCode_t
 EApiGetErrorStringA(
     __OUT const char  **const pszString     , 
     __IN EApiStatusCode_t StatusCode
     );
 
-#ifdef __cplusplus
-}
-#endif
-
-
 signed int
+__cdecl
 siFFormattedMessage_SC(
     FILE       *  OutStream   ,
     char          cType       ,
@@ -887,6 +878,7 @@ typedef enum ProgramStatusCodes_e{
     PRG_RETURN_LIB_UNINIT_ERROR
 }ProgramStatusCodes_t;
 int 
+__cdecl 
 main(void)
 {
   unsigned i;
