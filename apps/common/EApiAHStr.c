@@ -159,7 +159,7 @@ EApiAHGetString(
 
   EApiStatusCode=EApiBoardGetString(StringID, pString, &StringLenLcl);
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode))
-      StringLenLcl=(uint32_t)EApiAHCreateErrorString(EApiStatusCode, pString, StringBufferLenBck);
+      StringLenLcl=(uint32_t)EApiAHCreateErrorString((uint32_t)EApiStatusCode, pString, StringBufferLenBck);
 #if (STRICT_VALIDATION>0)
   EAPI_APP_RETURN_ERROR_IF(
       EApiAHGetStringAlloc, 
