@@ -167,7 +167,7 @@ GetNextBlock(
       goto ErrorExit;
       break;
     default:
-      return EAPI_CREATE_PTR(
+      EApiStatusCode=EAPI_CREATE_PTR(
           pCurBlock         ,
           stBlockLength     ,
           DBlockIdHdr_t *
@@ -175,7 +175,7 @@ GetNextBlock(
       break;
       }
 ErrorExit:
-  return NULL;
+  return EApiStatusCode;
 }
 EApiStatusCode_t
 SetDynBlockHeader(

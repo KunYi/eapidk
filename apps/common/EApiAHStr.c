@@ -35,7 +35,7 @@
  */
   #include <EApiApp.h>
 typedef struct ErrorLookupTbl_S{
-  const uint32_t StatusCode;
+  const EApiStatusCode_t StatusCode;
   const TCHAR *const  ErrorString;
 }ErrorLookupTbl_t;
 
@@ -109,7 +109,7 @@ ErrorExit:
 ExitSuccess:
   return EApiStatusCode;
 }
-uint32_t
+EApiStatusCode_t
 EApiAHCreateErrorStringAlloc(
   __IN uint32_t         StatusCode  ,
   __OUT TCHAR * *const  pString 
@@ -151,7 +151,7 @@ EApiAHGetString(
     __IN  size_t          StrBufLen   /* String pBuffer Length */
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  size_t EApiStatusCode=EAPI_INVALID_STRLEN;
   uint32_t StringLenLcl=(uint32_t)StrBufLen;
   size_t StringBufferLenBck=StrBufLen;
   EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHGetString, EAPI_INVALID_STRLEN, pString);
@@ -310,7 +310,7 @@ EApiAHCreateTempString(
     EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
     EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
     Value-=EAPI_KELVINS_OFFSET;
-    return EApiSprintf(pString, StrBufLen, TEXT("% li.%lu Celcius"), ((int32_t)Value)/10, Value%10);
+    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("% li.%lu Celcius"), ((int32_t)Value)/10, Value%10);
 
 ErrorExit:
 /* SuccessExit: */
@@ -353,7 +353,7 @@ EApiAHCreateSVersionString(
     /* 255.255 */
     EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateSVersionString, -1, pString);
     EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateSVersionString, -1, StrBufLen);
-    return EApiSprintf(pString, StrBufLen, TEXT("%u.%u"), EAPI_VER_GET_VER(Value), EAPI_VER_GET_REV(Value) );
+    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("%u.%u"), EAPI_VER_GET_VER(Value), EAPI_VER_GET_REV(Value) );
 
 ErrorExit:
 /* SuccessExit: */
@@ -498,7 +498,6 @@ EApiStrCpyA(
   return StringDest;
 }
 int 
-__cdecl 
 EApiSprintfA ( 
     __IN char *const       pBuffer   ,
     __IN const size_t       BufferLen ,
@@ -550,7 +549,6 @@ EApiStrCpy(
   return StringDest;
 }
 int 
-__cdecl 
 EApiSprintf ( 
     __IN TCHAR *const       pBuffer   ,
     __IN const size_t       BufferLen ,

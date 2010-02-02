@@ -62,7 +62,6 @@ EApiGetErrorStringA(
 
 
 signed int
-__cdecl
 siFFormattedMessage_SC(
     FILE       *  OutStream   ,
     char          cType       ,
@@ -888,7 +887,6 @@ typedef enum ProgramStatusCodes_e{
     PRG_RETURN_LIB_UNINIT_ERROR
 }ProgramStatusCodes_t;
 int 
-__cdecl 
 main(void)
 {
   unsigned i;

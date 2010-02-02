@@ -489,7 +489,6 @@ FreeFilePtr(
 // Create Block Content
 */
 int 
-__cdecl 
 main(
     signed int argc,
     const char **argv
