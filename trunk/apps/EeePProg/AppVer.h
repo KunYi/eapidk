@@ -49,5 +49,5 @@
 /****************************************************************************/    
 #define APP_VERSION 0  
 #define APP_REVISION 5  
-#define APP_BUILD 445
+#define APP_BUILD 449
 #endif /* _EEEPPROG_H_ */                                                                                                                                                                                                                                                                                                                    

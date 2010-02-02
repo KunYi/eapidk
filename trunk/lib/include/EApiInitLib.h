@@ -46,7 +46,6 @@ extern "C" {
 #  define EAPI_DBG_USE_OUTPUT_FILE 1
 #endif
 void 
-__cdecl 
 DebugMsg( 
     __IN const char *const fmt, 
     ...
