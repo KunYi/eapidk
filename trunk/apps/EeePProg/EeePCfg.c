@@ -151,11 +151,17 @@ SMBIOS_CE_Element(
   pElementDesc=pElementDesc;
 
   pszMinCount=strchr(pszCEType, ',');
-  if(pszMinCount==NULL                  ) return EAPI_STATUS_ERROR;
+  if(pszMinCount==NULL ){
+    EApiStatusCode=EAPI_STATUS_ERROR;
+    goto ErrorExit;
+  }
   *pszMinCount++='\0';
   
   pszMaxCount=strchr(pszMinCount, ',');
-  if(pszMaxCount==NULL                  ) return EAPI_STATUS_ERROR;
+  if(pszMaxCount==NULL ){
+    EApiStatusCode=EAPI_STATUS_ERROR;
+    goto ErrorExit;
+  }
   *pszMaxCount++='\0';
 
   EApiStatusCode=GetTokenValueStrip(
@@ -174,18 +180,20 @@ SMBIOS_CE_Element(
 
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
     printf("SMBIOS_CE_Element = Unknown Token, %s\n", pszValue);
-    return EApiStatusCode;
+    goto ErrorExit;
   }
 
-  uiMinCount=ulConvertStr2Num(pszMinCount, NULL                  );
-  uiMaxCount=ulConvertStr2Num(pszMaxCount, NULL                  );
+  uiMinCount=ulConvertStr2NumEx(pszMinCount, NULL                  );
+  uiMaxCount=ulConvertStr2NumEx(pszMaxCount, NULL                  );
   if(uiMinCount>UINT8_MAX){
     printf("SMBIOS_CE_Element = Invalid MinCount, %s\n", pszMinCount);
-    return EAPI_STATUS_ERROR;
+    EApiStatusCode=EAPI_STATUS_ERROR;
+    goto ErrorExit;
   }
   if(uiMaxCount>UINT8_MAX){
     printf("SMBIOS_CE_Element = Invalid MaxCount, %s\n", pszMaxCount);
-    return EAPI_STATUS_ERROR;
+    EApiStatusCode=EAPI_STATUS_ERROR;
+    goto ErrorExit;
   }
 
 
@@ -199,7 +207,8 @@ SMBIOS_CE_Element(
 /*       NULL, */
 /*       HEXTBL_8BIT_ELEMENT|3 */
 /*     ); */
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
 
@@ -261,20 +270,27 @@ COM0PCIe_Element(
   char *pszStartingLane, *pszWidth, *pszGen;
   unsigned long uiStartingLane, uiWidth, uiGen;
   pszStartingLane=pszValue;
-  pElementDesc=pElementDesc;
+  memset(pCurElement, 0x00, pElementDesc->cstElementSize);
 
   pszWidth=strchr(pszStartingLane, ',');
-  if(pszWidth==NULL                  ) return EAPI_STATUS_SUCCESS;
+  if(pszWidth==NULL ){
+    EApiStatusCode=EAPI_STATUS_ERROR;
+    goto ErrorExit;
+  }
   *pszWidth++='\0';
   
   pszGen=strchr(pszWidth, ',');
-  if(pszGen==NULL                  ) return EAPI_STATUS_SUCCESS;
+  if(pszGen==NULL  ) {
+    EApiStatusCode=EAPI_STATUS_ERROR;
+    goto ErrorExit;
+  }
   *pszGen++='\0';
 
-  uiStartingLane=ulConvertStr2Num(pszStartingLane, NULL                  );
+  uiStartingLane=ulConvertStr2NumEx(pszStartingLane, NULL                  );
   if(uiStartingLane>31){
     printf("COM0PCIe_Element = Invalid Starting Lane, %s\n", pszStartingLane);
-    return EAPI_STATUS_ERROR;
+    EApiStatusCode=EAPI_STATUS_ERROR;
+    goto ErrorExit;
   }
 
   EApiStatusCode=GetTokenValueStrip(
@@ -284,7 +300,7 @@ COM0PCIe_Element(
     );
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
     printf("COM0PCIe_Element = Unknown Token, %s\n", pszWidth);
-    return EApiStatusCode;
+    goto ErrorExit;
   }
 
   EApiStatusCode=GetTokenValueStrip(
@@ -294,17 +310,19 @@ COM0PCIe_Element(
     );
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
     printf("COM0PCIe_Element = Unknown Token, %s\n", pszGen);
-    return EApiStatusCode;
+    goto ErrorExit;
   }
   if(uiStartingLane&((1<<(uiWidth - 1))-1)){
     printf("COM0PCIe_Element = Invalid Starting Lane/Width, %s/%s\n", pszStartingLane, pszWidth);
-    return EAPI_STATUS_ERROR;
+    EApiStatusCode=EAPI_STATUS_ERROR;
+    goto ErrorExit;
   }
   *(unsigned long*)pCurElement=(uiStartingLane<<16)|(uiWidth<<8)|(uiGen);
 #if TEST_EEPCFG
 /*   printf("COM0PCIe_Element = 0x%06lX, %s\n", *pCurElement, pszValue); */
 #endif
-  return EAPI_STATUS_SUCCESS;
+ErrorExit:
+  return EApiStatusCode;
 }
 
    
@@ -574,7 +592,6 @@ typedef struct COM0R20_CB_HDR_s{
   unsigned long aulFAN0       [1];
   unsigned long aulSER0       [1];
   unsigned long aulSER1       [1];
-  unsigned long aulSER2       [1];
   unsigned long aulDDI1       [1];
   unsigned long aulDDI2       [1];
   unsigned long aulDDI3       [1];
@@ -613,8 +630,6 @@ typedef struct COM0R20_SERIAL_s{
   unsigned long aulSER0_IRQ              [1];
   unsigned long aulSER1_IOADDRESS        [1];
   unsigned long aulSER1_IRQ              [1];
-  unsigned long aulSER2_IOADDRESS        [1];
-  unsigned long aulSER2_IRQ              [1];
   unsigned long aulInsideCrc             [1];
 }COM0R20_SERIAL_t;
 
@@ -894,7 +909,6 @@ CfgElementDesc_t COM0R20_CB_Desc[]={
   ELEMENT_DESC("FAN0"          , COM0R20_CB_cgf.aulFAN0       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
   ELEMENT_DESC("SER0"          , COM0R20_CB_cgf.aulSER0       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
   ELEMENT_DESC("SER1"          , COM0R20_CB_cgf.aulSER1       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
-  ELEMENT_DESC("SER2"          , COM0R20_CB_cgf.aulSER2       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
   ELEMENT_DESC("DDI1"          , COM0R20_CB_cgf.aulDDI1       , &Token_Element_funcs   , &DDI1TL               , ELEMENT_REQUIRED)
   ELEMENT_DESC("DDI2"          , COM0R20_CB_cgf.aulDDI2       , &Token_Element_funcs   , &DDI2TL               , ELEMENT_REQUIRED)
   ELEMENT_DESC("DDI3"          , COM0R20_CB_cgf.aulDDI3       , &Token_Element_funcs   , &DDI2TL               , ELEMENT_REQUIRED)
@@ -955,8 +969,6 @@ CfgElementDesc_t COM0R20_SerialPortsDesc[]={
   ELEMENT_DESC("SER0_IRQ"      , COM0R20_SER_cgf.aulSER0_IRQ               , &Token_Element_funcs , &IRQTL              , ELEMENT_OPTIONAL)
   ELEMENT_DESC("SER1_IOADDRESS", COM0R20_SER_cgf.aulSER1_IOADDRESS         , &Number_Element_funcs, &ValidIOAddrPortDesc, ELEMENT_OPTIONAL)
   ELEMENT_DESC("SER1_IRQ"      , COM0R20_SER_cgf.aulSER1_IRQ               , &Token_Element_funcs , &IRQTL              , ELEMENT_OPTIONAL)
-  ELEMENT_DESC("SER2_IOADDRESS", COM0R20_SER_cgf.aulSER2_IOADDRESS         , &Number_Element_funcs, &ValidIOAddrPortDesc, ELEMENT_OPTIONAL)
-  ELEMENT_DESC("SER2_IRQ"      , COM0R20_SER_cgf.aulSER2_IRQ               , &Token_Element_funcs , &IRQTL              , ELEMENT_OPTIONAL)
 };
 EApiStatusCode_t
 HandleCOM0R20CBHeaderBlock(
@@ -1012,7 +1024,6 @@ HandleCOM0R20CBHeaderBlock(
   pHeader->MiscIo2|=(pCOM0R20_CB_cgf->aulFAN0  [0]?COM0R20_FAN0_PRESENT  :0);
   pHeader->MiscIo2|=(pCOM0R20_CB_cgf->aulSER0  [0]?COM0R20_SER0_PRESENT  :0);
   pHeader->MiscIo2|=(pCOM0R20_CB_cgf->aulSER1  [0]?COM0R20_SER1_PRESENT  :0);
-  pHeader->MiscIo2|=(pCOM0R20_CB_cgf->aulSER2  [0]?COM0R20_SER2_PRESENT  :0);
 
   pHeader->DDIDesc =(uint8_t)pCOM0R20_CB_cgf->aulDDI1[0]<<COM0R20_DDI1_OFFSET;
   pHeader->DDIDesc|=(uint8_t)pCOM0R20_CB_cgf->aulDDI2[0]<<COM0R20_DDI2_OFFSET;
@@ -1148,11 +1159,9 @@ HandleCOM0R20SerialCfgBlock(
 
   EeeP_Set16BitValue_BE(Header.Ser0BaseAddr  , (uint16_t)pCOM0Serial_cgf->aulSER0_IOADDRESS[0]);
   EeeP_Set16BitValue_BE(Header.Ser1BaseAddr  , (uint16_t)pCOM0Serial_cgf->aulSER1_IOADDRESS[0]);
-  EeeP_Set16BitValue_BE(Header.Ser2BaseAddr  , (uint16_t)pCOM0Serial_cgf->aulSER2_IOADDRESS[0]);
 
-  Header.SerIRQ[0]=(uint8_t)pCOM0Serial_cgf->aulSER0_IRQ[0];
-  Header.SerIRQ[0]|=pCOM0Serial_cgf->aulSER1_IRQ[0]<<4;
-  Header.SerIRQ[1]=(uint8_t)pCOM0Serial_cgf->aulSER2_IRQ[0];
+  Header.SerIRQ=(uint8_t)pCOM0Serial_cgf->aulSER0_IRQ[0];
+  Header.SerIRQ|=pCOM0Serial_cgf->aulSER1_IRQ[0]<<4;
 
   DO(EeePAddBlock(BHandel, &Header, NULL, pCOM0Serial_cgf->aulInsideCrc[0]));
 

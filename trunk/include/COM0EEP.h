@@ -314,7 +314,6 @@ typedef struct COM0R20_CB_s{
 #       define COM0R20_FAN0_PRESENT         EEEP_UINT8_C(1<<4)
 #       define COM0R20_SER0_PRESENT         EEEP_UINT8_C(1<<5)
 #       define COM0R20_SER1_PRESENT         EEEP_UINT8_C(1<<6)
-#       define COM0R20_SER2_PRESENT         EEEP_UINT8_C(1<<7)
     uint8_t     DDIDesc;   /* 0x17 Digital Display Interface Descriptor Byte
                             *      
                             *      +=======+======+=======+==================+
@@ -561,7 +560,7 @@ typedef struct ExpCardBlock_s{
  */
 typedef struct SerPortCfgBlock_s{
     DBlockIdHdr_t  DBHdr        ; /* 0x00 Dynamic Block Header */
-    uint8_t SerIRQ[2]           ; /* 0x03 
+    uint8_t SerIRQ              ; /* 0x03 
                                    *      +=======+=======+==================+
                                    *      | Byte  | Bits  | Descriptions     |
                                    *      +=======+=======+==================+
@@ -648,20 +647,6 @@ typedef struct SerPortCfgBlock_s{
                                    *      |       |       | Base Address     |
                                    *      +=======+=======+==================+
                                    */
-    uint8_t Ser2BaseAddr[2]     ; /* 0x09 Serial Port 2
-                                   *      +=======+=======+==================+
-                                   *      | Byte  | Bits  | Descriptions     |
-                                   *      +=======+=======+==================+
-                                   *      | 0     | 0 - 7 | Bits 8-15 of     |
-                                   *      |       |       | Base Address     |
-                                   *      +-------+-------+------------------+
-                                   *      | 1     | 0 - 2 | Reserved set to 0|
-                                   *      +-------+-------+------------------+
-                                   *      | 1     | 3 - 7 | Bits 3-7 of      |
-                                   *      |       |       | Base Address     |
-                                   *      +=======+=======+==================+
-                                   */
-    uint8_t       Reserved0     ; /* 0x05 Alignment Byte */
 }SerPortCfgBlock_t;
 
 

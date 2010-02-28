@@ -175,6 +175,9 @@ typedef struct ChassisInfo_s{
     CCElement_t CElement[1]; /* 0x17 Contained Element(s) */   
 }ChassisInfo_t;
 
+
+#define SMBIOS_MIN_BLOCK_LENGTH (sizeof(SmbiosHdr_t)+2)
+
 #pragma pack(pop)   /* restore original alignment from stack */
 
 #ifdef __cplusplus

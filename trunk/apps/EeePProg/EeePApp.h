@@ -42,6 +42,7 @@ extern "C" {
 #include <EeeP.h>
 #include <EeePDB.h>
 #include <StrFuncs.h>
+#include <Str2Value.h>
 #include <EeePCfg.h>
 #include <EeePArg.h>
 

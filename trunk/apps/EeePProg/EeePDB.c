@@ -367,11 +367,13 @@ EeePFreeBuffer(
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePFreeBuffer,
       EAPI_STATUS_INVALID_PARAMETER,
-      *pBHandel
+      pBHandel
     );
 
+  if(*pBHandel!=NULL){
   free(*pBHandel);
   *pBHandel=NULL;
+  }
 ErrorExit:
   return EApiStatusCode;
 }

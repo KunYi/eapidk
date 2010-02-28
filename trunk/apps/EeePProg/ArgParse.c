@@ -55,10 +55,12 @@ NumberArg(
     const char *cszArg 
     )
 {
-  pArgs=pArgs;
-  *(unsigned long*)pvalue=ulConvertStr2Num(cszArg, NULL);
-/*   printf("StringArg: %s(0x%lX)\n", cszArg, *(unsigned long*)pvalue); */
-  return EAPI_STATUS_SUCCESS;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  
+  DO(ParseAsciiEqu_VA(cszArg, pvalue, (signed int)pArgs->stValueSize));
+
+ErrorExit:
+  return EApiStatusCode;
 }
 
 EApiStatusCode_t
@@ -389,9 +391,14 @@ ParseArgs(
                 !strcmp(szCurOption, pCurArgDesc->cszLong)
                 )
             {
+              if(pCurArgDesc->puiResult!=NULL){
               ++*pCurArgDesc->puiResult;
+              }
               DO(ParseSubArgs(&siArgc, &pszCurArg, pCurArgDesc->stArgs, pCurArgDesc->pArgs));
               ++uiValid;
+              if(pCurArgDesc->handler!=NULL){
+                DO(pCurArgDesc->handler(pCurArgDesc->pArgData));
+              }
               break;
             }
             ++pCurArgDesc;
@@ -406,9 +413,14 @@ ParseArgs(
             uiValid=0;
             while(stI --){
               if(*szCurOption==pCurArgDesc->cShort){
+                if(pCurArgDesc->puiResult!=NULL){
                 ++*pCurArgDesc->puiResult;
+                }
                 DO(ParseSubArgs(&siArgc, &pszCurArg, pCurArgDesc->stArgs, pCurArgDesc->pArgs));
                 ++uiValid;
+                if(pCurArgDesc->handler!=NULL){
+                  DO(pCurArgDesc->handler(pCurArgDesc->pArgData));
+                }
                 break;
               }
               ++pCurArgDesc;

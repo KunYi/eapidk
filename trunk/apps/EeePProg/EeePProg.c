@@ -57,14 +57,14 @@ ArgDesc_t  COM0R20M_Cfg[]={
 };
 ArgDesc_t  COM0R20M_Img[]={
   {
-  &CurOptions.szCOM0R20M_SCfg_File        ,
-  sizeof(CurOptions.szCOM0R20M_SCfg_File) ,
+  &CurOptions.CreateCOM0R20M.InFile       ,
+  sizeof(CurOptions.CreateCOM0R20M.InFile) ,
   "<Filename>  Configuration Filename"   ,
   StringArg
   },
   {
-  &CurOptions.szCOM0R20M_Img_File        ,
-  sizeof(CurOptions.szCOM0R20M_Img_File) ,
+  &CurOptions.CreateCOM0R20M.OutFile        ,
+  sizeof(CurOptions.CreateCOM0R20M.OutFile) ,
   "<Filename>  Destination File"         ,
   StringArg
   },
@@ -87,14 +87,14 @@ ArgDesc_t  COM0R20CB_Cfg[]={
 };
 ArgDesc_t  COM0R20CB_Img[]={
   {
-  &CurOptions.szCOM0R20CB_SCfg_File        ,
-  sizeof(CurOptions.szCOM0R20CB_SCfg_File) ,
+  &CurOptions.CreateCOM0R20CB.InFile       ,
+  sizeof(CurOptions.CreateCOM0R20CB.InFile) ,
   "<Filename>  Configuration Filename"   ,
   StringArg
   },
   {
-  &CurOptions.szCOM0R20CB_Img_File       ,
-  sizeof(CurOptions.szCOM0R20CB_Img_File),
+  &CurOptions.CreateCOM0R20CB.OutFile       ,
+  sizeof(CurOptions.CreateCOM0R20CB.OutFile),
   "<Filename>  Destination File"          ,
   StringArg
   },
@@ -117,54 +117,54 @@ ArgDesc_t  EeePExpEEP_Cfg[]={
 };
 ArgDesc_t  EeePExpEEP_Img[]={
   {
-  &CurOptions.szEeePExpEEP_SCfg_File        ,
-  sizeof(CurOptions.szEeePExpEEP_SCfg_File) ,
+  &CurOptions.CreateEeePExpEEP.InFile       ,
+  sizeof(CurOptions.CreateEeePExpEEP.InFile) ,
   "<Filename>  Configuration Filename"   ,
   StringArg
   },
   {
-  &CurOptions.szEeePExpEEP_Img_File        ,
-  sizeof(CurOptions.szEeePExpEEP_Img_File) ,
+  &CurOptions.CreateEeePExpEEP.OutFile       ,
+  sizeof(CurOptions.CreateEeePExpEEP.OutFile) ,
   "<Filename>  Destination File"            ,
   StringArg
   },
 };
 ArgDesc_t  EeePExpEEP_EEP[]={
   {
-  &CurOptions.szEeePExpEEP_S2Cfg_File        ,
-  sizeof(CurOptions.szEeePExpEEP_S2Cfg_File) ,
+  &CurOptions.CreateEeePExpEEP_EEP.FileName   ,
+  sizeof(CurOptions.CreateEeePExpEEP_EEP.FileName) ,
   "<Filename>  Configuration Filename"   ,
   StringArg
   },
   {
-  &CurOptions.ulEeePExpEEP_Img_EApiBus     ,
-  sizeof(CurOptions.ulEeePExpEEP_Img_EApiBus),
+  &CurOptions.CreateEeePExpEEP_EEP.I2CBus     ,
+  sizeof(CurOptions.CreateEeePExpEEP_EEP.I2CBus),
   "<EApi Id>      EApi Bus Id"             ,
   NumberArg
   },
   {
-  &CurOptions.ulEeePExpEEP_Img_DevAddr     ,
-  sizeof(CurOptions.ulEeePExpEEP_Img_DevAddr),
+  &CurOptions.CreateEeePExpEEP_EEP.I2CDevAddr     ,
+  sizeof(CurOptions.CreateEeePExpEEP_EEP.I2CDevAddr),
   "<I2C Address>  EEPROM Device Address"   ,
   NumberArg
   },
 };
 ArgDesc_t  EeePExpEEP_PEEP[]={
   {
-  &CurOptions.szEeePExpEEP_SBIN_File        ,
-  sizeof(CurOptions.szEeePExpEEP_SBIN_File) ,
+  &CurOptions.ProgramEeePExpEEP_EEP.FileName   ,
+  sizeof(CurOptions.ProgramEeePExpEEP_EEP.FileName) ,
   "<Filename>  Binary Image Filename"       ,
   StringArg
   },
   {
-  &CurOptions.ulEeePExpEEP_Bin_EApiBus     ,
-  sizeof(CurOptions.ulEeePExpEEP_Bin_EApiBus),
+  &CurOptions.ProgramEeePExpEEP_EEP.I2CBus   ,
+  sizeof(CurOptions.ProgramEeePExpEEP_EEP.I2CBus) ,
   "<EApi Id>      EApi Bus Id"             ,
   NumberArg
   },
   {
-  &CurOptions.ulEeePExpEEP_Bin_DevAddr     ,
-  sizeof(CurOptions.ulEeePExpEEP_Bin_DevAddr),
+  &CurOptions.ProgramEeePExpEEP_EEP.I2CDevAddr   ,
+  sizeof(CurOptions.ProgramEeePExpEEP_EEP.I2CDevAddr) ,
   "<I2C Address>  EEPROM Device Address"   ,
   NumberArg
   },
@@ -187,20 +187,20 @@ ArgDesc_t  COM0R20M_IMG[]={
 };
 ArgDesc_t  EeePExpEEP_IMG[]={
   {
-  &CurOptions.szEeePExpEEP_To_Img_FName        ,
-  sizeof(CurOptions.szEeePExpEEP_To_Img_FName) ,
+  &CurOptions.StoreEeePExpEEP_EEP.FileName   ,
+  sizeof(CurOptions.StoreEeePExpEEP_EEP.FileName) ,
   "<Filename>  Binary Image Filename"       ,
   StringArg
   },
   {
-  &CurOptions.ulEeePExpEEP_To_Img_EApiBus     ,
-  sizeof(CurOptions.ulEeePExpEEP_To_Img_EApiBus),
+  &CurOptions.StoreEeePExpEEP_EEP.I2CBus     ,
+  sizeof(CurOptions.StoreEeePExpEEP_EEP.I2CBus),
   "<EApi Id>      EApi Bus Id"             ,
   NumberArg
   },
   {
-  &CurOptions.ulEeePExpEEP_To_Img_DevAddr     ,
-  sizeof(CurOptions.ulEeePExpEEP_To_Img_DevAddr),
+  &CurOptions.StoreEeePExpEEP_EEP.I2CDevAddr     ,
+  sizeof(CurOptions.StoreEeePExpEEP_EEP.I2CDevAddr),
   "<I2C Address>  EEPROM Device Address"   ,
   NumberArg
   },
@@ -231,203 +231,16 @@ ArgDesc_t  GEN_LIST_DBLOCKS_FILE[]={
 };
 ArgDesc_t  GEN_LIST_DBLOCKS_EEP[]={
   {
-  &CurOptions.ulEEP_Img_EApiBus     ,
-  sizeof(CurOptions.ulEEP_Img_EApiBus),
-  "<EApi Id>      EApi Bus Id"             ,
+  &CurOptions.ulEEP_Img.I2CBus                ,
+  sizeof(CurOptions.ulEEP_Img.I2CBus)         ,
+  "<EApi Id>      EApi Bus Id"                ,
   NumberArg
   },
   {
-  &CurOptions.ulEEP_Img_DevAddr     ,
-  sizeof(CurOptions.ulEEP_Img_DevAddr),
-  "<I2C Address>  EEPROM Device Address"   ,
+  &CurOptions.ulEEP_Img.I2CDevAddr            ,
+  sizeof(CurOptions.ulEEP_Img.I2CDevAddr)     ,
+  "<I2C Address>  EEPROM Device Address"      ,
   NumberArg
-  },
-};
-
-CmdDesc_t ArgsDesc[]={
-  {
-    'q'                                             , 
-    "quiet"                                         , 
-    &CurOptions.uiQuiet                             , 
-    "Minimises Output"                              , 
-    NULL                                            ,
-    0                          
-  },
-  {
-    'h'                                             , 
-    "help"                                          , 
-    &CurOptions.uiHelp                              , 
-    "Print this usage message"                      , 
-    NULL                                            ,
-    0                          
-  },
-  {
-    '?'                                             , 
-    NULL                                            , 
-    &CurOptions.uiHelp                              , 
-    "Print this usage message"                      , 
-    NULL                                            ,
-    0                          
-  },
-  {
-    'v'                                             , 
-    "verbose"                                       , 
-    &CurOptions.uiVerbose                           , 
-    "Increases Verbosity Level"                     , 
-    NULL                                            ,
-    0                          
-  },
-  {
-    0x00                                            , 
-    "CREATE-COM0R20M-CFG"                           , 
-    &CurOptions.uiCreateCOM0R20M_CFG                , 
-    "Create COM0 Module Config File Template"       , 
-    COM0R20M_Cfg                                    ,
-    ARRAY_SIZE(COM0R20M_Cfg)
-  },
-  {
-    0x00                                            , 
-    "CREATE-COM0R20M-IMG"                           , 
-    &CurOptions.uiCreateCOM0R20M_IMG                , 
-    "Create COM0 Module Binary File"                , 
-    COM0R20M_Img                                    ,
-    ARRAY_SIZE(COM0R20M_Img)
-  },
-  {
-    0x00                                            , 
-    "CREATE-COM0R20M-EEP"                           , 
-    &CurOptions.uiCreateCOM0R20M_EEP                , 
-    "Create COM0 Module Content and Program over EApi", 
-    COM0R20M_EEP                                    ,
-    ARRAY_SIZE(COM0R20M_EEP)
-  },
-  {
-    0x00, 
-    "CREATE-COM0R20CB-CFG" , 
-    &CurOptions.uiCreateCOM0R20CB_CFG , 
-    "Create COM0 Carrier Config File Template"      , 
-    COM0R20CB_Cfg                                   ,
-    ARRAY_SIZE(COM0R20CB_Cfg)
-  },
-  {
-    0x00                                            , 
-    "CREATE-COM0R20CB-EEP"                          , 
-    &CurOptions.uiCreateCOM0R20CB_EEP               , 
-    "Create COM0 Carrier Content and Program over EApi", 
-    COM0R20CB_EEP                                   ,
-    ARRAY_SIZE(COM0R20CB_EEP)
-  },
-  {
-    0x00                                            , 
-    "CREATE-COM0R20CB-IMG"                          , 
-    &CurOptions.uiCreateCOM0R20CB_IMG               , 
-    "Create COM0 Carrier Binary File"               , 
-    COM0R20CB_Img                                   ,
-    ARRAY_SIZE(COM0R20CB_Img)
-  },
-  {
-    0x00                                            , 
-    "CREATE-EeePExpEEP-CFG"                         , 
-    &CurOptions.uiCreateEeePExpEEP_CFG              , 
-    "Create EeeP Expansion EEP Config File Template", 
-    EeePExpEEP_Cfg                                  ,
-    ARRAY_SIZE(EeePExpEEP_Cfg)
-  },
-  {
-    0x00                                            , 
-    "CREATE-EeePExpEEP-IMG"                         , 
-    &CurOptions.uiCreateEeePExpEEP_IMG              , 
-    "Create EeeP Expansion EEP Binary File"         , 
-    EeePExpEEP_Img                                  ,
-    ARRAY_SIZE(EeePExpEEP_Img)
-  },
-  {
-    0x00                                            , 
-    "CREATE-EeePExpEEP-EEP"                         , 
-    &CurOptions.uiCreateEeePExpEEP_EEP              , 
-    "Create EeeP Expansion EEP Image and Program over EApi", 
-    EeePExpEEP_EEP                                  ,
-    ARRAY_SIZE(EeePExpEEP_EEP)
-  },
-  {
-    0x00                                            , 
-    "PROGRAM-EeePExpEEP-EEP"                        , 
-    &CurOptions.uiProgramEeePExpEEP_EEP             , 
-    "Program EeeP Expansion EEP Image file over EApi", 
-    EeePExpEEP_PEEP                                  ,
-    ARRAY_SIZE(EeePExpEEP_PEEP)
-  },
-  {
-    0x00                                            , 
-    "PROGRAM-COM0R20CB-EEP"                         , 
-    &CurOptions.uiProgramCOM0R20CB_EEP              , 
-    "Program COM0 R2.0 Carrier Board EEP Image file over EApi", 
-    COM0R20CB_PEEP                                  ,
-    ARRAY_SIZE(COM0R20CB_PEEP)
-  },
-  {
-    0x00                                            , 
-    "PROGRAM-COM0R20M-EEP"                          , 
-    &CurOptions.uiProgramCOM0R20M_EEP               , 
-    "Program COM0 R2.0 Module EEP Image file over EApi", 
-    COM0R20M_PEEP                                   ,
-    ARRAY_SIZE(COM0R20M_PEEP)
-  },
-  {
-    0x00                                                , 
-    "SAVE-EeePExpEEP-IMG"                               , 
-    &CurOptions.uiStoreEeePExpEEP_EEP                   , 
-    "Stores EeeP Expansion EEP to Image file over EApi" , 
-    EeePExpEEP_IMG                                      ,
-    ARRAY_SIZE(EeePExpEEP_IMG)
-  },
-  {
-    0x00                                                , 
-    "SAVE-COM0R20CB-IMG"                                , 
-    &CurOptions.uiStoreCOM0R20CB_EEP                    ,
-    "Stores COM0 R2.0 Carrier Board EEP to Image file over EApi", 
-    COM0R20CB_IMG                                       ,
-    ARRAY_SIZE(COM0R20CB_IMG )
-  },
-  {
-    0x00                                                ,
-    "SAVE-COM0R20M-IMG"                                 ,
-    &CurOptions.uiStoreCOM0R20M_EEP                     ,
-    "Stores COM0 R2.0 Module EEP to Image file over EApi", 
-    COM0R20M_IMG                                       ,
-    ARRAY_SIZE(COM0R20M_IMG)
-  },
-  {
-    0x00                                            , 
-    "LIST-DBLOCKS-IMG"                              , 
-    &CurOptions.uiListDBlocks_IMG                   , 
-    "Lists Dynamic Blocks in Binary Image file"     , 
-    GEN_LIST_DBLOCKS_FILE                           ,
-    ARRAY_SIZE(GEN_LIST_DBLOCKS_FILE)
-  },
-  {
-    0x00                                            , 
-    "LIST-DBLOCKS-EEP"                              , 
-    &CurOptions.uiListDBlocks_EEP                   , 
-    "Lists Dynamic Blocks in Binary Image file"     , 
-    GEN_LIST_DBLOCKS_EEP                           ,
-    ARRAY_SIZE(GEN_LIST_DBLOCKS_EEP)
-  },
-  {
-    0x00                                            , 
-    "LIST-DBLOCKS-COM0R20CBEEP"                    , 
-    &CurOptions.uiListDBlocks_COM0R20_CB_EEP        , 
-    "Lists Dynamic Blocks in COM0 R2.0 Carrier Board EEPROM", 
-    NULL                                            ,
-    0                                 
-  },
-  {
-    0x00                                           , 
-    "LIST-DBLOCKS-COM0R20MEEP"                    , 
-    &CurOptions.uiListDBlocks_COM0R20_M_EEP        , 
-    "Lists Dynamic Blocks in COM0 R2.0 Module EEPROM", 
-    NULL                                            ,
-    0                                 
   },
 };
 
@@ -446,7 +259,7 @@ CreateTxtFilePtr(
     *FilePtr=fopen(Destination, "w");
     EAPI_APP_RETURN_ERROR_IF_S(
          CreateTxtFilePtr,
-         (FilePtr==NULL),
+         (*FilePtr==NULL),
          EAPI_STATUS_WRITE_ERROR
       );
   }
@@ -473,6 +286,584 @@ FreeFilePtr(
 #define FREE_STREAM(x) \
           FreeFilePtr(&x)
 
+EApiStatusCode_t 
+CMD_CreateCOM0R20_MEEPCfg(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  FILE *lclStream=NULL;
+
+  DO(CreateTxtFilePtr(*(char**)pArgData, &lclStream));
+  DO(EeeP_CreateCOM0R20_MEEPCfg(lclStream));
+
+ErrorExit:
+  FREE_STREAM(lclStream);
+  return EApiStatusCode;
+}
+EApiStatusCode_t 
+CMD_CreateCOM0R20_CBCfg(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  FILE *lclStream=NULL;
+
+  DO(CreateTxtFilePtr(*(char**)pArgData, &lclStream));
+  DO(EeeP_CreateCOM0R20_CBCfg(lclStream));
+
+ErrorExit:
+  FREE_STREAM(lclStream);
+  return EApiStatusCode;
+}
+EApiStatusCode_t 
+CMD_CreateCOM0R20_EeePExtCfg(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  FILE *lclStream=NULL;
+
+  DO(CreateTxtFilePtr(*(char**)pArgData, &lclStream));
+  DO(EeeP_CreateEeePExtEEPCfg(lclStream));
+
+ErrorExit:
+  FREE_STREAM(lclStream);
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t 
+CMD_CreateCOM0R20CB_EEP(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeeP_CreateCOM0R20_CBImage(
+        &BHandel                              ,
+        *(char**)pArgData
+      ));
+  DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t 
+CMD_CreateCOM0R20M_EEP(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeeP_CreateCOM0R20_MEEPImage(
+        &BHandel                              ,
+        *(char**)pArgData
+      ));
+  DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t 
+CMD_CreateCOM0R20Ext_EEP(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeeP_CreateCOM0R20_MEEPImage(
+        &BHandel                              ,
+        ((WriteEepCfg_t*)pArgData)->FileName
+      ));
+  DO(EeePWriteBufferToEEP(BHandel, 
+        (uint16_t)((WriteEepCfg_t*)pArgData)->I2CBus, 
+        (uint16_t)((WriteEepCfg_t*)pArgData)->I2CDevAddr
+        )
+      );
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+
+EApiStatusCode_t 
+CMD_ProgramCOM0R20CB_EEP(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeePReadBufferFromFile(
+        &BHandel                              ,
+        *(char**)pArgData
+      ));
+  if(memcmp(((COM0R20_CB_t *)BHandel)->GenId, COM0R20_CB_HEADER_ID, sizeof(COM0R20_CB_HEADER_ID)-1)){
+    EAPI_APP_RETURN_ERROR(
+        CMD_ProgramCOM0R20CB_EEP,
+        EAPI_STATUS_ERROR,
+        "Not Valid COM0 R2.0 Carrier Board Image"
+      );
+  }
+  DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t 
+CMD_ProgramCOM0R20M_EEP(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeePReadBufferFromFile(
+        &BHandel                              ,
+        *(char**)pArgData
+      ));
+  if(memcmp(((COM0R20_M_t *)BHandel)->GenId, COM0R20_M_HEADER_ID, sizeof(COM0R20_M_HEADER_ID)-1)){
+    EAPI_APP_RETURN_ERROR(
+        CMD_ProgramCOM0R20M_EEP,
+        EAPI_STATUS_ERROR,
+        "Not Valid COM0 R2.0 Module Image"
+      );
+  }
+  DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+
+EApiStatusCode_t 
+CMD_ProgramEeePExt_EEP(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeePReadBufferFromFile(
+        &BHandel                              ,
+        ((WriteEepCfg_t*)pArgData)->FileName
+      ));
+  if(memcmp(((Exp_EEP_t *)BHandel)->GenId, EEEP_EXP_HEADER_ID, sizeof(EEEP_EXP_HEADER_ID)-1)){
+    EAPI_APP_RETURN_ERROR(
+        CMD_ProgramEeePExt_EEP,
+        EAPI_STATUS_ERROR,
+        "Not Valid EeeP Extended EEP Image"
+      );
+  }
+  DO(EeePWriteBufferToEEP(
+          BHandel, 
+          (uint16_t)((WriteEepCfg_t*)pArgData)->I2CBus, 
+          (uint16_t)((WriteEepCfg_t*)pArgData)->I2CDevAddr
+      ));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t 
+CMD_StoreEeePExt_EEP(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+  DO(EeePReadBufferFromEEP(
+          &BHandel, 
+          (uint16_t)((WriteEepCfg_t*)pArgData)->I2CBus, 
+          (uint16_t)((WriteEepCfg_t*)pArgData)->I2CDevAddr
+      ));
+  DO(EeePWriteBufferToFile(BHandel, ((WriteEepCfg_t*)pArgData)->FileName));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t 
+CMD_StoreCOM0R20_CB_EEP(
+    void *pArgData
+    )
+{
+  WriteEepCfg_t WriteEep={NULL, EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR};
+  WriteEep.FileName=*(char**)pArgData;
+  return CMD_StoreEeePExt_EEP(&WriteEep);
+}
+
+EApiStatusCode_t 
+CMD_StoreCOM0R20_M_EEP(
+    void *pArgData
+    )
+{
+  WriteEepCfg_t WriteEep={NULL, EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR};
+  WriteEep.FileName=*(char**)pArgData;
+  return CMD_StoreEeePExt_EEP(&WriteEep);
+}
+
+EApiStatusCode_t 
+CMD_ListDBlocksEeePExt_EEP(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+  DO(EeePReadBufferFromEEP(
+          &BHandel, 
+          (uint16_t)((I2CAddrCfg_t*)pArgData)->I2CBus, 
+          (uint16_t)((I2CAddrCfg_t*)pArgData)->I2CDevAddr
+      ));
+  DO(EeePListBlocks( BHandel, 0));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+
+EApiStatusCode_t 
+CMD_ListDBlocksCOM0R20_CB_EEP(
+    void *pArgData
+    )
+{
+  I2CAddrCfg_t DevDesc={EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR};
+  pArgData=pArgData;
+  return CMD_ListDBlocksEeePExt_EEP(&DevDesc);
+}
+EApiStatusCode_t 
+CMD_ListDBlocksCOM0R20_M_EEP(
+    void *pArgData
+    )
+{
+  I2CAddrCfg_t DevDesc={EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR};
+  pArgData=pArgData;
+  return CMD_ListDBlocksEeePExt_EEP(&DevDesc);
+}
+
+EApiStatusCode_t 
+CMD_CreateExtEepEEP_IMG(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeeP_CreateEeePExtEEPImage(
+        &BHandel                              ,
+        ((InOutFiles_t*)pArgData)->InFile
+      ));
+  DO(EeePWriteBufferToFile(BHandel, ((InOutFiles_t*)pArgData)->OutFile));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+EApiStatusCode_t 
+CMD_CreateCOM0R20M_IMG(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeeP_CreateCOM0R20_MEEPImage(
+        &BHandel                              ,
+        ((InOutFiles_t*)pArgData)->InFile
+      ));
+  DO(EeePWriteBufferToFile(BHandel, ((InOutFiles_t*)pArgData)->OutFile));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+EApiStatusCode_t 
+CMD_CreateCOM0R20CB_IMG(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeeP_CreateCOM0R20_CBImage(
+        &BHandel                              ,
+        ((InOutFiles_t*)pArgData)->InFile
+      ));
+  DO(EeePWriteBufferToFile(BHandel, ((InOutFiles_t*)pArgData)->OutFile));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t 
+CMD_ListDBlocks_IMG(
+    void *pArgData
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EeePHandel_t BHandel=NULL;
+
+  DO(EeePReadBufferFromFile(
+        &BHandel                              ,
+        *(char**)pArgData
+      ));
+  DO(EeePListBlocks( BHandel, 0));
+
+ErrorExit:
+  DO(EeePFreeBuffer(&BHandel));
+  return EApiStatusCode;
+}
+
+
+
+CmdDesc_t ArgsDesc[]={
+  {
+    'q'                                             , 
+    "quiet"                                         , 
+    &CurOptions.uiQuiet                             , 
+    "Minimises Output"                              , 
+    NULL                                            ,
+    0                                               ,
+    NULL                                            ,
+    NULL
+  },
+  {
+    'h'                                             , 
+    "help"                                          , 
+    &CurOptions.uiHelp                              , 
+    "Print this usage message"                      , 
+    NULL                                            ,
+    0                                               ,
+    NULL                                            ,
+    NULL
+  },
+  {
+    '?'                                             , 
+    NULL                                            , 
+    &CurOptions.uiHelp                              , 
+    "Print this usage message"                      , 
+    NULL                                            ,
+    0                                               ,
+    NULL                                            ,
+    NULL
+  },
+  {
+    'v'                                             , 
+    "verbose"                                       , 
+    &CurOptions.uiVerbose                           , 
+    "Increases Verbosity Level"                     , 
+    NULL                                            ,
+    0                                               ,
+    NULL                                            ,
+    NULL
+  },
+  {
+    0x00                                            , 
+    "CREATE-COM0R20M-CFG"                           , 
+    &CurOptions.uiCreateCOM0R20M_CFG                , 
+    "Create COM0 Module Config File Template"       , 
+    COM0R20M_Cfg                                    ,
+    ARRAY_SIZE(COM0R20M_Cfg)                        ,
+    &CurOptions.szCOM0R20M_Cfg_File                 ,
+    CMD_CreateCOM0R20_MEEPCfg
+  },
+  {
+    0x00                                            , 
+    "CREATE-COM0R20M-IMG"                           , 
+    &CurOptions.uiCreateCOM0R20M_IMG                , 
+    "Create COM0 Module Binary File"                , 
+    COM0R20M_Img                                    ,
+    ARRAY_SIZE(COM0R20M_Img)                        ,
+    &CurOptions.CreateCOM0R20M                      ,
+    CMD_CreateCOM0R20M_IMG
+  },
+  {
+    0x00                                            , 
+    "CREATE-COM0R20M-EEP"                           , 
+    &CurOptions.uiCreateCOM0R20M_EEP                , 
+    "Create COM0 Module Content and Program over EApi", 
+    COM0R20M_EEP                                    ,
+    ARRAY_SIZE(COM0R20M_EEP)                        ,
+    &CurOptions.szCOM0R20M_S2Cfg_File               ,
+    CMD_CreateCOM0R20M_EEP
+  },
+  {
+    0x00, 
+    "CREATE-COM0R20CB-CFG" , 
+    &CurOptions.uiCreateCOM0R20CB_CFG               , 
+    "Create COM0 Carrier Config File Template"      , 
+    COM0R20CB_Cfg                                   ,
+    ARRAY_SIZE(COM0R20CB_Cfg)                       ,
+    &CurOptions.szCOM0R20CB_Cfg_File                ,
+    CMD_CreateCOM0R20_CBCfg
+  },
+  {
+    0x00                                            , 
+    "CREATE-COM0R20CB-EEP"                          , 
+    &CurOptions.uiCreateCOM0R20CB_EEP               , 
+    "Create COM0 Carrier Content and Program over EApi", 
+    COM0R20CB_EEP                                   ,
+    ARRAY_SIZE(COM0R20CB_EEP)                       ,
+    &CurOptions.szCOM0R20CB_S2Cfg_File              ,
+    CMD_CreateCOM0R20CB_EEP
+  },
+  {
+    0x00                                            , 
+    "CREATE-COM0R20CB-IMG"                          , 
+    &CurOptions.uiCreateCOM0R20CB_IMG               , 
+    "Create COM0 Carrier Binary File"               , 
+    COM0R20CB_Img                                   ,
+    ARRAY_SIZE(COM0R20CB_Img)                       ,
+    &CurOptions.CreateCOM0R20CB                     ,
+    CMD_CreateCOM0R20CB_IMG
+  },
+  {
+    0x00                                            , 
+    "CREATE-EeePExpEEP-CFG"                         , 
+    &CurOptions.uiCreateEeePExpEEP_CFG              , 
+    "Create EeeP Expansion EEP Config File Template", 
+    EeePExpEEP_Cfg                                  ,
+    ARRAY_SIZE(EeePExpEEP_Cfg)                      ,
+    &CurOptions.szEeePExpEEP_Cfg_File               ,
+    CMD_CreateCOM0R20_EeePExtCfg
+  },
+  {
+    0x00                                            , 
+    "CREATE-EeePExpEEP-IMG"                         , 
+    &CurOptions.uiCreateEeePExpEEP_IMG              , 
+    "Create EeeP Expansion EEP Binary File"         , 
+    EeePExpEEP_Img                                  ,
+    ARRAY_SIZE(EeePExpEEP_Img)                      ,
+    &CurOptions.CreateEeePExpEEP                    ,
+    CMD_CreateExtEepEEP_IMG
+  },
+  {
+    0x00                                            , 
+    "CREATE-EeePExpEEP-EEP"                         , 
+    &CurOptions.uiCreateEeePExpEEP_EEP              , 
+    "Create EeeP Expansion EEP Image and Program over EApi", 
+    EeePExpEEP_EEP                                  ,
+    ARRAY_SIZE(EeePExpEEP_EEP)                      ,
+    &CurOptions.CreateEeePExpEEP_EEP                ,
+    CMD_CreateCOM0R20Ext_EEP
+  },
+  {
+    0x00                                            , 
+    "PROGRAM-EeePExpEEP-EEP"                        , 
+    &CurOptions.uiProgramEeePExpEEP_EEP             , 
+    "Program EeeP Expansion EEP Image file over EApi", 
+    EeePExpEEP_PEEP                                 ,
+    ARRAY_SIZE(EeePExpEEP_PEEP)                     ,
+    &CurOptions.ProgramEeePExpEEP_EEP               ,
+    CMD_ProgramEeePExt_EEP
+  },
+  {
+    0x00                                            , 
+    "PROGRAM-COM0R20CB-EEP"                         , 
+    &CurOptions.uiProgramCOM0R20CB_EEP              , 
+    "Program COM0 R2.0 Carrier Board EEP Image file over EApi", 
+    COM0R20CB_PEEP                                  ,
+    ARRAY_SIZE(COM0R20CB_PEEP)                      ,
+    &CurOptions.szCOM0R20CB_SBIN_File               ,
+    CMD_ProgramCOM0R20CB_EEP
+  },
+  {
+    0x00                                            , 
+    "PROGRAM-COM0R20M-EEP"                          , 
+    &CurOptions.uiProgramCOM0R20M_EEP               , 
+    "Program COM0 R2.0 Module EEP Image file over EApi", 
+    COM0R20M_PEEP                                   ,
+    ARRAY_SIZE(COM0R20M_PEEP)                       ,
+    &CurOptions.szCOM0R20M_SBIN_File                ,
+    CMD_ProgramCOM0R20M_EEP
+  },
+  {
+    0x00                                                , 
+    "SAVE-EeePExpEEP-IMG"                               , 
+    &CurOptions.uiStoreEeePExpEEP_EEP                   , 
+    "Stores EeeP Expansion EEP to Image file over EApi" , 
+    EeePExpEEP_IMG                                      ,
+    ARRAY_SIZE(EeePExpEEP_IMG)                          ,
+    &CurOptions.StoreEeePExpEEP_EEP                     ,
+    CMD_StoreEeePExt_EEP
+  },
+  {
+    0x00                                                , 
+    "SAVE-COM0R20CB-IMG"                                , 
+    &CurOptions.uiStoreCOM0R20CB_EEP                    ,
+    "Stores COM0 R2.0 Carrier Board EEP to Image file over EApi", 
+    COM0R20CB_IMG                                       ,
+    ARRAY_SIZE(COM0R20CB_IMG )                          ,
+    &CurOptions.szCOM0R20CBEEP_To_Img_FName             ,
+    CMD_StoreCOM0R20_CB_EEP
+  },
+  {
+    0x00                                                ,
+    "SAVE-COM0R20M-IMG"                                 ,
+    &CurOptions.uiStoreCOM0R20M_EEP                     ,
+    "Stores COM0 R2.0 Module EEP to Image file over EApi", 
+    COM0R20M_IMG                                        ,
+    ARRAY_SIZE(COM0R20M_IMG)                            ,
+    &CurOptions.szCOM0R20MEEP_To_Img_FName              ,
+    CMD_StoreCOM0R20_M_EEP
+  },
+  {
+    0x00                                            , 
+    "LIST-DBLOCKS-IMG"                              , 
+    &CurOptions.uiListDBlocks_IMG                   , 
+    "Lists Dynamic Blocks in Binary Image file"     , 
+    GEN_LIST_DBLOCKS_FILE                           ,
+    ARRAY_SIZE(GEN_LIST_DBLOCKS_FILE)               ,
+    &CurOptions.szGEN_List_DBlocks_File             ,
+    CMD_ListDBlocks_IMG
+  },
+  {
+    0x00                                            , 
+    "LIST-DBLOCKS-EEP"                              , 
+    &CurOptions.uiListDBlocks_EEP                   , 
+    "Lists Dynamic Blocks in Binary Image file"     , 
+    GEN_LIST_DBLOCKS_EEP                            ,
+    ARRAY_SIZE(GEN_LIST_DBLOCKS_EEP)                ,
+    &CurOptions.ulEEP_Img                           ,
+    CMD_ListDBlocksEeePExt_EEP
+  },
+  {
+    0x00                                            , 
+    "LIST-DBLOCKS-COM0R20CBEEP"                     , 
+    &CurOptions.uiListDBlocks_COM0R20_CB_EEP        , 
+    "Lists Dynamic Blocks in COM0 R2.0 Carrier Board EEPROM", 
+    NULL                                            ,
+    0                                               ,
+    NULL                                            ,
+    CMD_ListDBlocksCOM0R20_CB_EEP                                
+  },
+  {
+    0x00                                              , 
+    "LIST-DBLOCKS-COM0R20MEEP"                        , 
+    &CurOptions.uiListDBlocks_COM0R20_M_EEP           , 
+    "Lists Dynamic Blocks in COM0 R2.0 Module EEPROM" , 
+    NULL                                              ,
+    0                                                 ,
+    NULL                                              ,
+    CMD_ListDBlocksCOM0R20_M_EEP                                 
+  },
+};
+
   
 
 
@@ -486,8 +877,8 @@ FreeFilePtr(
   }
 
 /*
-// Create Block Content
-*/
+ * Create Block Content
+ */
 int 
 __cdecl 
 main(
@@ -495,9 +886,8 @@ main(
     const char **argv
   )
 {
-  EeePHandel_t BHandel;
-  FILE *lclStream=NULL;
   EApiStatusCode_t EApiStatusCode;
+
   DO_MAIN(EApiLibInitialize());
 
   EApiStatusCode=ParseArgs(argc - 1, argv + 1, ArgsDesc, ARRAY_SIZE(ArgsDesc));
@@ -509,7 +899,7 @@ main(
     case EAPI_STATUS_SUCCESS:
       break;
     default:
-      EAPI_FORMATED_MES('E', main, EApiStatusCode, TEXT("ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc))"));
+      EAPI_FORMATED_MES('E', main, EApiStatusCode, "ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc))");
       exit(EApiStatusCode);
       break;
   }
@@ -520,227 +910,13 @@ main(
 
   if(CurOptions.uiHelp){
     PrintUsage(stderr, ArgsDesc, ARRAY_SIZE(ArgsDesc));
-    exit(EApiStatusCode);
+    goto ErrorExit;
   }
   /*
    *
    */
-  if(CurOptions.uiCreateCOM0R20CB_EEP){
-    DO_MAIN(EeeP_CreateCOM0R20_CBImage(
-          &BHandel                              ,
-          CurOptions.szCOM0R20CB_S2Cfg_File
-        ));
-    DO_MAIN(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiProgramCOM0R20CB_EEP){
-    DO_MAIN(EeePReadBufferFromFile(
-          &BHandel                              ,
-          CurOptions.szCOM0R20CB_SBIN_File
-        ));
-    if(memcmp(((COM0R20_CB_t *)BHandel)->GenId, COM0R20_CB_HEADER_ID, sizeof(COM0R20_CB_HEADER_ID)-1)){
-      EAPI_APP_RETURN_ERROR(
-          main,
-          EAPI_STATUS_ERROR,
-          TEXT("Not Valid COM0 R2.0 Carrier Board Image")
-        );
-    }
-    DO_MAIN(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiCreateCOM0R20M_EEP){
-    DO_MAIN(EeeP_CreateCOM0R20_MEEPImage(
-          &BHandel                              ,
-          CurOptions.szCOM0R20M_S2Cfg_File
-        ));
-    DO_MAIN(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiProgramCOM0R20M_EEP){
-    DO_MAIN(EeePReadBufferFromFile(
-          &BHandel                              ,
-          CurOptions.szCOM0R20M_SBIN_File
-        ));
-    if(memcmp(((COM0R20_M_t *)BHandel)->GenId, COM0R20_M_HEADER_ID, sizeof(COM0R20_M_HEADER_ID)-1)){
-      EAPI_APP_RETURN_ERROR(
-          main,
-          EAPI_STATUS_ERROR,
-          TEXT("Not Valid COM0 R2.0 Module Image")
-        );
-    }
-    DO_MAIN(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiCreateCOM0R20CB_IMG){
-    DO_MAIN(EeeP_CreateCOM0R20_CBImage(
-          &BHandel                              ,
-          CurOptions.szCOM0R20CB_SCfg_File
-        ));
-    DO_MAIN(EeePWriteBufferToFile(BHandel, CurOptions.szCOM0R20CB_Img_File));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiCreateCOM0R20M_IMG){
-    DO_MAIN(EeeP_CreateCOM0R20_MEEPImage(
-          &BHandel                              ,
-          CurOptions.szCOM0R20M_SCfg_File
-        ));
-    DO_MAIN(EeePWriteBufferToFile(BHandel, CurOptions.szCOM0R20M_Img_File));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiCreateEeePExpEEP_IMG){
-    DO_MAIN(EeeP_CreateEeePExtEEPImage(
-          &BHandel                              ,
-          CurOptions.szEeePExpEEP_SCfg_File
-        ));
-    DO_MAIN(EeePWriteBufferToFile(BHandel, CurOptions.szEeePExpEEP_Img_File));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiCreateEeePExpEEP_EEP){
-    DO_MAIN(EeeP_CreateEeePExtEEPImage(
-          &BHandel                              ,
-          CurOptions.szEeePExpEEP_S2Cfg_File
-        ));
-    DO_MAIN(EeePWriteBufferToEEP(
-            BHandel, 
-            (uint16_t)CurOptions.ulEeePExpEEP_Img_EApiBus, 
-            (uint16_t)CurOptions.ulEeePExpEEP_Img_DevAddr
-        ));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiProgramEeePExpEEP_EEP){
-    DO_MAIN(EeePReadBufferFromFile(
-          &BHandel                              ,
-          CurOptions.szEeePExpEEP_SBIN_File
-        ));
-    if(memcmp(((Exp_EEP_t *)BHandel)->GenId, EEEP_EXP_HEADER_ID, sizeof(EEEP_EXP_HEADER_ID)-1)){
-      EAPI_APP_RETURN_ERROR(
-          main,
-          EAPI_STATUS_ERROR,
-          TEXT("Not Valid EeeP Extended EEP Image")
-        );
-    }
-    DO_MAIN(EeePWriteBufferToEEP(
-            BHandel, 
-            (uint16_t)CurOptions.ulEeePExpEEP_Bin_EApiBus, 
-            (uint16_t)CurOptions.ulEeePExpEEP_Bin_DevAddr
-        ));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiListDBlocks_IMG){
-    DO_MAIN(EeePReadBufferFromFile(
-          &BHandel                              ,
-          CurOptions.szGEN_List_DBlocks_File
-        ));
-    DO_MAIN(EeePListBlocks( BHandel, 0));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiListDBlocks_EEP){
-    DO_MAIN(EeePReadBufferFromEEP(
-            &BHandel, 
-            (uint16_t)CurOptions.ulEEP_Img_EApiBus, 
-            (uint16_t)CurOptions.ulEEP_Img_DevAddr
-        ));
-    DO_MAIN(EeePListBlocks( BHandel, 0));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  if(CurOptions.uiListDBlocks_COM0R20_CB_EEP){
-    DO_MAIN(EeePReadBufferFromEEP(
-            &BHandel, 
-            EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR
-        ));
-    DO_MAIN(EeePListBlocks( BHandel, 0));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  if(CurOptions.uiListDBlocks_COM0R20_M_EEP){
-    DO_MAIN(EeePReadBufferFromEEP(
-            &BHandel, 
-            EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR
-        ));
-    DO_MAIN(EeePListBlocks( BHandel, 0));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  if(CurOptions.uiStoreEeePExpEEP_EEP){
-    DO_MAIN(EeePReadBufferFromEEP(
-            &BHandel, 
-            (uint16_t)CurOptions.ulEeePExpEEP_To_Img_EApiBus, 
-            (uint16_t)CurOptions.ulEeePExpEEP_To_Img_DevAddr
-        ));
-    DO_MAIN(EeePWriteBufferToFile(BHandel, CurOptions.szEeePExpEEP_To_Img_FName));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  if(CurOptions.uiStoreCOM0R20CB_EEP){
-    DO_MAIN(EeePReadBufferFromEEP(
-            &BHandel, 
-            EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR
-        ));
-    DO_MAIN(EeePWriteBufferToFile(BHandel, CurOptions.szCOM0R20CBEEP_To_Img_FName));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  if(CurOptions.uiStoreCOM0R20M_EEP){
-    DO_MAIN(EeePReadBufferFromEEP(
-            &BHandel, 
-            EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR
-        ));
-    DO_MAIN(EeePWriteBufferToFile(BHandel, CurOptions.szCOM0R20MEEP_To_Img_FName));
-    DO_MAIN(EeePFreeBuffer(&BHandel));
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiCreateCOM0R20CB_CFG){
-    DO_MAIN(CreateTxtFilePtr(CurOptions.szCOM0R20CB_Cfg_File, &lclStream));
-    DO_MAIN(EeeP_CreateCOM0R20_CBCfg(lclStream));
-    FREE_STREAM(lclStream);
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiCreateCOM0R20M_CFG){
-    DO_MAIN(CreateTxtFilePtr(CurOptions.szCOM0R20M_Cfg_File, &lclStream));
-    DO_MAIN(EeeP_CreateCOM0R20_MEEPCfg(lclStream));
-    FREE_STREAM(lclStream);
-  }
-  /*
-   *
-   */
-  if(CurOptions.uiCreateEeePExpEEP_CFG){
-    DO_MAIN(CreateTxtFilePtr(CurOptions.szEeePExpEEP_Cfg_File, &lclStream));
-    DO_MAIN(EeeP_CreateEeePExtEEPCfg(lclStream));
-    FREE_STREAM(lclStream);
-  }
   
-  DO_MAIN(EApiLibUnInitialize());
 ErrorExit:
+  DO_MAIN(EApiLibUnInitialize());
   exit(EApiStatusCode);
-
 }

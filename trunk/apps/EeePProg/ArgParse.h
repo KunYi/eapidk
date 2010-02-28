@@ -47,6 +47,8 @@ typedef struct CmdDesc_s{
   const char *cszHelp;
   ArgDesc_t  *pArgs;
   size_t     stArgs;
+  void *     pArgData;
+  EApiStatusCode_t (*handler)(void *pArgsData);
 }CmdDesc_t;
 
 typedef EApiStatusCode_t CmdArgHandler_t(
