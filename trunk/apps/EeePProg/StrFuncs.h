@@ -61,7 +61,7 @@ typedef struct StrDesc_s{
   const StrDescElement_t *pcDesc;
 }StrDesc_t;
 #define STR_DESC(name, Elements) \
-StrDesc_t name[]={ ARRAY_SIZE(Elements), Elements}
+StrDesc_t name[]={ {ARRAY_SIZE(Elements), Elements}}
  
 char * 
 szFindStr(

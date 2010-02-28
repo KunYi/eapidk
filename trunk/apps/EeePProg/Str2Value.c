@@ -29,6 +29,7 @@
 
 #include <EeePApp.h>
   #include <ctype.h>
+  #include <limits.h>
 
 #define EAPI_STATUS_PARSE_ERROR EAPI_STATUS_ERROR
 char *
@@ -56,7 +57,7 @@ ReturnEnvVar(
 #else
     libvar=getenv(VarName);
     if(libvar==NULL) goto ErrorExit;
-    libvar=_strdup(libvar);
+    libvar=EAPI_strdup(libvar);
 #endif
     // 
 ErrorExit:
@@ -145,8 +146,8 @@ ulConvertStr2NumEx(
     char *pszEndB;
     if(pszEnd==NULL)pszEnd=&pszEndB;
     cszString=skipWhiteSpaces(cszString);
-    strtoul(cszString, &pszEndH, 16);
-    strtoul(cszString, &pszEndB,  2);
+    ReturnVal=strtoul(cszString, &pszEndH, 16);
+    ReturnVal=strtoul(cszString, &pszEndB,  2);
     /* 
      *  0xff
      */
@@ -289,7 +290,7 @@ ErrorExit:
 }
 typedef struct BlockParser_s{
     const char       *szDesc;
-    EApiStatusCode_t    (*pHandler)(void*, char* ,         signed long long*);
+    EApiStatusCode_t    (*pHandler)(struct BlockParser_s*, char* ,         signed long long*);
     EApiStatusCode_t    (*pParser )(void*, char**, char**, signed int      *);
     void             *pContext;
     const char       *szMsg2;
@@ -324,7 +325,7 @@ ParseOpcodeTokensAscii(
     __OUT signed int *psiOperationType
   )
 {
-  StrDescElement_t*pElement ;
+  const StrDescElement_t*pElement ;
   char *szPos=*pszString;
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   szPos=szFindStr(szPos, pContext, &pElement);
@@ -342,7 +343,7 @@ ParseOpcodeTokensAscii(
 
 EApiStatusCode_t
 ParseAsciiEqu_13(
-    __IN  void             *pContext,
+    __IN  struct BlockParser_s *pContext,
     __IN  char             *szString,
     __OUT signed long long *psllValue
 
@@ -391,10 +392,10 @@ ParseAsciiEqu_13(
         pszEnd=skipWhiteSpaces(pszEnd);
         if(*pszEnd!='\0'){
           siFormattedMessage_SC('E', __FILE__, "ParseAsciiEqu_13", __LINE__, EAPI_STATUS_PARSE_ERROR,
-              "%s\n",  szString, pszEnd
+              "%s\n",  szString
             );
           siFormattedMessage_SC('E', __FILE__, "ParseAsciiEqu_13", __LINE__, EAPI_STATUS_PARSE_ERROR,
-              "%*s%s\n", pszEnd - szString, "", "^ Here"
+              "%*s%s\n", ((signed int)(pszEnd - szString)), "", "^ Here"
             );
           return EAPI_STATUS_PARSE_ERROR;
         }
@@ -755,7 +756,7 @@ ParseAsciiEqu(
 #if 1
   DO(ExpandEnviromentVariables(cszString, &szEquation));
 #else
-  szEquation=_strdup(cszString);
+  szEquation=EAPI_strdup(cszString);
 #endif
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ParseAsciiEqu, 
@@ -794,12 +795,14 @@ ParseAsciiEqu_VA(
     );
   memset(pvalue, 0x00, siElementSize);
   DO(ParseAsciiEqu(cszString, &sllValue));
-  switch(siElementSize){
-    case sizeof(unsigned long long):
+  if(siElementSize==sizeof(unsigned long long)){
       *(unsigned long long*)pvalue=(unsigned long long)sllValue;
-      break;
-    case sizeof(unsigned long):
-      if(sllValue>0 && ((unsigned long long)sllValue)>(sizeof(unsigned long)*256)){
+
+  }else if(siElementSize==sizeof(unsigned long)){
+      if((sllValue>=0 && (((unsigned long long) sllValue)>ULONG_MAX))||
+         (sllValue< 0 && (((unsigned long long)-sllValue)>LONG_MAX ))
+	)
+      {
         EAPI_APP_RETURN_ERROR(
             ParseAsciiEqu_VA,
             EAPI_STATUS_ERROR,
@@ -807,14 +810,23 @@ ParseAsciiEqu_VA(
           );
       }
       *(unsigned long*)pvalue=(unsigned long)sllValue;
-      break;
-/* #if (sizeof(unsigned long) != sizeof(unsigned int)) */
-/*     case sizeof(unsigned int): */
-/*       *(unsigned int*)pvalue=(unsigned int)sllValue; */
-/*       break; */
-/* #endif */
-    case sizeof(unsigned short):
-      if(sllValue>0 && ((unsigned long long)sllValue)>(sizeof(unsigned short)*256)){
+  }else if(siElementSize==sizeof(unsigned int)){
+      if((sllValue>=0 && (((unsigned long long) sllValue)>UINT_MAX))||
+         (sllValue< 0 && (((unsigned long long)-sllValue)>INT_MAX ))
+         )
+      {
+        EAPI_APP_RETURN_ERROR(
+            ParseAsciiEqu_VA,
+            EAPI_STATUS_ERROR,
+            "Value Too Large for unsigned int"
+          );
+      }
+       *(unsigned int*)pvalue=(unsigned int)sllValue;
+   }else if(siElementSize==sizeof(unsigned short)){
+      if((sllValue>=0 && (((unsigned long long) sllValue)>USHRT_MAX))||
+         (sllValue< 0 && (((unsigned long long)-sllValue)>SHRT_MAX ))
+         )
+      {
         EAPI_APP_RETURN_ERROR(
             ParseAsciiEqu_VA,
             EAPI_STATUS_ERROR,
@@ -822,9 +834,11 @@ ParseAsciiEqu_VA(
           );
       }
       *(unsigned short*)pvalue=(unsigned short)sllValue;
-      break;
-    case sizeof(unsigned char):
-      if(sllValue>0 && ((unsigned long long)sllValue)>(sizeof(unsigned char)*256)){
+  }else if(siElementSize==sizeof(unsigned char)){
+      if((sllValue>=0 && (((unsigned long long) sllValue)>UCHAR_MAX))||
+         (sllValue< 0 && (((unsigned long long)-sllValue)>CHAR_MAX ))
+         )
+      {
         EAPI_APP_RETURN_ERROR(
             ParseAsciiEqu_VA,
             EAPI_STATUS_ERROR,
@@ -832,14 +846,12 @@ ParseAsciiEqu_VA(
           );
       }
       *(unsigned char*)pvalue=(unsigned char)sllValue;
-      break;
-    default:
+  }else{
       EAPI_APP_RETURN_ERROR(
           ParseAsciiEqu_VA,
           EAPI_STATUS_ERROR,
           "Invalid Variable Lenght"
         );
-      break;
   }
 
 ErrorExit:

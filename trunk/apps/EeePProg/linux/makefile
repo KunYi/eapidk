@@ -81,7 +81,7 @@ ExeName=EeePProg
 DBGOPT:=-g -O0 
 RELOPT:=-O3
 INCLUDS=-I../../../include/linux -I../ -I../../include -I../../../include 
-CFLAGS:= -Wall -W -Werror -pedantic $(INCLUDS)
+CFLAGS:= -std=gnu99 -Wall -W -Werror -pedantic $(INCLUDS)
 
 define FLD_BUILD_RULE
 @mkdir -p $(@)
