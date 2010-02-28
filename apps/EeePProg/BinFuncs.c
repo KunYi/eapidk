@@ -289,7 +289,7 @@ LclWriteFile(
     EApiStatusCode=EAPI_STATUS_WRITE_ERROR;
     siFormattedMessage_SC('L', __FILE__, "LclWriteFile", __LINE__, EApiStatusCode,
         "Opening File %s(%s)\n", cszFilename, cszWriteType);
-    return EApiStatusCode;
+    goto ErrorExit;
   }
   EAPI_APP_RETURN_ERROR_IF_S(
       LclWriteFile,
@@ -333,7 +333,7 @@ LclReadFile(
     EApiStatusCode=EAPI_STATUS_READ_ERROR;
     siFormattedMessage_SC('L', __FILE__, "LclReadFile", __LINE__, EApiStatusCode,
         "Opening File %s(%s)\n", cszFilename, cszReadType);
-    return EApiStatusCode;
+    goto ErrorExit;
   }
 
   fseek(LclFilePtr, 0, SEEK_END);
