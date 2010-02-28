@@ -29,32 +29,15 @@
 
 #include <EeePApp.h>
 
-void 
-skipWhiteSpacesc(
-        const char **const pcszStr
-        )
-{
-  const char * pcszStart;
-  if(pcszStr==NULL) return ;
-  if(*pcszStr==NULL) return ;
-  pcszStart=*pcszStr;
-  while((!iseol(*pcszStart))&&iswhitespace(*pcszStart))
-    pcszStart++;
-  *pcszStr=pcszStart;
-}
-
-void 
+char *
 skipWhiteSpaces(
-        char **const pcszStr
+        const char *cszStr
         )
 {
-  char * pcszStart;
-  if(pcszStr==NULL) return ;
-  if(*pcszStr==NULL) return ;
-  pcszStart=*pcszStr;
-  while((!iseol(*pcszStart))&&iswhitespace(*pcszStart))
-    pcszStart++;
-  *pcszStr=pcszStart;
+  if(cszStr==NULL) return (char*)cszStr;
+  while((!iseol(*cszStr))&&iswhitespace(*cszStr))
+    cszStr++;
+  return (char*)cszStr;
 }
 
 void 
@@ -70,6 +53,48 @@ stripWhiteSpaces(
   *(pszEnd+1)='\0';
 }
 
+char * 
+szFindStr(
+    __IN     const char             *szStr,
+    __IN     const StrDesc_t        *pDesc,
+    __OUTOPT const StrDescElement_t**pElement
+    )
+{
+  char * szPos1=NULL, *szPos2;
+  size_t stNumStrs=pDesc->cuiCount;
+  const StrDescElement_t *pcCurElement=pDesc->pcDesc;
+  while(stNumStrs --){
+    szPos2=strstr(szStr, pcCurElement->pcszSymbol);
+    if((szPos2!=NULL)&&((szPos1==NULL)||(szPos2<szPos1))){
+      szPos1=szPos2;
+      if(pElement) *pElement=pcCurElement;
+    }
+
+    pcCurElement++;
+  }
+  return szPos1;
+}
+
+
+char *
+strrstr(
+    __IN const char *cszString,
+    __IN const char *cszSearchString
+    )
+{
+  char *szLclPtr;
+  unsigned uiMatchFound=0;
+  if(cszString==NULL) return NULL;
+  if(cszSearchString==NULL) return NULL;
+  szLclPtr=strstr(cszString, cszSearchString);
+  while(szLclPtr!=NULL){
+    cszString=  szLclPtr+1;
+    szLclPtr=strstr(cszString, cszSearchString);
+    uiMatchFound++;
+  };
+  return uiMatchFound?(char *)cszString -1:NULL;
+}
+
 /* char *_strdup( */
 /*     __IN const char *pcszStr */
 /*     ) */
@@ -81,51 +106,6 @@ stripWhiteSpaces(
 /*   strcpy(pszDup, pcszStr); */
 /*   return pszDup; */
 /* } */
-
-
-unsigned long 
-ulConvertStr2Num(
-    const char *  pcszStr, 
-    char **       pcszEnd
-    )
-  {
-    unsigned long ulReturnVal;
-    char *pcszEndH;
-    char *pcszEndB;
-    char *pcszDummy;
-    if(pcszStr==NULL) return 0;
-    if(pcszEnd==NULL) pcszEnd=&pcszDummy ;
-    skipWhiteSpacesc(&pcszStr);
-    ulReturnVal=strtoul(pcszStr, &pcszEndH, 16);
-    ulReturnVal=strtoul(pcszStr, &pcszEndB,  2);
-    /* 
-     *  0xff
-     */
-    if( !memcmp( "0x", pcszStr , 2) ){
-        ulReturnVal = strtoul(pcszStr+2, pcszEnd, 16);
-    /* 
-     *  0ffh
-     */
-    }else if(isdecimal(pcszStr[0]) && (toupper(pcszEndH[0])=='H') ){
-        ulReturnVal = strtoul(pcszStr, pcszEnd, 16);
-        (*pcszEnd)++;
-    /* 
-     *  011b
-     */
-    }else if(isbinary(pcszStr[0]) && (toupper(pcszEndB[0])=='B') ){
-        ulReturnVal = strtoul(pcszStr, pcszEnd, 2);
-        (*pcszEnd)++;
-    /* 
-     *  099
-     */
-    }else {
-        ulReturnVal = strtoul(pcszStr, pcszEnd, 10);
-    }
-    skipWhiteSpaces(pcszEnd);
-    return ulReturnVal;
-  }
-
-
 
 
 #ifdef _MSC_VER 
@@ -179,29 +159,6 @@ strcpy_s(
 void
 main(void)
 {
-  uint8_t buffer[0x100]=
-    {"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"};
-  PrintHexAsciiTableEx(buffer+2, 0x10, buffer, NULL, HEXTBL_8BIT_ELEMENT|HEXTBL_NORMAL_ATTRIB|15);
-  PrintHexAsciiTableEx(buffer+3, 0x10, buffer, NULL, HEXTBL_NORM8_ATTRIB);
-  PrintHexAsciiTableEx(buffer+4, 0x10, buffer, NULL, HEXTBL_8BIT_ELEMENT|HEXTBL_NORMAL_ATTRIB|17);
-
-  PrintHexAsciiTableEx(buffer+2, 0x10, buffer, NULL, HEXTBL_16BIT_ELEMENT|HEXTBL_NORMAL_ATTRIB|7);
-  PrintHexAsciiTableEx(buffer+3, 0x10, buffer, NULL, HEXTBL_NORM16_ATTRIB);
-  PrintHexAsciiTableEx(buffer+4, 0x10, buffer, NULL, HEXTBL_16BIT_ELEMENT|HEXTBL_NORMAL_ATTRIB|9);
-
-  PrintHexAsciiTableEx(buffer+2, 0x10, buffer, NULL, HEXTBL_32BIT_ELEMENT|HEXTBL_NORMAL_ATTRIB|3);
-  PrintHexAsciiTableEx(buffer+4, 0x10, buffer, NULL, HEXTBL_NORM32_ATTRIB);
-  PrintHexAsciiTableEx(buffer+5, 0x10, buffer, NULL, HEXTBL_32BIT_ELEMENT|HEXTBL_NORMAL_ATTRIB|5);
-
-  PrintHexAsciiTableEx(buffer+2, 0x10, buffer, NULL, HEXTBL_64BIT_ELEMENT|HEXTBL_NORMAL_ATTRIB|1);
-  PrintHexAsciiTableEx(buffer+4, 0x10, buffer, NULL, HEXTBL_NORM64_ATTRIB);
-  PrintHexAsciiTableEx(buffer+6, 0x10, buffer, NULL, HEXTBL_64BIT_ELEMENT|HEXTBL_NORMAL_ATTRIB|3);
-
-  EAPI_printf(TEXT("Checksum=%08")TEXT(PRIX32)TEXT("\n"), u32ChecksumBlock(buffer, ARRAY_SIZE(buffer)));
-
-  PrintHexAsciiTable(buffer+3, 0x200, buffer, TEXT("Test 7"));
-  
-  PrintHexAsciiTableEx(buffer+2, 0x200, buffer, NULL, HEXTBL_8BIT_ELEMENT|HEXTBL_NORMAL_ATTRIB|24);
   
   exit(0);
 }

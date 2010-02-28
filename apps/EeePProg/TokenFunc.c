@@ -122,7 +122,7 @@ GetTokenValueStrip(
     __OUT unsigned long*pulValue
     )
 {
-  skipWhiteSpaces(&szValue);
+  szValue=skipWhiteSpaces(szValue);
   stripWhiteSpaces(szValue);
   return GetTokenValue(pcTokenDesc, szValue, pulValue);
 }

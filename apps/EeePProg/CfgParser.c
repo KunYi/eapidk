@@ -170,8 +170,8 @@ ParseCfgFile(
     )
 {
   FILE *pCfgFile;
-  char LineBuffer[1024];
-  TCHAR ErrorBuffer[1324];
+  char LineBuffer[MAX_LINE_LEN];
+  char ErrorBuffer[MAX_LINE_LEN+256];
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   char *szName;
   char *szValue;
@@ -227,10 +227,10 @@ ParseCfgFile(
           )
         {
           if(pCurElement->cuiRequired>pCurElement->stElementCount){
-            EApiSprintf(
+            EApiSprintfA(
                 ErrorBuffer, 
                 ARRAY_SIZE(ErrorBuffer), 
-                TEXT("Missing Required Element '%hs' in Block (%lu)'%hs'"), 
+                "Missing Required Element '%hs' in Block (%lu)'%hs'", 
                 pCurElement->pcszElementName, 
                 ulBlockStartLine,
                 pCurBlockDesc->pszBlockName
@@ -261,18 +261,18 @@ ParseCfgFile(
     }else{
       unsigned int FoundElement=0;
       szName=LineBuffer;
-      skipWhiteSpaces(&szName);
+      szName=skipWhiteSpaces(szName);
       if(!strlen(szName)){
         /*Skip Empty Blank Lines */
         continue;
       }
       if(pCurBlockDesc==NULL){
-        EApiSprintf(
+        EApiSprintfA(
             ErrorBuffer, 
             ARRAY_SIZE(ErrorBuffer),
-            TEXT("(%04lu)%-15s : %hs"), 
+            "(%04lu)%-15s : %hs", 
             ulLineNum, 
-            TEXT("Invalid Block"), 
+            "Invalid Block", 
             LineBuffer
           );
         EAPI_FORMATED_MES( 'W', ParseCfgFile, 0, ErrorBuffer);
@@ -280,12 +280,12 @@ ParseCfgFile(
       }
       szValue=strchr(szName, '=');
       if(szValue==NULL){
-        EApiSprintf(
+        EApiSprintfA(
             ErrorBuffer, 
             ARRAY_SIZE(ErrorBuffer), 
-            TEXT("(%04lu)%-15s : %hs"), 
+            "(%04lu)%-15s : %hs", 
             ulLineNum, 
-            TEXT("Invalid line"), 
+            "Invalid line", 
             LineBuffer
           );
         EAPI_FORMATED_MES( 'W', ParseCfgFile, 0, ErrorBuffer);
@@ -293,7 +293,7 @@ ParseCfgFile(
       }
       *szValue++='\0';
       stripWhiteSpaces(szName);
-      skipWhiteSpaces(&szValue);
+      szValue=skipWhiteSpaces(szValue);
 #if TEST_EEPCFG
 /*       sprintf(ErrorBuffer, "%-15s : %-20s = %s", pCurBlockDesc->pszBlockName, szName, szValue); */
 /*       EAPI_FORMATED_MES( 'L', ParseCfgFile, 0, ErrorBuffer); */
@@ -305,7 +305,7 @@ ParseCfgFile(
               (pCurElement->stElementCount+1>pCurElement->cstElementMax),
               EAPI_STATUS_ERROR
             );
-          DO(pCurElement->pHandlers->Handler(
+          EApiStatusCode=pCurElement->pHandlers->Handler(
                 pCurElement, 
                 EAPI_CREATE_PTR(
                     pCurElement->Elements.pv,
@@ -313,26 +313,38 @@ ParseCfgFile(
                     void*
                   ),
                 szValue
-              ));
+              );
+          if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+            siFormattedMessage_SC(
+                'E',
+                __FILE__, "ParseCfgFile", __LINE__, EApiStatusCode,
+                "ERROR Parsing Line %i, %s\n", ulLineNum, szValue
+            );
+            goto ErrorExit;
+          }
           pCurElement->stElementCount++;
           FoundElement++;
           break;
         }
       }
-      EAPI_APP_RETURN_ERROR_IF_S(
-          ParseCfgFile,
-          !FoundElement,
-          EAPI_STATUS_ERROR
+      if(!FoundElement){
+        EApiStatusCode=EAPI_STATUS_ERROR;
+        siFormattedMessage_SC(
+              'E',
+              __FILE__, "ParseCfgFile", __LINE__, EApiStatusCode,
+              "Unknown Block Element on line %i, '%s'\n", ulLineNum, szName
         );
+        goto ErrorExit;
+      }
     }
   }
   pCurBlockDesc=pCfgBDesc;
   for(i=stCfgBDescElements;i;i--){
     if(pCurBlockDesc->cuiRequired>pCurBlockDesc->uiFound){
-        EApiSprintf(
+        EApiSprintfA(
           ErrorBuffer, 
           ARRAY_SIZE(ErrorBuffer), 
-          TEXT("Missing Required Block '%hs'\n"), 
+          "Missing Required Block '%hs'\n", 
           pCurBlockDesc->pszBlockName
         );
       EAPI_APP_RETURN_ERROR(

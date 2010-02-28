@@ -33,6 +33,21 @@
 extern "C" {
 #endif
 
+typedef struct I2CAddrCfg_s{
+  unsigned long I2CBus;
+  unsigned long I2CDevAddr;
+}I2CAddrCfg_t;
+
+typedef struct WriteEepCfg_s{
+  char *FileName;
+  unsigned long I2CBus;
+  unsigned long I2CDevAddr;
+}WriteEepCfg_t;
+
+typedef struct InOutFiles_s{
+  char *InFile;
+  char *OutFile;
+}InOutFiles_t;
 
 typedef struct Options_s{
   unsigned int uiHelp;
@@ -41,49 +56,56 @@ typedef struct Options_s{
   unsigned int uiCreateCOM0R20M_CFG;
   char  *szCOM0R20M_Cfg_File;
   unsigned int uiCreateCOM0R20M_IMG;
-  char  *szCOM0R20M_SCfg_File;
-  char  *szCOM0R20M_Img_File;
+    InOutFiles_t CreateCOM0R20M;
+  
   unsigned int uiCreateCOM0R20M_EEP;
-  char  *szCOM0R20M_S2Cfg_File;
+    char  *szCOM0R20M_S2Cfg_File;
+  
   unsigned int uiCreateCOM0R20CB_CFG;
-  char  *szCOM0R20CB_Cfg_File;
+    char  *szCOM0R20CB_Cfg_File;
+  
   unsigned int uiCreateCOM0R20CB_IMG;
-  char  *szCOM0R20CB_SCfg_File;
-  char  *szCOM0R20CB_Img_File;
+    InOutFiles_t CreateCOM0R20CB;
+  
   unsigned int uiCreateCOM0R20CB_EEP;
-  char  *szCOM0R20CB_S2Cfg_File;
+    char  *szCOM0R20CB_S2Cfg_File;
+
   unsigned int uiCreateEeePExpEEP_CFG;
-  char  *szEeePExpEEP_Cfg_File;
+    char  *szEeePExpEEP_Cfg_File;
+  
   unsigned int uiCreateEeePExpEEP_IMG;
-  char  *szEeePExpEEP_SCfg_File;
-  char  *szEeePExpEEP_Img_File;
+    InOutFiles_t CreateEeePExpEEP;
+  
   unsigned int uiCreateEeePExpEEP_EEP;
-  char  *szEeePExpEEP_S2Cfg_File;
-  unsigned long  ulEeePExpEEP_Img_EApiBus;
-  unsigned long  ulEeePExpEEP_Img_DevAddr;
+    WriteEepCfg_t CreateEeePExpEEP_EEP;
+  
   unsigned int uiProgramEeePExpEEP_EEP;
-  char  *szEeePExpEEP_SBIN_File;
-  unsigned long  ulEeePExpEEP_Bin_EApiBus;
-  unsigned long  ulEeePExpEEP_Bin_DevAddr;
+    WriteEepCfg_t ProgramEeePExpEEP_EEP;
+  
   unsigned int uiProgramCOM0R20CB_EEP;
-  char  *szCOM0R20CB_SBIN_File;
+    char  *szCOM0R20CB_SBIN_File;
+  
   unsigned int uiProgramCOM0R20M_EEP;
-  char  *szCOM0R20M_SBIN_File;
+    char  *szCOM0R20M_SBIN_File;
+  
   unsigned int uiListDBlocks_IMG;
-  char  *szGEN_List_DBlocks_File;
+    char  *szGEN_List_DBlocks_File;
+  
   unsigned int uiListDBlocks_EEP;
-  unsigned long  ulEEP_Img_EApiBus;
-  unsigned long  ulEEP_Img_DevAddr;
+    I2CAddrCfg_t  ulEEP_Img;
+  
   unsigned int uiListDBlocks_COM0R20_CB_EEP;
+  
   unsigned int uiListDBlocks_COM0R20_M_EEP;
+  
   unsigned int uiStoreEeePExpEEP_EEP;
-  char  *        szEeePExpEEP_To_Img_FName  ;
-  unsigned long  ulEeePExpEEP_To_Img_EApiBus;
-  unsigned long  ulEeePExpEEP_To_Img_DevAddr;
+    WriteEepCfg_t StoreEeePExpEEP_EEP;
+  
   unsigned int uiStoreCOM0R20CB_EEP;
-  char  *        szCOM0R20CBEEP_To_Img_FName  ;
+    char  *        szCOM0R20CBEEP_To_Img_FName  ;
+  
   unsigned int uiStoreCOM0R20M_EEP;
-  char  *        szCOM0R20MEEP_To_Img_FName  ;
+    char  *        szCOM0R20MEEP_To_Img_FName  ;
 }Options_t;
 
 extern Options_t CurOptions;

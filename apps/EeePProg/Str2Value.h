@@ -26,59 +26,46 @@
  *+=========================================================================
  *</KHeader>
  */
-#ifndef __STRFUNCS_H__
-#define __STRFUNCS_H__
+#ifndef __STR2VALUE_H__
+#define __STR2VALUE_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define iswhitespace(x) ((x==' ')||(x=='\t'))
-#define iseos(x)        ((x=='\0'))
-#define iseol(x)        ((x=='\n')||(x=='\r'))
-#define isdecimal(x)    ((x>='0')&&(x<='9'))
-#define ishex(x)        (isdecimal(x)||(x>='A')&&(x<='F')||(x>='a')&&(x<='f'))
-#define isoctal(x)      ((x>='0')&&(x<='7'))
-#define isbinary(x)     ((x=='0')||(x=='1'))
-
 char *
-skipWhiteSpaces(
-    const char *pcszStr
-  );
-
-void 
-stripWhiteSpaces(
-    char *const pszStr
-  );
-
-typedef struct StrDescElement_s{
-  const char *pcszSymbol;
-  const unsigned int cuiValue;
-}StrDescElement_t;
-
-typedef struct StrDesc_s{
-  const unsigned int cuiCount;
-  const StrDescElement_t *pcDesc;
-}StrDesc_t;
-#define STR_DESC(name, Elements) \
-StrDesc_t name[]={ ARRAY_SIZE(Elements), Elements}
- 
-char * 
-szFindStr(
-    __IN     const char             *szStr,
-    __IN     const StrDesc_t        *pDesc,
-    __OUTOPT const StrDescElement_t**pElement
+ReturnEnvVar(
+    const char *const VarName
     );
 
-char *
-strrstr(
-    __IN const char *cszString,
-    __IN const char *cszSearchString
+
+unsigned long 
+ulConvertStr2NumEx(
+    __IN  const char *  cszString, 
+    __OUT char **       pszEnd
     );
 
+EApiStatusCode_t
+ExpandEnviromentVariables(
+    __IN  const char   *cszString,
+    __OUT char        **pszExpStr
+  );
+
+EApiStatusCode_t
+ParseAsciiEqu(
+    __IN  const char       *cszString,
+    __OUT signed long long *psllValue
+  );
+
+EApiStatusCode_t
+ParseAsciiEqu_VA(
+    __IN  const char       *cszString,
+    __OUT void             *pvalue,
+    __IN  signed int        siElementSize
+  );
 
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* __STRFUNCS_H__ */
+#endif /* __STR2VALUE_H__ */

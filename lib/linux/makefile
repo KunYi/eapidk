@@ -53,7 +53,6 @@ AR = ar
 RANLIB = ranlib
 ARFLAGS = -ruv
 InstallDir=/usr/lib
-InstallDir=/usr/lib
 
 BinFolder=../../apps/bin/$(ARCH)/$(MACH)/rel
 DBinFolder=../../apps/bin/$(ARCH)/$(MACH)/dbg

@@ -55,5 +55,5 @@ $(SDK_LIB_PATH)\kernel32.lib \
 SOURCES=$(TARGETNAME).rc $(TARGETNAME).c EApiAHI2C.c EApiAHStorage.c \
 	EApiAHStr.c BinFuncs.c EeePDB.c EeePCfg.c StrFuncs.c \
 	CfgParser.c CfgPHelper.c ArgParse.c TokenFunc.c \
-	RangeFunc.c DbgChk.c
+	RangeFunc.c DbgChk.c Str2Value.c
 
