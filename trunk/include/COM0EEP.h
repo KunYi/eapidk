@@ -302,9 +302,7 @@ typedef struct COM0R20_CB_s{
                             *      |       +-------+------------------------+
                             *      |       | 1     | SER1 Implemented       |
                             *      +-------+-------+------------------------+
-                            *      | 7     | 0     | SER2 Not Implemented   |
-                            *      |       +-------+------------------------+
-                            *      |       | 1     | SER2 Implemented       |
+                            *      | 7     | 0     | Reserved               |
                             *      +=======+================================+
                             */     
 #       define COM0R20_SSC_PRESENT          EEEP_UINT8_C(1<<0)
@@ -561,45 +559,45 @@ typedef struct ExpCardBlock_s{
 typedef struct SerPortCfgBlock_s{
     DBlockIdHdr_t  DBHdr        ; /* 0x00 Dynamic Block Header */
     uint8_t SerIRQ              ; /* 0x03 
-                                   *      +=======+=======+==================+
-                                   *      | Byte  | Bits  | Descriptions     |
-                                   *      +=======+=======+==================+
-                                   *      | 0     | 0 - 3 | Serial Port 0 IRQ|
-                                   *      |       |       |  0  Auto         |
-                                   *      |       |       |  1  No IRQ       |
-                                   *      |       |       |  2  Reserved     |
-                                   *      |       |       |  3  IRQ  3       |
-                                   *      |       |       |  4  IRQ  4       |
-                                   *      |       |       |  5  IRQ  5       |
-                                   *      |       |       |  6  IRQ  6       |
-                                   *      |       |       |  7  IRQ  7       |
-                                   *      |       |       |  8  IRQ  8       |
-                                   *      |       |       |  9  IRQ  9       |
-                                   *      |       |       | 10  IRQ 10       |
-                                   *      |       |       | 11  IRQ 11       |
-                                   *      |       |       | 12  IRQ 12       |
-                                   *      |       |       | 13  IRQ 13       |
-                                   *      |       |       | 14  IRQ 14       |
-                                   *      |       |       | 15  IRQ 15       |
-                                   *      +-------+-------+------------------+
-                                   *      | 0     | 4 - 7 | Serial Port 1 IRQ|
-                                   *      |       |       |  0  Auto         |
-                                   *      |       |       |  1  No IRQ       |
-                                   *      |       |       |  2  Reserved     |
-                                   *      |       |       |  3  IRQ  3       |
-                                   *      |       |       |  4  IRQ  4       |
-                                   *      |       |       |  5  IRQ  5       |
-                                   *      |       |       |  6  IRQ  6       |
-                                   *      |       |       |  7  IRQ  7       |
-                                   *      |       |       |  8  IRQ  8       |
-                                   *      |       |       |  9  IRQ  9       |
-                                   *      |       |       | 10  IRQ 10       |
-                                   *      |       |       | 11  IRQ 11       |
-                                   *      |       |       | 12  IRQ 12       |
-                                   *      |       |       | 13  IRQ 13       |
-                                   *      |       |       | 14  IRQ 14       |
-                                   *      |       |       | 15  IRQ 15       |
-                                   *      +=======+=======+==================+
+                                   *      +=======+==================+
+                                   *      | Bits  | Descriptions     |
+                                   *      +=======+==================+
+                                   *      | 0 - 3 | Serial Port 0 IRQ|
+                                   *      |       |  0  Auto         |
+                                   *      |       |  1  No IRQ       |
+                                   *      |       |  2  Reserved     |
+                                   *      |       |  3  IRQ  3       |
+                                   *      |       |  4  IRQ  4       |
+                                   *      |       |  5  IRQ  5       |
+                                   *      |       |  6  IRQ  6       |
+                                   *      |       |  7  IRQ  7       |
+                                   *      |       |  8  IRQ  8       |
+                                   *      |       |  9  IRQ  9       |
+                                   *      |       | 10  IRQ 10       |
+                                   *      |       | 11  IRQ 11       |
+                                   *      |       | 12  IRQ 12       |
+                                   *      |       | 13  IRQ 13       |
+                                   *      |       | 14  IRQ 14       |
+                                   *      |       | 15  IRQ 15       |
+                                   *      +-------+------------------+
+                                   *      | 4 - 7 | Serial Port 1 IRQ|
+                                   *      |       |  0  Auto         |
+                                   *      |       |  1  No IRQ       |
+                                   *      |       |  2  Reserved     |
+                                   *      |       |  3  IRQ  3       |
+                                   *      |       |  4  IRQ  4       |
+                                   *      |       |  5  IRQ  5       |
+                                   *      |       |  6  IRQ  6       |
+                                   *      |       |  7  IRQ  7       |
+                                   *      |       |  8  IRQ  8       |
+                                   *      |       |  9  IRQ  9       |
+                                   *      |       | 10  IRQ 10       |
+                                   *      |       | 11  IRQ 11       |
+                                   *      |       | 12  IRQ 12       |
+                                   *      |       | 13  IRQ 13       |
+                                   *      |       | 14  IRQ 14       |
+                                   *      |       | 15  IRQ 15       |
+                                   *      +=======+==================+
                                    */
     uint8_t Ser0BaseAddr[2]     ; /* 0x04 Serial Port 0
                                    *      +=======+=======+==================+
