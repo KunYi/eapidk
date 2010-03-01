@@ -599,29 +599,9 @@ typedef struct SerPortCfgBlock_s{
                                    *      |       |       | 13  IRQ 13       |
                                    *      |       |       | 14  IRQ 14       |
                                    *      |       |       | 15  IRQ 15       |
-                                   *      +-------+-------+------------------+
-                                   *      | 1     | 0 - 3 | Serial Port 2 IRQ|
-                                   *      |       |       |  0  Auto         |
-                                   *      |       |       |  1  No IRQ       |
-                                   *      |       |       |  2  Reserved     |
-                                   *      |       |       |  3  IRQ  3       |
-                                   *      |       |       |  4  IRQ  4       |
-                                   *      |       |       |  5  IRQ  5       |
-                                   *      |       |       |  6  IRQ  6       |
-                                   *      |       |       |  7  IRQ  7       |
-                                   *      |       |       |  8  IRQ  8       |
-                                   *      |       |       |  9  IRQ  9       |
-                                   *      |       |       | 10  IRQ 10       |
-                                   *      |       |       | 11  IRQ 11       |
-                                   *      |       |       | 12  IRQ 12       |
-                                   *      |       |       | 13  IRQ 13       |
-                                   *      |       |       | 14  IRQ 14       |
-                                   *      |       |       | 15  IRQ 15       |
-                                   *      +-------+-------+------------------+
-                                   *      | 1     | 4 - 7 | Reserved Set to 0|
                                    *      +=======+=======+==================+
                                    */
-    uint8_t Ser0BaseAddr[2]     ; /* 0x05 Serial Port 0
+    uint8_t Ser0BaseAddr[2]     ; /* 0x04 Serial Port 0
                                    *      +=======+=======+==================+
                                    *      | Byte  | Bits  | Descriptions     |
                                    *      +=======+=======+==================+
@@ -634,7 +614,7 @@ typedef struct SerPortCfgBlock_s{
                                    *      |       |       | Base Address     |
                                    *      +=======+=======+==================+
                                    */
-    uint8_t Ser1BaseAddr[2]     ; /* 0x07 Serial Port 1
+    uint8_t Ser1BaseAddr[2]     ; /* 0x06 Serial Port 1
                                    *      +=======+=======+==================+
                                    *      | Byte  | Bits  | Descriptions     |
                                    *      +=======+=======+==================+
