@@ -63,6 +63,20 @@ siFFormattedMessage_SC(
     const char *  cszFormat   ,   
     ...
     )
+EAPI_PRINTF_ARG(7, 8);
+
+signed int
+__cdecl
+siFFormattedMessage_SC(
+    FILE       *  OutStream   ,
+    char          cType       ,
+    const char *  cszFileName ,   
+    const char *  cszFuncName ,   
+    unsigned int  uiLineNum   ,
+    EApiStatusCode_t  StatusCode  ,   
+    const char *  cszFormat   ,   
+    ...
+    )
 {
   signed int Ret;
   va_list _ArgList;
