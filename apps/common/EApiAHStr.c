@@ -246,7 +246,7 @@ EApiAHCreateDecimalString(
    int EApiStatusCode=0;
     EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
     EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
-    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("%lu"), Value);
+    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("%")TEXT(PRIu32), Value);
 ErrorExit:
 /* SuccessExit: */
     return EApiStatusCode;
@@ -277,7 +277,7 @@ EApiAHCreateVoltageString(
     EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
     EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
     Value/=10;
-    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("%lu.%02lu Volts"), Value/100, Value%100);
+    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("%")TEXT(PRIu32)TEXT(".%02")TEXT(PRIu32)TEXT(" Volts"), Value/100, Value%100);
 
 ErrorExit:
 /* SuccessExit: */
@@ -293,7 +293,7 @@ EApiAHCreateRotationsString(
     int EApiStatusCode;
     EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
     EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
-    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("%lu RPM"), Value);
+    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("%")TEXT(PRIu32)TEXT(" RPM"), Value);
 
 ErrorExit:
 /* SuccessExit: */
@@ -310,7 +310,7 @@ EApiAHCreateTempString(
     EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateDecimalString, -1, pString);
     EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateDecimalString, -1, StrBufLen);
     Value-=EAPI_KELVINS_OFFSET;
-    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("% li.%lu Celcius"), ((int32_t)Value)/10, Value%10);
+    EApiStatusCode=EApiSprintf(pString, StrBufLen, TEXT("% ")TEXT(PRIi32)TEXT(".%")TEXT(PRIi32)TEXT(" Celcius"), ((int32_t)Value)/10, Value%10);
 
 ErrorExit:
 /* SuccessExit: */
@@ -328,12 +328,12 @@ EApiAHCreateTimeString(
     EAPI_APP_ASSERT_PARAMATER_NULL(EApiAHCreateTimeString, -1, pString);
     EAPI_APP_ASSERT_PARAMATER_ZERO(EApiAHCreateTimeString, -1, StrBufLen);
     if(Value/365/24/60)
-      StrLength+=EApiSprintf(&pString[StrLength], StrBufLen-StrLength, TEXT("%lu Years "), Value/365/24/60   );
+      StrLength+=EApiSprintf(&pString[StrLength], StrBufLen-StrLength, TEXT("%")TEXT(PRIu32)TEXT(" Years "), Value/365/24/60   );
     if(StrLength||((Value/24/60)%365))
-      StrLength+=EApiSprintf(&pString[StrLength], StrBufLen-StrLength, TEXT("%lu Days " ), (Value/24/60)%365 );
+      StrLength+=EApiSprintf(&pString[StrLength], StrBufLen-StrLength, TEXT("%")TEXT(PRIu32)TEXT(" Days " ), (Value/24/60)%365 );
     if(StrLength||((Value/60)%24))
-      StrLength+=EApiSprintf(&pString[StrLength], StrBufLen-StrLength, TEXT("%lu Hours "), (Value/60)%24     );
-      StrLength+=EApiSprintf(&pString[StrLength], StrBufLen-StrLength, TEXT("%lu Mins"  ), (Value)%60        );
+      StrLength+=EApiSprintf(&pString[StrLength], StrBufLen-StrLength, TEXT("%")TEXT(PRIu32)TEXT(" Hours "), (Value/60)%24     );
+      StrLength+=EApiSprintf(&pString[StrLength], StrBufLen-StrLength, TEXT("%")TEXT(PRIu32)TEXT(" Mins"  ), (Value)%60        );
     EApiStatusCode=StrLength;
 
 ErrorExit:

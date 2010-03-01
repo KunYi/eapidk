@@ -87,7 +87,8 @@ EApiSprintf (
     __IN const size_t       BufferLen ,
     __IN const TCHAR *const fmt       ,
     ...
-    );
+    )
+EAPI_PRINTF_ARG(3, 4);
 
 size_t 
 EApiStrLenA  ( 
@@ -109,7 +110,8 @@ EApiSprintfA (
     __IN const size_t       BufferLen ,
     __IN const char *const fmt       ,
     ...
-    );
+    )
+EAPI_PRINTF_ARG(3, 4);
 
 /****************************************************************************/
 /* Common pBuffer usage Model */

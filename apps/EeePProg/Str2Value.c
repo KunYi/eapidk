@@ -631,7 +631,7 @@ ParseAsciiEqu_1(
       *szEndBracket='\0';
       DO(ParseAsciiEqu_cmn(cAS, szStartBracket+1, &CurValue));
       stSubLen=szEndBracket - szStartBracket;
-      EApiSprintfA( szStartBracket, stSubLen+1, "%*lld", stSubLen, CurValue);
+      EApiSprintfA( szStartBracket, stSubLen+1, "%*lld", ((signed int)stSubLen), CurValue);
       *szEndBracket=' ';
     }
     else
