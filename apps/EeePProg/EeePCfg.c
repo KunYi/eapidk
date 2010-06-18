@@ -592,6 +592,7 @@ typedef struct COM0R20_CB_HDR_s{
   unsigned long aulFAN0       [1];
   unsigned long aulSER0       [1];
   unsigned long aulSER1       [1];
+  unsigned long aulDDI0       [1];
   unsigned long aulDDI1       [1];
   unsigned long aulDDI2       [1];
   unsigned long aulDDI3       [1];
@@ -909,6 +910,7 @@ CfgElementDesc_t COM0R20_CB_Desc[]={
   ELEMENT_DESC("FAN0"          , COM0R20_CB_cgf.aulFAN0       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
   ELEMENT_DESC("SER0"          , COM0R20_CB_cgf.aulSER0       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
   ELEMENT_DESC("SER1"          , COM0R20_CB_cgf.aulSER1       , &Token_Element_funcs   , &ImpNotImpTL          , ELEMENT_REQUIRED)
+  ELEMENT_DESC("DDI0"          , COM0R20_CB_cgf.aulDDI0       , &Token_Element_funcs   , &DDI1TL               , ELEMENT_REQUIRED)
   ELEMENT_DESC("DDI1"          , COM0R20_CB_cgf.aulDDI1       , &Token_Element_funcs   , &DDI1TL               , ELEMENT_REQUIRED)
   ELEMENT_DESC("DDI2"          , COM0R20_CB_cgf.aulDDI2       , &Token_Element_funcs   , &DDI2TL               , ELEMENT_REQUIRED)
   ELEMENT_DESC("DDI3"          , COM0R20_CB_cgf.aulDDI3       , &Token_Element_funcs   , &DDI2TL               , ELEMENT_REQUIRED)
@@ -1025,9 +1027,10 @@ HandleCOM0R20CBHeaderBlock(
   pHeader->MiscIo2|=(pCOM0R20_CB_cgf->aulSER0  [0]?COM0R20_SER0_PRESENT  :0);
   pHeader->MiscIo2|=(pCOM0R20_CB_cgf->aulSER1  [0]?COM0R20_SER1_PRESENT  :0);
 
-  pHeader->DDIDesc =(uint8_t)pCOM0R20_CB_cgf->aulDDI1[0]<<COM0R20_DDI1_OFFSET;
-  pHeader->DDIDesc|=(uint8_t)pCOM0R20_CB_cgf->aulDDI2[0]<<COM0R20_DDI2_OFFSET;
-  pHeader->DDIDesc|=(uint8_t)pCOM0R20_CB_cgf->aulDDI3[0]<<COM0R20_DDI3_OFFSET;
+  pHeader->DDIDesc[0] =(uint8_t)pCOM0R20_CB_cgf->aulDDI0[0]<<COM0R20_DDI0_OFFSET;
+  pHeader->DDIDesc[0]|=(uint8_t)pCOM0R20_CB_cgf->aulDDI1[0]<<COM0R20_DDI1_OFFSET;
+  pHeader->DDIDesc[1] =(uint8_t)pCOM0R20_CB_cgf->aulDDI2[0]<<COM0R20_DDI2_OFFSET;
+  pHeader->DDIDesc[1]|=(uint8_t)pCOM0R20_CB_cgf->aulDDI3[0]<<COM0R20_DDI3_OFFSET;
 
   memset(pHeader->PCIeGen, 0x00, sizeof(pHeader->PCIeGen));
   memset(pHeader->LaneMap, 0x00, sizeof(pHeader->LaneMap));
