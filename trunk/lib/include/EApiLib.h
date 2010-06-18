@@ -111,14 +111,14 @@
 	do{\
   		EAPI_FORMATED_MES('L', func, EAPI_STATUS_SUCCESS, desc );\
   		EApiStatusCode=EAPI_STATUS_SUCCESS; \
-      goto ExitSuccess; \
+      goto ExitPoint; \
 		}while(0)
 
 #define EAPI_LIB_RETURN_ERROR(func, err, desc) \
 	do{ \
   	  EAPI_FORMATED_MES('E', func, err, desc );\
   		EApiStatusCode=err; \
-      goto ErrorExit; \
+      goto ExitPoint; \
 	}while(0)
 
 #define EAPI_LIB_RETURN_ERROR_IF(func, exp, err, desc)  \
@@ -158,6 +158,9 @@
     x=y;\
     EApiStatusCode=EAPI_STATUS_MORE_DATA;\
   }
+
+#define EAPI_LIB_ASSERT_EXIT \
+ExitPoint:
 
 #endif /* _EAPILIB_H_ */
 

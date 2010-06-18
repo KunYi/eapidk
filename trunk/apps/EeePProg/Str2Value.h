@@ -64,6 +64,21 @@ ParseAsciiEqu_VA(
     __IN  signed int        siElementSize
   );
 
+EApiStatusCode_t
+AssignValue_VA(
+    __IN  const signed long long csllValue,
+    __OUT void             *pvalue,
+    __IN  signed int        siElementSize
+  );
+
+EApiStatusCode_t
+RecoverValue_VA(
+    __OUT const signed long long *pcsllValue,
+    __IN  void             *pvalue,
+    __IN  signed int        siElementSize
+  );
+
+
 
 #ifdef __cplusplus
 }

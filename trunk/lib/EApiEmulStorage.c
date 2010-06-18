@@ -107,8 +107,8 @@ EApiStorageCapEmul (
     EAPI_STATUS_UNSUPPORTED   , 
     "Unrecognised Storage ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 EApiStatusCode_t 
@@ -154,8 +154,8 @@ EApiStorageAreaReadEmul(
       EAPI_STATUS_UNSUPPORTED  , 
       "Unrecognised Storage ID"
       );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
@@ -211,8 +211,8 @@ EApiStorageAreaWriteEmul(
       EAPI_STATUS_UNSUPPORTED  , 
       "Unrecognised Storage ID"
       );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 

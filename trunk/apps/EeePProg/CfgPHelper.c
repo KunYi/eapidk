@@ -406,7 +406,7 @@ Number_Element(
 /*   }else{ */
 /*     printf("\tNumber_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -468,7 +468,7 @@ SpecRev_Element(
       );
   *(unsigned long*)pCurElement|=ulConvertStr2NumEx(szEnd+1, &szEnd)&0xF;
 /*   printf("\tSpecRev_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -500,7 +500,7 @@ PNPID_Element(
     *(unsigned long*)pCurElement|=uiCurChar - 'A'+1;
   }
 /*   printf("\tPNPID_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 

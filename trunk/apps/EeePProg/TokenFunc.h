@@ -33,6 +33,8 @@
 extern "C" {
 #endif
 
+#include "RangeFunc.h"
+
 
 typedef struct TokenDesc_s{
   char          *pszTokenList;

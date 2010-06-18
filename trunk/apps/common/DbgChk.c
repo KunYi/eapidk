@@ -93,7 +93,7 @@ const char *GetLastOccurance(
     )
 {
   const char*cszLPos=czFilename;
-  while(*czFilename!='\0'){
+  while(*czFilename){
     switch(*czFilename++){
       case '\\':
       case '/':
@@ -104,7 +104,7 @@ const char *GetLastOccurance(
   }
   return cszLPos;
 }
-const char cszLogFormat[]={"%c%04i %-12.12s %-30s | "};
+const char cszLogFormat[]={"%c%04i %-15.15s %-30s | "};
 
 signed int
 __cdecl

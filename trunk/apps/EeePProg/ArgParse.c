@@ -59,7 +59,7 @@ NumberArg(
   
   DO(ParseAsciiEqu_VA(cszArg, pvalue, (signed int)pArgs->stValueSize));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -98,8 +98,12 @@ StringBlock(
     }
   }
 /*   printf("D%04u %s\n", __LINE__, cszLastPos); */
-  if(!*pstLastPos)
+  if(!*cszLastPos){
     *pstLastPos=cszLastPos - cszStr;
+    return EAPI_STATUS_SUCCESS;
+  } else if(!*pstLastPos) {
+    *pstLastPos=cszLastPos - cszStr;
+  }
   return EAPI_STATUS_MORE_DATA;
 }
 
@@ -114,14 +118,14 @@ PrintStringBlock(
 {
   size_t stCurStrPos;
   StringBlock(cszStr, stMaxBlockLen, &stCurStrPos);
-  fprintf(OutStream, cszLine1, stCurStrPos, cszStr );
+  fprintf(OutStream, cszLine1, stMaxBlockLen, stCurStrPos, cszStr );
   while(stCurStrPos){
     cszStr+=stCurStrPos;
     if(*cszStr!='\0')
       cszStr++;
     StringBlock(cszStr, stMaxBlockLen, &stCurStrPos);
     if(stCurStrPos)
-      fprintf( OutStream, cszOLines, stCurStrPos, cszStr );
+      fprintf( OutStream, cszOLines, stMaxBlockLen, stCurStrPos, cszStr );
   };
   return EAPI_STATUS_SUCCESS;
 }
@@ -166,8 +170,8 @@ PrintUsage(
         OutStream         ,
         pCmdDesc->cszHelp , 
         43                , 
-        "%-43.*s |\n"     , 
-        "|                                 %-43.*s |\n"
+        "%-*.*s |\n"     , 
+        "|                                 %-*.*s |\n"
       );
 
     
@@ -178,8 +182,8 @@ PrintUsage(
           OutStream         ,
           pArgDesc->cszHelp , 
           37                , 
-          "%-37.*s |\n"     , 
-          "|                                       %-37.*s |\n"
+          "%-*.*s |\n"      ,
+          "|                                       %-*.*s |\n"
         );
       pArgDesc++;
     };
@@ -279,14 +283,14 @@ CreateArgvArgcBuffer(
       *pszArgv
     );
   (*psiArgc) --;
-  return ParseArgsBuffer(
+  EApiStatusCode=ParseArgsBuffer(
           szCmdLine, 
           *pszArgv, 
           (char *)((*pszArgv)+(*psiArgc)), 
           psiArgc, 
           &siCharCnt
         );
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -324,7 +328,7 @@ ParseArgsFile(
 
   DO(ParseArgs(siArgc - 1, (const char **)pszArgv, pCmdDesc, stArgDescCnt));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   if(pszArgv  !=NULL) free(pszArgv  );
   pszArgv=NULL;
   return EApiStatusCode;
@@ -349,7 +353,7 @@ ParseSubArgs(
     DO(pArgDesc->Handle(pArgDesc, pArgDesc->pValue, **ppszArgv));
     ++pArgDesc;
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -392,7 +396,7 @@ ParseArgs(
                 )
             {
               if(pCurArgDesc->puiResult!=NULL){
-              ++*pCurArgDesc->puiResult;
+                ++*pCurArgDesc->puiResult;
               }
               DO(ParseSubArgs(&siArgc, &pszCurArg, pCurArgDesc->stArgs, pCurArgDesc->pArgs));
               ++uiValid;
@@ -414,7 +418,7 @@ ParseArgs(
             while(stI --){
               if(*szCurOption==pCurArgDesc->cShort){
                 if(pCurArgDesc->puiResult!=NULL){
-                ++*pCurArgDesc->puiResult;
+                  ++*pCurArgDesc->puiResult;
                 }
                 DO(ParseSubArgs(&siArgc, &pszCurArg, pCurArgDesc->stArgs, pCurArgDesc->pArgs));
                 ++uiValid;
@@ -446,7 +450,7 @@ ParseArgs(
 
   if(uiSyntaxError)
   EApiStatusCode=EAPI_STATUS_INVALID_PARAMETER;
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 #if TEST_EEPARG
@@ -511,8 +515,7 @@ char *DummyArgs1[]={
   "-q",
   "--Arg1",
   "--Arg2",
-  "--CREATE-COM0R20M-CFG",
-  "TestFile.cfg",
+  "--CREATE-COM0R20M-CFG", "TestFile.cfg",
   "--Arg3",
 };
 #define DO_MAIN(x)  \

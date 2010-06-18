@@ -263,7 +263,7 @@ CreateTxtFilePtr(
          EAPI_STATUS_WRITE_ERROR
       );
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -297,7 +297,7 @@ CMD_CreateCOM0R20_MEEPCfg(
   DO(CreateTxtFilePtr(*(char**)pArgData, &lclStream));
   DO(EeeP_CreateCOM0R20_MEEPCfg(lclStream));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   FREE_STREAM(lclStream);
   return EApiStatusCode;
 }
@@ -312,7 +312,7 @@ CMD_CreateCOM0R20_CBCfg(
   DO(CreateTxtFilePtr(*(char**)pArgData, &lclStream));
   DO(EeeP_CreateCOM0R20_CBCfg(lclStream));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   FREE_STREAM(lclStream);
   return EApiStatusCode;
 }
@@ -327,7 +327,7 @@ CMD_CreateCOM0R20_EeePExtCfg(
   DO(CreateTxtFilePtr(*(char**)pArgData, &lclStream));
   DO(EeeP_CreateEeePExtEEPCfg(lclStream));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   FREE_STREAM(lclStream);
   return EApiStatusCode;
 }
@@ -346,7 +346,7 @@ CMD_CreateCOM0R20CB_EEP(
       ));
   DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -365,20 +365,20 @@ CMD_CreateCOM0R20M_EEP(
       ));
   DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
 
 EApiStatusCode_t 
-CMD_CreateCOM0R20Ext_EEP(
+CMD_CreateEeePExt_EEP(
     void *pArgData
     )
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
-  DO(EeeP_CreateCOM0R20_MEEPImage(
+  DO(EeeP_CreateEeePExtEEPImage(
         &BHandel                              ,
         ((WriteEepCfg_t*)pArgData)->FileName
       ));
@@ -388,7 +388,7 @@ CMD_CreateCOM0R20Ext_EEP(
         )
       );
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -415,7 +415,7 @@ CMD_ProgramCOM0R20CB_EEP(
   }
   DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_CB_EEP_DEV_ADDR));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -441,7 +441,7 @@ CMD_ProgramCOM0R20M_EEP(
   }
   DO(EeePWriteBufferToEEP(BHandel, EAPI_ID_I2C_EXTERNAL, COM0R20_M_EEP_DEV_ADDR));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -472,7 +472,7 @@ CMD_ProgramEeePExt_EEP(
           (uint16_t)((WriteEepCfg_t*)pArgData)->I2CDevAddr
       ));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -491,7 +491,7 @@ CMD_StoreEeePExt_EEP(
       ));
   DO(EeePWriteBufferToFile(BHandel, ((WriteEepCfg_t*)pArgData)->FileName));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -530,7 +530,7 @@ CMD_ListDBlocksEeePExt_EEP(
       ));
   DO(EeePListBlocks( BHandel, 0));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -569,7 +569,7 @@ CMD_CreateExtEepEEP_IMG(
       ));
   DO(EeePWriteBufferToFile(BHandel, ((InOutFiles_t*)pArgData)->OutFile));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -587,7 +587,7 @@ CMD_CreateCOM0R20M_IMG(
       ));
   DO(EeePWriteBufferToFile(BHandel, ((InOutFiles_t*)pArgData)->OutFile));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -605,7 +605,7 @@ CMD_CreateCOM0R20CB_IMG(
       ));
   DO(EeePWriteBufferToFile(BHandel, ((InOutFiles_t*)pArgData)->OutFile));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -624,7 +624,7 @@ CMD_ListDBlocks_IMG(
       ));
   DO(EeePListBlocks( BHandel, 0));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO(EeePFreeBuffer(&BHandel));
   return EApiStatusCode;
 }
@@ -760,7 +760,7 @@ CmdDesc_t ArgsDesc[]={
     EeePExpEEP_EEP                                  ,
     ARRAY_SIZE(EeePExpEEP_EEP)                      ,
     &CurOptions.CreateEeePExpEEP_EEP                ,
-    CMD_CreateCOM0R20Ext_EEP
+    CMD_CreateEeePExt_EEP
   },
   {
     0x00                                            , 
@@ -873,7 +873,7 @@ CmdDesc_t ArgsDesc[]={
   EApiStatusCode=x;\
   if(!EAPI_STATUS_TEST_OK(EApiStatusCode)){ \
     EAPI_FORMATED_MES('E', main, EApiStatusCode, #x);\
-    goto ErrorExit;\
+    goto ExitPoint;\
   }
 
 /*
@@ -917,6 +917,7 @@ main(
    */
   
 ErrorExit:
+EAPI_APP_ASSERT_EXIT
   DO_MAIN(EApiLibUnInitialize());
   exit(EApiStatusCode);
 }

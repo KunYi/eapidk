@@ -123,8 +123,8 @@ EApiBoardGetStringAEmul(
 	EAPI_STATUS_UNSUPPORTED  , 
 	"Unrecognised String ID"
 	);
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
@@ -197,8 +197,8 @@ EApiBoardGetValueEmul(
 			EAPI_STATUS_UNSUPPORTED  , 
 			"Unrecognised Value ID"
 		);
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 

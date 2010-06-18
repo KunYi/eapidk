@@ -794,7 +794,7 @@ EApiI2CWriteReadRaw(
 #define EAPI_I2C_ENC_10BIT_ADDR(x) EAPI_UINT32_C(((x)&0xFF)|(((x)&0x0300)<<1)|0xF000)
 #define EAPI_I2C_DEC_10BIT_ADDR(x) EAPI_UINT32_C(((x)&0xFF)|(((x)>>1)&0x300))
 #define EAPI_I2C_IS_10BIT_ADDR(x)  (((x)&0xF800)==0xF000)
-#define EAPI_I2C_IS_7BIT_ADDR(x)   (!Is10BitAddress(x))
+#define EAPI_I2C_IS_7BIT_ADDR(x)   (!EAPI_I2C_IS_10BIT_ADDR(x))
 
 /*
  * I2C Transfer Types

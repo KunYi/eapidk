@@ -57,10 +57,51 @@ u8ChecksumBlock (
     size_t      stLength
   );
 
-uint16_t
-u16CRC_CCITT (
+typedef 
+  EApiStatusCode_t 
+  HashFuncinit_t(void**pContext);
+typedef 
+  EApiStatusCode_t 
+  HashFuncbytes_t(
+    __INOUT    void *pContext , /* CRC Context       */
     __IN const void *pcvBuffer, /* Pointer to Buffer */
     __IN size_t      stCount    /* Num bytes to CRC */
+  );
+
+typedef 
+  EApiStatusCode_t 
+  HashFuncfini_t(
+    __IN      void **pContext,  /* CRC Context       */
+    __OUT     void  *pvDigest   /* Pointer to Buffer */
+  );
+
+typedef 
+  EApiStatusCode_t 
+  HashFuncverify_t(
+    __IN      void **pContext,  /* CRC Context       */
+    __OUT     void  *pvDigest   /* Pointer to Buffer */
+  );
+
+typedef struct HashFunc_s{
+  HashFuncinit_t  * init        ;
+  HashFuncbytes_t * bytes       ;
+  HashFuncfini_t  * fini        ;
+  HashFuncverify_t* verify      ;
+  size_t            stDigestLen ;
+}HashFunc_t;
+
+extern HashFunc_t CRC_CCITT;
+
+HashFuncinit_t    u16CRC_CCITT_init   ;
+HashFuncbytes_t   u16CRC_CCITT_bytes  ;
+HashFuncfini_t    u16CRC_CCITT_fini   ;
+HashFuncverify_t  u16CRC_CCITT_verify ;
+
+EApiStatusCode_t
+u16CRC_CCITT (
+    __IN const void *pcvBuffer, /* Pointer to Buffer */
+    __IN size_t      stCount  , /* Num bytes to CRC */
+    __OUT      void *pvDigest   /* Pointer to Buffer */
   );
 
 

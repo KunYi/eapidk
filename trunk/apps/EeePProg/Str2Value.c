@@ -285,7 +285,7 @@ DoOperation(
         );
       break;
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 typedef struct BlockParser_s{
@@ -401,7 +401,7 @@ ParseAsciiEqu_13(
         }
         break;
     }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
     return EApiStatusCode;
 }
 
@@ -447,7 +447,7 @@ ParseAsciiEqu_cmn(
   }else{
     EApiStatusCode=pContext->pHandler(pContext+1, szString, psllValue);
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -587,7 +587,7 @@ ParseAsciiEqu_2(
   } else{
     EApiStatusCode=pContext->pHandler(pContext+1, szString, psllValue);
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -645,7 +645,7 @@ ParseAsciiEqu_1(
   }
   if(EAPI_STATUS_TEST_OK(EApiStatusCode))
     EApiStatusCode=ParseAsciiEqu_cmn(cAS, szString, psllValue);
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -674,7 +674,11 @@ ExpandEnviromentVariables(
   *pszExpStr=NULL;
   StrLen=strlen(cszString)+1;
   szLclBuf=malloc(StrLen);
-  if(szLclBuf==NULL) goto ErrorExit;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ExpandEnviromentVariables, 
+      EAPI_STATUS_ALLOC_ERROR, 
+      szLclBuf
+    );
   strcpy(szLclBuf, cszString);
   while((szVarPosS=strrstr(szLclBuf, cszEnvStartMarker))!=NULL){
 #ifdef TEST_EQUPARSER
@@ -686,7 +690,11 @@ ExpandEnviromentVariables(
       siFormattedMessage_SC('E', __FILE__, "ExpandEnviromentVariables", __LINE__, EAPI_STATUS_PARSE_ERROR,
           "Missing Right Bracket '%s'",  cszEnvEndMarker
           );
-      goto ErrorExit;
+      EAPI_APP_RETURN_ERROR(
+          ExpandEnviromentVariables,
+          EAPI_STATUS_PARSE_ERROR,
+          ""
+          );
     }
     *szVarPosS='\0';
     *szVarPosE='\0';
@@ -702,7 +710,11 @@ ExpandEnviromentVariables(
 #endif
     StrLen+= ValLen - (szVarPosE - szVarPosS + 1) ;
     szLclBuf2=malloc(StrLen);
-    if(szLclBuf2==NULL) goto ErrorExit;
+    EAPI_APP_ASSERT_PARAMATER_NULL(
+        ExpandEnviromentVariables, 
+        EAPI_STATUS_ALLOC_ERROR, 
+        szLclBuf2
+      );
     strcpy(szLclBuf2, szLclBuf);
     if(szVarValue!=NULL) {
       strcat(szLclBuf2, szVarValue);
@@ -722,9 +734,11 @@ ExpandEnviromentVariables(
 #endif
   goto ExitSuccess;
 
-ErrorExit:
-  if(szLclBuf!=NULL)
+EAPI_APP_ASSERT_EXIT
+  if(szLclBuf!=NULL){
     free(szLclBuf);
+    szLclBuf=NULL;
+  }
 ExitSuccess:
   *pszExpStr=szLclBuf;
   if(szVarValue!=NULL)
@@ -769,10 +783,140 @@ ParseAsciiEqu(
 /*               "%s\n", szEquation ); */
 #endif
   DO(ParseAsciiEqu_1(szEquation, psllValue));
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   if(szEquation!=NULL) free(szEquation);
   return EApiStatusCode;
 }
+EApiStatusCode_t
+AssignValue_VA(
+    __IN  const signed long long csllValue,
+    __OUT void             *pvalue,
+    __IN  signed int        siElementSize
+  )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ParseAsciiEqu_VA, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      pvalue
+    );
+  EAPI_APP_ASSERT_PARAMATER_ZERO(
+      ParseAsciiEqu_VA, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      siElementSize
+    );
+  memset(pvalue, 0x00, siElementSize);
+  if(siElementSize==sizeof(unsigned long long)){
+      *(unsigned long long*)pvalue=(unsigned long long)csllValue;
+
+  }else if(siElementSize==sizeof(unsigned long)){
+      if((csllValue>=0 && (((unsigned long long)  csllValue)>ULONG_MAX))||
+         (csllValue< 0 && (((unsigned long long)- csllValue)>LONG_MAX ))
+	)
+      {
+        EAPI_APP_RETURN_ERROR(
+            ParseAsciiEqu_VA,
+            EAPI_STATUS_ERROR,
+            "Value Too Large for unsigned long"
+          );
+      }
+      *(unsigned long*)pvalue=(unsigned long)csllValue;
+  }else if(siElementSize==sizeof(unsigned int)){
+      if((csllValue>=0 && (((unsigned long long) csllValue)>UINT_MAX))||
+         (csllValue< 0 && (((unsigned long long)-csllValue)>INT_MAX ))
+         )
+      {
+        EAPI_APP_RETURN_ERROR(
+            ParseAsciiEqu_VA,
+            EAPI_STATUS_ERROR,
+            "Value Too Large for unsigned int"
+          );
+      }
+       *(unsigned int*)pvalue=(unsigned int)csllValue;
+   }else if(siElementSize==sizeof(unsigned short)){
+      if((csllValue>=0 && (((unsigned long long) csllValue)>USHRT_MAX))||
+         (csllValue< 0 && (((unsigned long long)-csllValue)>SHRT_MAX ))
+         )
+      {
+        EAPI_APP_RETURN_ERROR(
+            ParseAsciiEqu_VA,
+            EAPI_STATUS_ERROR,
+            "Value Too Large for unsigned short"
+          );
+      }
+      *(unsigned short*)pvalue=(unsigned short)csllValue;
+  }else if(siElementSize==sizeof(unsigned char)){
+      if((csllValue>=0 && (((unsigned long long) csllValue)>UCHAR_MAX))||
+         (csllValue< 0 && (((unsigned long long)-csllValue)>CHAR_MAX ))
+         )
+      {
+        EAPI_APP_RETURN_ERROR(
+            ParseAsciiEqu_VA,
+            EAPI_STATUS_ERROR,
+            "Value Too Large for unsigned char"
+          );
+      }
+      *(unsigned char*)pvalue=(unsigned char)csllValue;
+  }else{
+      EAPI_APP_RETURN_ERROR(
+          ParseAsciiEqu_VA,
+          EAPI_STATUS_ERROR,
+          "Invalid Variable Lenght"
+        );
+  }
+
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t
+RecoverValue_VA(
+    __OUT const signed long long *pcsllValue,
+    __IN  void             *pvalue,
+    __IN  signed int        siElementSize
+  )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ParseAsciiEqu_VA, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      pcsllValue
+    );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ParseAsciiEqu_VA, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      pvalue
+    );
+  EAPI_APP_ASSERT_PARAMATER_ZERO(
+      ParseAsciiEqu_VA, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      siElementSize
+    );
+  if(siElementSize==sizeof(unsigned long long)){
+      *(unsigned long long*)pcsllValue=*(unsigned long long*)pvalue;
+  }else if(siElementSize==sizeof(unsigned long)){
+      *(unsigned long long*)pcsllValue=*(unsigned long *)pvalue;
+  }else if(siElementSize==sizeof(unsigned int)){
+      *(unsigned long long*)pcsllValue=*(unsigned int*)pvalue;
+   }else if(siElementSize==sizeof(unsigned short)){
+      *(unsigned long long*)pcsllValue=*(unsigned short*)pvalue;
+  }else if(siElementSize==sizeof(unsigned char)){
+      *(unsigned long long*)pcsllValue=*(unsigned char*)pvalue;
+  }else{
+      EAPI_APP_RETURN_ERROR(
+          ParseAsciiEqu_VA,
+          EAPI_STATUS_ERROR,
+          "Invalid Variable Lenght"
+        );
+  }
+
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
+}
+
+
 EApiStatusCode_t
 ParseAsciiEqu_VA(
     __IN  const char       *cszString,
@@ -795,124 +939,79 @@ ParseAsciiEqu_VA(
     );
   memset(pvalue, 0x00, siElementSize);
   DO(ParseAsciiEqu(cszString, &sllValue));
-  if(siElementSize==sizeof(unsigned long long)){
-      *(unsigned long long*)pvalue=(unsigned long long)sllValue;
+  DO(AssignValue_VA(sllValue, pvalue, siElementSize));
 
-  }else if(siElementSize==sizeof(unsigned long)){
-      if((sllValue>=0 && (((unsigned long long) sllValue)>ULONG_MAX))||
-         (sllValue< 0 && (((unsigned long long)-sllValue)>LONG_MAX ))
-	)
-      {
-        EAPI_APP_RETURN_ERROR(
-            ParseAsciiEqu_VA,
-            EAPI_STATUS_ERROR,
-            "Value Too Large for unsigned long"
-          );
-      }
-      *(unsigned long*)pvalue=(unsigned long)sllValue;
-  }else if(siElementSize==sizeof(unsigned int)){
-      if((sllValue>=0 && (((unsigned long long) sllValue)>UINT_MAX))||
-         (sllValue< 0 && (((unsigned long long)-sllValue)>INT_MAX ))
-         )
-      {
-        EAPI_APP_RETURN_ERROR(
-            ParseAsciiEqu_VA,
-            EAPI_STATUS_ERROR,
-            "Value Too Large for unsigned int"
-          );
-      }
-       *(unsigned int*)pvalue=(unsigned int)sllValue;
-   }else if(siElementSize==sizeof(unsigned short)){
-      if((sllValue>=0 && (((unsigned long long) sllValue)>USHRT_MAX))||
-         (sllValue< 0 && (((unsigned long long)-sllValue)>SHRT_MAX ))
-         )
-      {
-        EAPI_APP_RETURN_ERROR(
-            ParseAsciiEqu_VA,
-            EAPI_STATUS_ERROR,
-            "Value Too Large for unsigned short"
-          );
-      }
-      *(unsigned short*)pvalue=(unsigned short)sllValue;
-  }else if(siElementSize==sizeof(unsigned char)){
-      if((sllValue>=0 && (((unsigned long long) sllValue)>UCHAR_MAX))||
-         (sllValue< 0 && (((unsigned long long)-sllValue)>CHAR_MAX ))
-         )
-      {
-        EAPI_APP_RETURN_ERROR(
-            ParseAsciiEqu_VA,
-            EAPI_STATUS_ERROR,
-            "Value Too Large for unsigned char"
-          );
-      }
-      *(unsigned char*)pvalue=(unsigned char)sllValue;
-  }else{
-      EAPI_APP_RETURN_ERROR(
-          ParseAsciiEqu_VA,
-          EAPI_STATUS_ERROR,
-          "Invalid Variable Lenght"
-        );
-  }
-
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
 #ifdef TEST_EQUPARSER
 typedef struct TestCase_s{
-  const char *cszEquation;
-  signed long long sllValue;
+  void *const      pValueStore ;
+  signed int       pStoreSize  ;
+  signed int       pElementSize;
+  const char      *cszEquation ;
+  signed long long sllValue    ;
 }TestCase_t;
-#define TEST_CASE(x) {#x, x},
+#define __TEST_CASE(Store, Equ) {Store, sizeof(Store), sizeof(Store[0]), #Equ, Equ},
+#define _TEST_CASE(Store, Equ) __TEST_CASE(Store, Equ)
+#define TEST_CASE(Store, Equ) _TEST_CASE(Store, Equ)
+uint8_t  Val_u8[1];
+uint16_t Val_u16[1];
+uint32_t Val_u32[1];
+uint64_t Val_u64[1];
 
 TestCase_t TestCasesEquates[]={
-  TEST_CASE(1 + 1)
-  TEST_CASE(1 + 1 + 3 + 4 - 3)
-  TEST_CASE(0x00123)
-  TEST_CASE(123)
-  TEST_CASE(1 - 1)
-  TEST_CASE(2*2+1)
-  TEST_CASE(456%45+3*23/4+1)
-  TEST_CASE(((2*2)+1))
-  TEST_CASE((2*((2)+(1))))
-  TEST_CASE((2*((2)+(1)))==0)
-  TEST_CASE((2*((2)+(1)))!=0)
-  TEST_CASE((2*((2)+(1)))>=0)
-  TEST_CASE((2*((2)+(1)))<=0)
-  TEST_CASE((2*((2)+(1)))&&0)
-  TEST_CASE((2*((2)+(1)))||0)
-  TEST_CASE(0x505050|   0x0A0A0A0|0x0000000)
-  TEST_CASE(0x505050&   0x0A0A0A0|0x0000000)
-  TEST_CASE(0x505050&   0x0A0A0A0&0x0000000)
-  TEST_CASE(0x505050&  ~0x0A0A0A0|0x0000000)
-  TEST_CASE(0x505050&~~~0x0A0A0A0|0x0000000)
-  TEST_CASE(0x505050& ~~0x0A0A0A0|0x0000000)
-  TEST_CASE(0x505050^   0x0A0A0A0|0x0000000)
-  TEST_CASE(0x505050^   0x0A0A0A0^0x0000000)
-  TEST_CASE(1<<5)
-  TEST_CASE(5>>1)
-  TEST_CASE(5>>1>=0)
-  TEST_CASE(5>>1>=5>>2)
-  TEST_CASE(5>>1<=5>>2)
-  TEST_CASE(-1)
-  TEST_CASE(!0)
-  TEST_CASE(~0)
-  TEST_CASE(1?1:0)
-  TEST_CASE((1?1:0)?0:1)
-  TEST_CASE(1?0:1?2:3)
-  TEST_CASE(0?0:1?2:3)
-  TEST_CASE(0?1:0?2:3)
-  TEST_CASE(5- -1)
-  TEST_CASE(5- - -1)
-  TEST_CASE(5- - - -1)
-  TEST_CASE(5- + -1)
-  TEST_CASE(5- - + -1)
-  TEST_CASE(5-(-1))
+  TEST_CASE(Val_u64, 1 + 1)
+  TEST_CASE(Val_u64, 1 + 1 + 3 + 4 - 3)
+  TEST_CASE(Val_u64, 0x00123)
+  TEST_CASE(Val_u64, 123)
+  TEST_CASE(Val_u64, 1 - 1)
+  TEST_CASE(Val_u64, 2*2+1)
+  TEST_CASE(Val_u64, 456%45+3*23/4+1)
+  TEST_CASE(Val_u64, ((2*2)+1))
+  TEST_CASE(Val_u64, (2*((2)+(1))))
+  TEST_CASE(Val_u64, (2*((2)+(1)))==0)
+  TEST_CASE(Val_u64, (2*((2)+(1)))!=0)
+  TEST_CASE(Val_u64, (2*((2)+(1)))>=0)
+  TEST_CASE(Val_u64, (2*((2)+(1)))<=0)
+  TEST_CASE(Val_u64, (2*((2)+(1)))&&0)
+  TEST_CASE(Val_u64, (2*((2)+(1)))||0)
+  TEST_CASE(Val_u64, 0x505050|   0x0A0A0A0|0x0000000)
+  TEST_CASE(Val_u64, 0x505050&   0x0A0A0A0|0x0000000)
+  TEST_CASE(Val_u64, 0x505050&   0x0A0A0A0&0x0000000)
+  TEST_CASE(Val_u64, 0x505050&  ~0x0A0A0A0|0x0000000)
+  TEST_CASE(Val_u64, 0x505050&~~~0x0A0A0A0|0x0000000)
+  TEST_CASE(Val_u64, 0x505050& ~~0x0A0A0A0|0x0000000)
+  TEST_CASE(Val_u64, 0x505050^   0x0A0A0A0|0x0000000)
+  TEST_CASE(Val_u64, 0x505050^   0x0A0A0A0^0x0000000)
+  TEST_CASE(Val_u64, 1<<5)
+  TEST_CASE(Val_u64, 5>>1)
+  TEST_CASE(Val_u64, 5>>1>=0)
+  TEST_CASE(Val_u64, 5>>1>=5>>2)
+  TEST_CASE(Val_u64, 5>>1<=5>>2)
+  TEST_CASE(Val_u64, -1)
+  TEST_CASE(Val_u64, !0)
+  TEST_CASE(Val_u64, ~0)
+  TEST_CASE(Val_u64, 1?1:0)
+  TEST_CASE(Val_u64, (1?1:0)?0:1)
+  TEST_CASE(Val_u64, 1?0:1?2:3)
+  TEST_CASE(Val_u64, 0?0:1?2:3)
+  TEST_CASE(Val_u64, 0?1:0?2:3)
+  TEST_CASE(Val_u64, 5- -1)
+  TEST_CASE(Val_u64, 5- - -1)
+  TEST_CASE(Val_u64, 5- - - -1)
+  TEST_CASE(Val_u64, 5- + -1)
+  TEST_CASE(Val_u64, 5- - + -1)
+  TEST_CASE(Val_u64, 5-(-1))
+  TEST_CASE(Val_u32, 0xFFFFFFFF  )
+  TEST_CASE(Val_u16, 0xFFFF  )
+  TEST_CASE(Val_u8 , 0xFF   )
 };
 TestCase_t TestCasesEnv[]={
-  {"$(NUMBER_OF_PROCESSORS)>=1", 1},
-  {"0x$(PROCESSOR_REVISION)", 0},
-  {"$(PROCESSOR_REVISION)", 0},
+  {Val_u8, sizeof(Val_u8), sizeof(Val_u8[0]), "$(NUMBER_OF_PROCESSORS)>=1", 1},
+  {Val_u8, sizeof(Val_u8), sizeof(Val_u8[0]), "0x$(PROCESSOR_REVISION)", 0xd08},
+  {Val_u8, sizeof(Val_u8), sizeof(Val_u8[0]), "$(PROCESSOR_REVISION)", 0},
 };
 const char *pszTestStatus[]={
   "FAIL",
@@ -929,12 +1028,13 @@ const char *pszTestStatus[]={
 /* } */
 
 int __cdecl main(
-    const char *const *const argv, 
-    const signed int argc, 
-    const char *const *const envp 
+/*     const char *const *const argv,  */
+/*     const signed int argc,  */
+/*     const char *const *const envp  */
+    void
     )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   TestCase_t *pCurTestCase;
   int CasesLeft, TestCount=0, PassCount=0;
   signed long long sllLclValue;
@@ -968,6 +1068,7 @@ int __cdecl main(
 /*     siFormattedMessage_M2('D', __FILE__, "main", __LINE__, "", */
 /*               "%s\n", *pcszEnv ); */
 /*   } */
+  /*
   for(CasesLeft=ARRAY_SIZE(TestCasesEquates),
       pCurTestCase=TestCasesEquates;
       CasesLeft --;
@@ -976,12 +1077,42 @@ int __cdecl main(
   {
     TestCount++;
     EApiStatusCode=ParseAsciiEqu(pCurTestCase->cszEquation, &sllLclValue);
-    if(!EAPI_TEST_SUCCESS(EApiStatusCode)){
+    if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
       break;
     }
     printf(
         "[%04s]%30s | %8lli(0x%08llX), %8lli(0x%08llX)\n", 
         pszTestStatus[sllLclValue==pCurTestCase->sllValue], 
+        pCurTestCase->cszEquation, 
+        sllLclValue, sllLclValue, 
+        pCurTestCase->sllValue, pCurTestCase->sllValue
+      );
+    if(sllLclValue==pCurTestCase->sllValue){
+      PassCount++;
+    }
+  }
+  */
+  for(CasesLeft=ARRAY_SIZE(TestCasesEquates),
+      pCurTestCase=TestCasesEquates;
+      CasesLeft --;
+      pCurTestCase ++
+      )
+  {
+    TestCount++;
+    DO(ParseAsciiEqu_VA(
+            pCurTestCase->cszEquation, 
+            pCurTestCase->pValueStore,
+            pCurTestCase->pElementSize
+        ));
+    DO(RecoverValue_VA(
+            &sllLclValue, 
+            pCurTestCase->pValueStore,
+            pCurTestCase->pElementSize
+        ));
+    printf(
+        "[%04s](%i)%30s | %8lli(0x%08llX), %8lli(0x%08llX)\n", 
+        pszTestStatus[sllLclValue==pCurTestCase->sllValue], 
+        pCurTestCase->pElementSize, 
         pCurTestCase->cszEquation, 
         sllLclValue, sllLclValue, 
         pCurTestCase->sllValue, pCurTestCase->sllValue
@@ -998,7 +1129,7 @@ int __cdecl main(
   {
     TestCount++;
     EApiStatusCode=ParseAsciiEqu(pCurTestCase->cszEquation, &sllLclValue);
-/*     if(!EAPI_TEST_SUCCESS(EApiStatusCode)){ */
+/*     if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){ */
 /*       break; */
 /*     } */
     printf(
@@ -1022,8 +1153,8 @@ int __cdecl main(
       TestCount,
       PassCount
     );
-  return 0;
-/*   exit(EAPI_STATUS_SUCCESS); */
+EAPI_APP_ASSERT_EXIT
+  exit(EApiStatusCode);
 }
 #endif
 
