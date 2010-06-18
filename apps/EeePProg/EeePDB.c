@@ -643,7 +643,7 @@ EeePSetCRC(
     DO(CRC_CCITT.bytes(
                 pContext, 
         BufferMap.pCmnHdr, 
-        EAPI_GET_PTR_OFFSET(BufferMap.pEeePCRCBlock, BufferMap.pCmnHdr)
+        EAPI_GET_PTR_OFFSET(BufferMap.pEeePCRCBlock->CrC16, BufferMap.pCmnHdr)
         ));
     DO(CRC_CCITT.fini(&pContext, BufferMap.pEeePCRCBlock->CrC16));
 
@@ -678,7 +678,7 @@ EeePCheckCRC(
   DO(CRC_CCITT.bytes(
                 pContext, 
                 BufferMap.pCmnHdr, 
-                EAPI_GET_PTR_OFFSET(BufferMap.pEeePCRCBlock, BufferMap.pCmnHdr)
+                EAPI_GET_PTR_OFFSET(BufferMap.pEeePCRCBlock->CrC16, BufferMap.pCmnHdr)
         ));
   DO(CRC_CCITT.verify(&pContext, BufferMap.pEeePCRCBlock->CrC16));
 

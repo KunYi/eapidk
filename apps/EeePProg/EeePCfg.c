@@ -1027,6 +1027,7 @@ HandleCOM0R20CBHeaderBlock(
   pHeader->MiscIo2|=(pCOM0R20_CB_cgf->aulSER0  [0]?COM0R20_SER0_PRESENT  :0);
   pHeader->MiscIo2|=(pCOM0R20_CB_cgf->aulSER1  [0]?COM0R20_SER1_PRESENT  :0);
 
+  memset(pHeader->DDIDesc, 0x00, sizeof(pHeader->DDIDesc));
   pHeader->DDIDesc[0] =(uint8_t)pCOM0R20_CB_cgf->aulDDI0[0]<<COM0R20_DDI0_OFFSET;
   pHeader->DDIDesc[0]|=(uint8_t)pCOM0R20_CB_cgf->aulDDI1[0]<<COM0R20_DDI1_OFFSET;
   pHeader->DDIDesc[1] =(uint8_t)pCOM0R20_CB_cgf->aulDDI2[0]<<COM0R20_DDI2_OFFSET;
