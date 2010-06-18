@@ -220,7 +220,6 @@ typedef struct COM0R20_CB_s{
 #       define COM0R20_GBE0_PRESENT          EEEP_UINT8_C(1<<0)
 #       define COM0R20_GBE1_PRESENT          EEEP_UINT8_C(1<<1)
 #       define COM0R20_GBE2_PRESENT          EEEP_UINT8_C(1<<2)
-#       define COM0R20_GB1E0_PRESENT         EEEP_UINT8_C(1<<3)
 
     uint8_t     MiscIo1;   /* 0x15 Miscellaneous I/O Descriptor Byte 1
                             *      
@@ -312,42 +311,60 @@ typedef struct COM0R20_CB_s{
 #       define COM0R20_FAN0_PRESENT         EEEP_UINT8_C(1<<4)
 #       define COM0R20_SER0_PRESENT         EEEP_UINT8_C(1<<5)
 #       define COM0R20_SER1_PRESENT         EEEP_UINT8_C(1<<6)
-    uint8_t     DDIDesc;   /* 0x17 Digital Display Interface Descriptor Byte
+    uint8_t     DDIDesc[2];  /* 0x17 Digital Display Interface Descriptor Bytes
                             *      
-                            *      +=======+======+=======+==================+
-                            *      | DDI   | Bits | Value | Meaning          |
-                            *      | Port  |      |       |                  |
-                            *      +=======+======+=======+==================+
-                            *      | 1     | 0-2  | 0     | Not Implemented  |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 1     | eDisplay Port    |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 2     | Display Port     |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 3     | HDMI/DVI         |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 4     | SDVO             |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 5 - 7 | Reserved         |
-                            *      +-------+------+-------+------------------+
-                            *      | 2     | 3-4  | 0     | Not Implemented  |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 1     | eDisplay Port    |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 2     | Display Port     |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 3     | HDMI/DVI         |
-                            *      +-------+------+-------+------------------+
-                            *      |       | 5    | Reserved set to 0        |
-                            *      +-------+------+-------+------------------+
-                            *      | 3     | 6-7  | 0     | Not Implemented  |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 1     | eDisplay Port    |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 2     | Display Port     |
-                            *      |       |      +-------+------------------+
-                            *      |       |      | 3     | HDMI/DVI         |
-                            *      +-------+------+-------+------------------+
+                            *      +======+======+======+=====+=================+
+                            *      | DDI  | Byte | Bits |Value| Meaning         |
+                            *      | Port |      |      |     |                 |
+                            *      +======+======+======+=====+=================+
+                            *      | 0    | 0    | 0-2  | 0   | Not Implemented |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 1   | eDisplay Port   |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 2   | Display Port    |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 3   | HDMI/DVI        |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 4   | SDVO            |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 5-7 | Reserved        |
+                            *      +------+      +------+-----+-----------------+
+                            *      |      |      | 3    | Reserved set to 0     |
+                            *      +------+      +------+-----+-----------------+
+                            *      | 1    |      | 4-6  | 0   | Not Implemented |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 1   | eDisplay Port   |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 2   | Display Port    |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 3   | HDMI/DVI        |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 4   | SDVO            |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 5-7 | Reserved        |
+                            *      +------+      +------+-------+---------------+
+                            *      |      |      | 7    | Reserved set to 0     |
+                            *      +------+------+------+-----+-----------------+
+                            *      | 2    | 1    | 0-1  | 0   | Not Implemented |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 1   | eDisplay Port   |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 2   | Display Port    |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 3   | HDMI/DVI        |
+                            *      +------+      +------+-----+-----------------+
+                            *      |      |      | 2-3  | Reserved set to 0     |
+                            *      +------+      +------+-----+-----------------+
+                            *      | 3    |      | 4-5  | 0   | Not Implemented |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 1   | eDisplay Port   |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 2   | Display Port    |
+                            *      |      |      |      +-----+-----------------+
+                            *      |      |      |      | 3   | HDMI/DVI        |
+                            *      +------+      +------+-----+-----------------+
+                            *      |      |      | 6-7  | Reserved set to 0     |
+                            *      +------+------+------+-----+-----------------+
                             */     
 #       define COM0R20_DDI_NOT_USED          EEEP_UINT8_C(0x0)
 #       define COM0R20_DDI_eDispPort         EEEP_UINT8_C(0x1)
@@ -356,10 +373,11 @@ typedef struct COM0R20_CB_s{
 #       define COM0R20_DDI_SDVO              EEEP_UINT8_C(0x4)
 #       define COM0R20_DDI_BITMASK           EEEP_UINT8_C(0x3)
 
-#       define COM0R20_DDI1_OFFSET           EEEP_UINT8_C(0x0)
-#       define COM0R20_DDI2_OFFSET           EEEP_UINT8_C(0x3)
-#       define COM0R20_DDI3_OFFSET           EEEP_UINT8_C(0x6)
-     uint8_t    PCIeGen[8]; /* 0x18 PCI Express lane Generation.
+#       define COM0R20_DDI0_OFFSET           EEEP_UINT8_C(0x0)
+#       define COM0R20_DDI1_OFFSET           EEEP_UINT8_C(0x4)
+#       define COM0R20_DDI2_OFFSET           EEEP_UINT8_C(0x0)
+#       define COM0R20_DDI3_OFFSET           EEEP_UINT8_C(0x4)
+     uint8_t    PCIeGen[8]; /* 0x19 PCI Express lane Generation.
                             *       2 Bits Per lane
                             *      +=======+=======+======================+
                             *      | Bits  | Value | Meaning              |
@@ -376,7 +394,7 @@ typedef struct COM0R20_CB_s{
 #       define COM0R20_PCIe_GEN1            EEEP_UINT8_C(0)
 #       define COM0R20_PCIe_GEN2            EEEP_UINT8_C(1)
 #       define COM0R20_PCIe_GEN3            EEEP_UINT8_C(2)
-     uint8_t    LaneMap[16];/* 0x20 Lane Information
+     uint8_t    LaneMap[16];/* 0x21 Lane Information
                             *      +=======+=======+======================+
                             *      | Bits  | Value | Meaning              |
                             *      +=======+=======+======================+
