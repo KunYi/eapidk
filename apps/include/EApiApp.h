@@ -94,16 +94,16 @@
 
 #define EAPI_APP_RETURN_SUCCESS(func, desc)  \
 	do{\
-		EApiStatusCode=err; \
+		EApiStatusCode=EAPI_RETURN_SUCCESS; \
 		EAPI_FORMATED_MES('L', func, EAPI_RETURN_SUCCESS, desc );\
-		goto ExitSuccess; \
+		goto ExitPoint; \
 	}while(0)
 
 #define EAPI_APP_RETURN_ERROR(func, err, desc)  \
 	do{ \
 		EAPI_FORMATED_MES('E', func, err, desc );\
 		EApiStatusCode=err; \
-		goto ErrorExit; \
+		goto ExitPoint; \
 	}while(0)
 
 #define EAPI_APP_RETURN_ERROR_IF(func, exp, err, desc)  \
@@ -144,6 +144,11 @@
     x=y;\
   }
 
+#define EAPI_APP_EXIT \
+goto ExitPoint
+
+#define EAPI_APP_ASSERT_EXIT \
+ExitPoint:
 
 
 #endif /* _EAPIAPP_H_ */

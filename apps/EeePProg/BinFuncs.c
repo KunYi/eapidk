@@ -12,7 +12,7 @@
  *I              information. All rights reserved except as may be 
  *I              permitted by prior written consent.
  *I
- *I Description: Auto Created for sEAPI_printf.c
+ *I Description: Auto Created for sprintf.c
  *I
  *+-------------------------------------------------------------------------
  *I
@@ -59,15 +59,67 @@ u8ChecksumBlock (
   return EEEP_LO_UINT8(u32ChecksumBlock(pcvBuffer, stLength));
 }
 
-uint16_t
-u16CRC_CCITT (
+typedef struct CRC_State_s{
+  unsigned   CRC;
+  size_t     Cnt;
+}CRC_State_t;
+
+EApiStatusCode_t
+u16CRC_CCITT_init (
+    void**pContext
+    )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  CRC_State_t * pCRC;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      u16CRC_CCITT_init,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pContext
+      );
+  *pContext=pCRC=malloc(sizeof(CRC_State_t));
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      u16CRC_CCITT_init,
+      EAPI_STATUS_ALLOC_ERROR,
+      pCRC
+      );
+  pCRC->CRC=0;
+  pCRC->Cnt=0;
+
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
+}
+
+/*
+ *
+ *
+ *
+ *  CRC_CCITT
+ *
+ *
+ *
+ */
+EApiStatusCode_t
+u16CRC_CCITT_bytes (
+    __IN       void *pContext , /* CRC Context       */
     __IN const void *pcvBuffer, /* Pointer to Buffer */
     __IN size_t      stCount    /* Num bytes to CRC */
   )
 { 
-  const uint8_t *pcu8Buffer=pcvBuffer; 
-  unsigned CRC=0; 
-  unsigned i; 
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  const uint8_t *pcu8Buffer     =pcvBuffer; 
+  CRC_State_t   *pCRC           =pContext ;
+  unsigned       CRC            =pCRC->CRC;
+  unsigned       i; 
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      u16CRC_CCITT_bytes,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pcvBuffer
+      );
+
+
+/*   printf("L%04i 0x%04X 0x%04lX\n", __LINE__, CRC&0xFFFF, (unsigned long)pCRC->Cnt); */
+/*   PrintHexAsciiTable(pcvBuffer, stCount, pcu8Buffer - pCRC->Cnt, NULL); */
+  pCRC->Cnt+=stCount;
   while (stCount --) { 
     CRC^= *pcu8Buffer++ << 8; 
     for (i = 8; i ; i --){ 
@@ -79,10 +131,87 @@ u16CRC_CCITT (
       }
     }
   }
-  return EEEP_LO_UINT16(CRC);
+  pCRC->CRC=CRC;
+
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
+}
+EApiStatusCode_t
+u16CRC_CCITT_fini  (
+    __IN      void **pContext,  /* CRC Context       */
+    __OUT     void  *pvDigest   /* Pointer to Buffer */
+  )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  CRC_State_t * pCRC=*pContext;
+  unsigned      CRC=pCRC->CRC;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      u16CRC_CCITT_fini,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pvDigest
+      );
+/*   printf("L%04i 0x%04X 0x%04lX\n", __LINE__, pCRC->CRC&0xFFFF, (unsigned long)pCRC->Cnt); */
+  free(*pContext);
+  *pContext=NULL;
+
+  EeeP_Set16BitValue_BE(pvDigest, EEEP_LO_UINT16(CRC));
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
+}
+EApiStatusCode_t
+u16CRC_CCITT_verify  (
+    __IN       void**pContext,  /* CRC Context       */
+    __OUT      void *pvDigest   /* Pointer to Buffer */
+  )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  uint8_t Digest[2];
+
+  DO(u16CRC_CCITT_fini(pContext, Digest));
+
+  EAPI_APP_RETURN_ERROR_IF(
+      u16CRC_CCITT_verify,
+      memcmp(Digest, pvDigest, sizeof(Digest)),
+      EAPI_STATUS_ERROR,
+      "Invalid CRC CCITT"
+      );
+
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
 }
 
+EApiStatusCode_t
+u16CRC_CCITT (
+    __IN const void    *pcvBuffer, /* Pointer to Buffer */
+    __IN       size_t   stCount  , /* Num bytes to CRC  */
+    __OUT      void    *pvDigest   /* Pointer to Buffer */
+  )
+{ 
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  void * pContext;
+  DO(u16CRC_CCITT_init(&pContext));
+  DO(u16CRC_CCITT_bytes(pContext, pcvBuffer, stCount));
+  DO(u16CRC_CCITT_fini(&pContext, pvDigest));
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
+}
+HashFunc_t CRC_CCITT={
+    u16CRC_CCITT_init   ,
+    u16CRC_CCITT_bytes  ,
+    u16CRC_CCITT_fini   ,
+    u16CRC_CCITT_verify ,
+    sizeof(uint16_t)
+};
 
+/*
+ *
+ *
+ *
+ *  PrintHexTable
+ *
+ *
+ *
+ */
 TCHAR
 cBin2Ascii(
     __IN  unsigned int uiValue
@@ -167,7 +296,7 @@ PrintHexAsciiTableEx(
     if(cuiFlags&HEXTBL_OFFSET_TITLE)
       EAPI_printf(TEXT("\n\tOFFSET = 0x%08lX, LENGTH = 0x%08lX\n"), (unsigned long)stOffset, (unsigned long)stBufSize);
 
-    if(stBufSize==0) goto ExitSucces;
+    if(stBufSize==0) EAPI_APP_EXIT;
 
     pcu8Mem=((uint8_t*)pcvBuffer) - (stOffset%stRowSize);
 
@@ -232,22 +361,21 @@ PrintHexAsciiTableEx(
       pcu8Mem+=stRowSize;
       EAPI_printf(TEXT("\n"));
     }
-ErrorExit:
-ExitSucces:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
 void 
 PrintHexAsciiTable(
 	const void *const pcvBuffer	,
-	const size_t stBufSize		,
+	const size_t cstBufSize		,
 	const void *const pcvBase		,
 	const TCHAR *const pcszDescription
 	)
 {
   PrintHexAsciiTableEx(
       pcvBuffer           ,
-      stBufSize           ,
+      cstBufSize          ,
       pcvBase             ,
       pcszDescription     ,
       HEXTBL_NORM8_ATTRIB
@@ -289,7 +417,7 @@ LclWriteFile(
     EApiStatusCode=EAPI_STATUS_WRITE_ERROR;
     siFormattedMessage_SC('L', __FILE__, "LclWriteFile", __LINE__, EApiStatusCode,
         "Opening File %s(%s)\n", cszFilename, cszWriteType);
-    goto ErrorExit;
+    EAPI_APP_EXIT;
   }
   EAPI_APP_RETURN_ERROR_IF_S(
       LclWriteFile,
@@ -297,7 +425,7 @@ LclWriteFile(
       EAPI_STATUS_WRITE_ERROR
     );
   fclose(LclFilePtr);
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -333,7 +461,7 @@ LclReadFile(
     EApiStatusCode=EAPI_STATUS_READ_ERROR;
     siFormattedMessage_SC('L', __FILE__, "LclReadFile", __LINE__, EApiStatusCode,
         "Opening File %s(%s)\n", cszFilename, cszReadType);
-    goto ErrorExit;
+    EAPI_APP_EXIT;
   }
 
   fseek(LclFilePtr, 0, SEEK_END);
@@ -363,7 +491,7 @@ LclReadFile(
   *pstReadBCnt=stFileLen;
   fclose(LclFilePtr);
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 

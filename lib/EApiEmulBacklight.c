@@ -81,8 +81,8 @@ EApiVgaGetBacklightEnableEmul(
     EAPI_STATUS_UNSUPPORTED  , 
     "Unrecognised Backlight ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
@@ -111,8 +111,8 @@ EApiVgaSetBacklightEnableEmul(
     EAPI_STATUS_UNSUPPORTED  , 
     "Unrecognised Backlight ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 EApiStatusCode_t 
@@ -140,8 +140,8 @@ EApiVgaGetBacklightBrightnessEmul(
     EAPI_STATUS_UNSUPPORTED  , 
     "Unrecognised Backlight ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
@@ -170,8 +170,8 @@ EApiVgaSetBacklightBrightnessEmul(
     EAPI_STATUS_UNSUPPORTED  , 
     "Unrecognised Backlight ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 

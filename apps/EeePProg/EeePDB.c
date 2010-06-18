@@ -78,7 +78,15 @@ ExitSuccess:
   return EApiStatusCode;
 }
 
-
+EApiStatusCode_t 
+GetDBlckIdString(
+    __OUT TCHAR *        pszString,
+    __IN  size_t         stArrayLen,
+    __IN  unsigned int   uiValue
+    )
+{
+  return GetString(BlockIdLookup, pszString, stArrayLen, uiValue);
+}
 size_t 
 EeePAdjLength(
     size_t Length
@@ -125,7 +133,7 @@ SetBlockLength(
         ((DBlockIdHdr_t*)BHandel)->DBlockLength, 
         EEEP_LO_UINT16((stBlockLength)/EEEP_SIZE_UNITS)
       );
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
   }
   return EApiStatusCode;
@@ -143,7 +151,7 @@ GetBlockLength(
     );
   EApiStatusCode=
     EeeP_Get16BitValue_BE(((DBlockIdHdr_t*)pcvBHandel)->DBlockLength )*EEEP_SIZE_UNITS;
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
   }
   return EApiStatusCode;
@@ -175,6 +183,7 @@ GetNextBlock(
       break;
       }
 ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -192,7 +201,7 @@ SetDynBlockHeader(
     );
   ((DBlockIdHdr_t *)pCurBlock)->DBlockId=u8BlockId;
   EApiStatusCode=SetBlockLength(pCurBlock, stBlockLength);
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
   }
   return EApiStatusCode;
@@ -247,7 +256,7 @@ ReduceBlockLength(
       *pvNewBlock=*pvCurBlock;
     *pvCurBlock=pTmpBlock;
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
   }
   return EApiStatusCode;
@@ -355,7 +364,7 @@ EeePCreateNewBuffer(
         ));
     EeeP_Set16BitValue_BE( pEeePCRCBlock->CrC16, 0);
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -371,10 +380,10 @@ EeePFreeBuffer(
     );
 
   if(*pBHandel!=NULL){
-  free(*pBHandel);
-  *pBHandel=NULL;
+    free(*pBHandel);
+    *pBHandel=NULL;
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -423,7 +432,7 @@ EeePGetFirstDB(
       );
   if(pstImageMaxSize!=NULL) *pstImageMaxSize=
         (size_t)(256<<(((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_SIZE_MASK));
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -509,7 +518,7 @@ EeePMapBuffer(
     }
   }
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -569,7 +578,7 @@ EeePListBlocks(
   {
     CurOffset=EAPI_GET_PTR_OFFSET(pCurBlock, BHandel);
     BlockLen=GetBlockLength(pCurBlock);
-    GetString(BlockIdLookup, BlockName, ARRAY_SIZE(BlockName), pCurBlock->DBlockId);
+    GetDBlckIdString(BlockName, ARRAY_SIZE(BlockName), pCurBlock->DBlockId);
     EAPI_MSG_OUT(
         TEXT("\n")
 #ifdef _UNICODE
@@ -604,7 +613,7 @@ EeePListBlocks(
     }
   }
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -615,7 +624,7 @@ EeePSetCRC(
 {
   EeePBufferMap_t BufferMap;
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
-  uint16_t u16CRC;
+  void *pContext;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePSetCRC,
@@ -630,18 +639,16 @@ EeePSetCRC(
       EAPI_STATUS_ERROR,
       "No CRC Block Present"
     );
-  u16CRC=u16CRC_CCITT(
+    DO(CRC_CCITT.init(&pContext));
+    DO(CRC_CCITT.bytes(
+                pContext, 
         BufferMap.pCmnHdr, 
         EAPI_GET_PTR_OFFSET(BufferMap.pEeePCRCBlock, BufferMap.pCmnHdr)
-      );
-
-  EeeP_Set16BitValue_BE(
-        BufferMap.pEeePCRCBlock->CrC16, 
-        u16CRC
-      );
+        ));
+    DO(CRC_CCITT.fini(&pContext, BufferMap.pEeePCRCBlock->CrC16));
 
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -651,7 +658,7 @@ EeePCheckCRC(
 {
   EeePBufferMap_t BufferMap;
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
-  uint16_t u16CRC1, u16CRC2;
+  void *pContext;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePCheckCRC,
@@ -666,21 +673,16 @@ EeePCheckCRC(
       EAPI_STATUS_ERROR,
       "No CRC Block Present"
     );
-  u16CRC1=u16CRC_CCITT(
-        BufferMap.pCmnHdr, 
-        EAPI_GET_PTR_OFFSET(BufferMap.pEeePCRCBlock, BufferMap.pCmnHdr)
-      );
+  BufferMap.pCmnHdr->DontCareByte=0;
+  DO(CRC_CCITT.init(&pContext));
+  DO(CRC_CCITT.bytes(
+                pContext, 
+                BufferMap.pCmnHdr, 
+                EAPI_GET_PTR_OFFSET(BufferMap.pEeePCRCBlock, BufferMap.pCmnHdr)
+        ));
+  DO(CRC_CCITT.verify(&pContext, BufferMap.pEeePCRCBlock->CrC16));
 
-  u16CRC2=EeeP_Get16BitValue_BE(BufferMap.pEeePCRCBlock->CrC16);
-
-  EAPI_APP_RETURN_ERROR_IF(
-      EeePCheckCRC        ,
-      u16CRC1!=u16CRC2    ,
-      EAPI_STATUS_ERROR   ,
-      "CRC Invalid"
-    );
-
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -763,7 +765,7 @@ EeePAddBlock(
   memcpy(pvTmpBlock, pcvBlock, RequestBlockSize);
   if(pvIBlock!=NULL) *pvIBlock=pvTmpBlock;
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -815,7 +817,7 @@ EeePFindBlock(
       EAPI_STATUS_ERROR,
       "Block Not Found"
     );
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -871,7 +873,7 @@ EeePFindVendorBlock(
       EAPI_STATUS_ERROR,
       "Block Not Found"
     );
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -919,7 +921,7 @@ EeePFindSmbiosBlock(
       EAPI_STATUS_ERROR,
       "Block Not Found"
     );
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -957,7 +959,7 @@ EeePWriteBufferToFile(
           BHandel, 
           256<<(((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_SIZE_MASK)
       );
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1004,7 +1006,7 @@ EeePReadBufferFromFile(
       );
   }
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1039,7 +1041,7 @@ EeePSetI2CDeviceDesc(
   pDDesc->ExtIndx   =(uint16_t)((((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_EXT_INDEX)?EApiAPI2CExtIndex:EApiAPI2CStdIndex);
   pDDesc->DevSize   =256<<(((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_SIZE_MASK);
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -1059,7 +1061,7 @@ EeePWriteBufferToEEP(
           BHandel, 
           DDesc.DevSize
       );
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1113,7 +1115,7 @@ EeePReadBufferFromEEP(
           stEEPSize,
           stEEPSize
       );
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
     if(pBHandel!=NULL&&*pBHandel!=NULL)free(*pBHandel);
     *pBHandel=NULL;
@@ -1134,7 +1136,7 @@ ErrorExit:
       );\
     EApiStatusCode=x;\
     if(!EAPI_STATUS_TEST_OK(EApiStatusCode)) \
-      goto  ErrorExit\
+      goto  ErrorExit;\
   }while(0)
 
 /*
@@ -1227,6 +1229,7 @@ main(void)
 
 
 
+ErrorExit:
   exit(EApiStatusCode);
 
 }

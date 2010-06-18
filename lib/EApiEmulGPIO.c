@@ -350,8 +350,8 @@ EApiGPIOGetLevelEmul(
     EAPI_STATUS_UNSUPPORTED  , 
     "Unrecognised GPIO ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
@@ -425,8 +425,8 @@ EApiGPIOSetLevelEmul(
     EAPI_STATUS_UNSUPPORTED, 
     "Unrecognised GPIO ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
@@ -477,8 +477,8 @@ EApiGPIOGetDirectionEmul(
     EAPI_STATUS_UNSUPPORTED  , 
     "Unrecognised GPIO ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
@@ -555,8 +555,8 @@ EApiGPIOSetDirectionEmul(
     EAPI_STATUS_UNSUPPORTED, 
     "Unrecognised GPIO ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
@@ -584,8 +584,8 @@ EApiGPIOGetDirectionCapsEmul(
     EAPI_STATUS_UNSUPPORTED  , 
     "Unrecognised GPIO ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 

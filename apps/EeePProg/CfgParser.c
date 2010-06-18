@@ -97,7 +97,7 @@ PrintCfgFile(
     }
     pCfgBDesc++;
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -132,7 +132,7 @@ CleanBlock(
       pCurElement->stElementCount=0;
       pCurElement++;
     }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -158,7 +158,7 @@ CleanStruct(
     DO(CleanBlock(pCfgBDesc->pElementsDesc, pCfgBDesc->stElementCount));
     pCfgBDesc++;
   }
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 #define MAX_LINE_LEN 2048
@@ -347,6 +347,10 @@ ParseCfgFile(
   
 
 ErrorExit:
+EAPI_APP_ASSERT_EXIT 
+
   return EApiStatusCode;
 }
+
+
 

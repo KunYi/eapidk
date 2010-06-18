@@ -186,13 +186,25 @@ EeePReadBufferFromEEP(
     __IN  uint16_t       u16DeviceAddr 
     );
 
+EApiStatusCode_t
+EeePSetI2CDeviceDesc(
+    __OUT I2CDeviceDesc_t *pDDesc,
+    __IN  EeePHandel_t     BHandel,
+    __IN  uint16_t         WRecTimems ,
+    __IN  uint16_t         u16DeviceAddr
+    );
 
 EApiStatusCode_t
 EeePListBlocks(
     EeePHandel_t BHandel,
     unsigned int uiFlags
   );
-
+EApiStatusCode_t 
+GetDBlckIdString(
+    __OUT TCHAR *        pszString,
+    __IN  size_t         stArrayLen,
+    __IN  unsigned int   uiValue
+    );
 #ifdef __cplusplus
 }
 #endif

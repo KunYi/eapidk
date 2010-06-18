@@ -53,48 +53,50 @@
 #define I2C_EMUL_BYTE_DELAY_NS (1000000000/I2C_EMUL_FREQ*(8+1))
 typedef 
 EApiStatusCode_t 
-I2CDevEmulator(
-    __IN uint32_t Arg1, 
-    __IN void *pWBuffer, 
-    __IN uint32_t WriteBCnt, 
-    __OUT void *pRBuffer, 
+I2CDevEmulator_t(
+    __IN uint32_t Arg1      , 
+    __IN void    *pWBuffer  , 
+    __IN uint32_t WriteBCnt , 
+    __OUT void   *pRBuffer  , 
     __IN uint32_t ReadBCnt
     );
 
-I2CDevEmulator EmulateDIDEeprom;
-I2CDevEmulator EmulateUDSEeprom;
-I2CDevEmulator EmulateEPIEeprom;
-I2CDevEmulator EmulatePICMGEeprom;
+I2CDevEmulator_t EmulateDIDEeprom     ;
+I2CDevEmulator_t EmulateUDSEeprom     ;
+I2CDevEmulator_t EmulateEPIEeprom     ;
+I2CDevEmulator_t EmulateEeePExpEeprom ;
+I2CDevEmulator_t EmulateCOM0MEeprom   ;
+I2CDevEmulator_t EmulateCOM0CBEeprom  ;
 
 typedef struct CmdDesc_s{
-  const unsigned long Cmd           ;/* Cmd */
-  const unsigned long CmdBlockLen   ;/* Cmd Buffer Length */
-  void     *const pBuffer      ;/* Cmd Content */ 
+  const unsigned long Cmd           ; /* Cmd */
+  const unsigned long CmdBlockLen   ; /* Cmd Buffer Length */
+  void     *const     pBuffer       ; /* Cmd Content */ 
 }CmdDesc_t;
 typedef struct CmdDeviceCfgData_s{
-  const unsigned long ExtendedCmd   ;/* Ext/Std Index */
-  unsigned long CurrentCmd    ;/* Ext/Std Index */
-  unsigned long CurrentOffset ;/* Ext/Std Index */
-  const char *const cszDeviceName;
-  CmdDesc_t *const Cmds        ;/* Commands Buffer pointer */ 
+  const unsigned long ExtendedCmd   ; /* Ext/Std Index */
+  unsigned long       CurrentCmd    ; /* Ext/Std Index */
+  unsigned long       CurrentOffset ; /* Ext/Std Index */
+  const char *const   cszDeviceName ;
+  CmdDesc_t *const    Cmds          ; /* Commands Buffer pointer */ 
 }CmdDeviceCfgData_t;
 
 typedef struct EepromCfgData_s{
-  const unsigned long ByteLen       ;/* EEPROM Length */
-  const unsigned long ExtendedCmd   ;/* Ext/Std Index */
-  const unsigned long PageLength    ;/* Write Page Alignment size */
+  const unsigned long ByteLen       ; /* EEPROM Length */
+  const unsigned long ExtendedCmd   ; /* Ext/Std Index */
+  const unsigned long PageLength    ; /* Write Page Alignment size */
 #define STD_INDEX 1                  
 #define EXT_INDEX 2                  
-  unsigned long CurIndx       ;/* Current Index Value */
-  uint8_t  *const pu8DBuffer   ;/* Eeprom pBuffer Pointer */ 
-  const char *const cszFilename;
+  unsigned long       CurIndx       ; /* Current Index Value */
+  uint8_t  *const     pu8DBuffer    ; /* Eeprom pBuffer Pointer */ 
+  const char *const   cszFilename   ;
   FILE     *FStream;
 }EepromCfgData_t;
 
 typedef struct BusDevicesTbl_s{
-  const unsigned long EncAddr         ;/* Device Address */
-  I2CDevEmulator *const Emulator ;/* Emulator */
-  const unsigned long Arg1            ;/* Argument to pass to Emulator */
+  const unsigned long     EncAddr   ; /* Device Address */
+  I2CDevEmulator_t *const Emulator  ; /* Emulator */
+  const unsigned long     Arg1      ; /* Argument to pass to Emulator */
 }BusDevicesTbl_t;
 #if (STRICT_VALIDATION>1)
 char * StdExt[]={
@@ -106,12 +108,12 @@ char * StdExt[]={
 
 EApiStatusCode_t 
 EmulateEepromFS(
-    __IN unsigned long Arg1, 
-    __IN EepromCfgData_t *CfgData, 
-    __IN uint8_t *pWBuffer, 
-    __IN unsigned long WriteBCnt, 
-    __OUT uint8_t *pRBuffer, 
-    __IN unsigned long ReadBCnt
+    __IN unsigned long    Arg1      , 
+    __IN EepromCfgData_t *CfgData   , 
+    __IN uint8_t         *pWBuffer  , 
+    __IN unsigned long    WriteBCnt , 
+    __OUT uint8_t        *pRBuffer  , 
+    __IN unsigned long    ReadBCnt
     )
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
@@ -228,20 +230,20 @@ EmulateEepromFS(
     CfgData->CurIndx+=ReadBCnt;
   }
   EAPI_LIB_RETURN_SUCCESS(EmulateEepromFS, "");
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
 
 EApiStatusCode_t 
 EmulateCmdDevice(
-    __IN unsigned long  Arg1, 
-    __IN CmdDeviceCfgData_t *CfgData, 
-    __IN uint8_t *pWBuffer, 
-    __IN unsigned long WriteBCnt, 
-    __OUT uint8_t *pRBuffer, 
-    __IN unsigned long ReadBCnt
+    __IN unsigned long        Arg1      , 
+    __IN CmdDeviceCfgData_t  *CfgData   , 
+    __IN uint8_t             *pWBuffer  , 
+    __IN unsigned long        WriteBCnt , 
+    __OUT uint8_t            *pRBuffer  , 
+    __IN unsigned long        ReadBCnt
     )
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
@@ -326,8 +328,8 @@ EmulateCmdDevice(
     }
   }
   EAPI_LIB_RETURN_SUCCESS(EmulateEepromFS, "");
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 #define bin_data DIDEEPROM
@@ -344,10 +346,10 @@ static EepromCfgData_t DIDEEPromData={
 };
 EApiStatusCode_t 
 EmulateDIDEeprom(
-    __IN uint32_t Arg1, 
-    __IN void *pWBuffer, 
-    __IN uint32_t WriteBCnt, 
-    __OUT void *pRBuffer, 
+    __IN uint32_t Arg1      , 
+    __IN void    *pWBuffer  , 
+    __IN uint32_t WriteBCnt , 
+    __OUT void   *pRBuffer  , 
     __IN uint32_t ReadBCnt
     )
 {
@@ -374,10 +376,10 @@ static EepromCfgData_t UDSEEPromData={
 };
 EApiStatusCode_t 
 EmulateUDSEeprom(
-    __IN uint32_t Arg1, 
-    __IN void *pWBuffer, 
-    __IN uint32_t WriteBCnt, 
-    __OUT void *pRBuffer, 
+    __IN uint32_t Arg1      , 
+    __IN void    *pWBuffer  , 
+    __IN uint32_t WriteBCnt , 
+    __OUT void   *pRBuffer  , 
     __IN uint32_t ReadBCnt
     )
 {
@@ -405,10 +407,10 @@ static EepromCfgData_t EPIEEPromData={
 
 EApiStatusCode_t 
 EmulateEPIEeprom(
-    __IN uint32_t Arg1, 
-    __IN void *pWBuffer, 
-    __IN uint32_t WriteBCnt, 
-    __OUT void *pRBuffer, 
+    __IN uint32_t Arg1      , 
+    __IN void    *pWBuffer  , 
+    __IN uint32_t WriteBCnt , 
+    __OUT void   *pRBuffer  , 
     __IN uint32_t ReadBCnt
     )
 {
@@ -501,10 +503,10 @@ CloseI2CEepromFiles(void)
 
 EApiStatusCode_t 
 EmulateEeePExpEeprom(
-    __IN uint32_t Arg1, 
-    __IN void *pWBuffer, 
-    __IN uint32_t WriteBCnt, 
-    __OUT void *pRBuffer, 
+    __IN uint32_t Arg1      , 
+    __IN void    *pWBuffer  , 
+    __IN uint32_t WriteBCnt , 
+    __OUT void   *pRBuffer  , 
     __IN uint32_t ReadBCnt
     )
 {
@@ -521,10 +523,10 @@ EmulateEeePExpEeprom(
 
 EApiStatusCode_t 
 EmulateCOM0CBEeprom(
-    __IN uint32_t Arg1, 
-    __IN void *pWBuffer, 
-    __IN uint32_t WriteBCnt, 
-    __OUT void *pRBuffer, 
+    __IN uint32_t Arg1      , 
+    __IN void    *pWBuffer  , 
+    __IN uint32_t WriteBCnt , 
+    __OUT void   *pRBuffer  , 
     __IN uint32_t ReadBCnt
     )
 {
@@ -540,10 +542,10 @@ EmulateCOM0CBEeprom(
 
 EApiStatusCode_t 
 EmulateCOM0MEeprom(
-    __IN uint32_t Arg1, 
-    __IN void *pWBuffer, 
-    __IN uint32_t WriteBCnt, 
-    __OUT void *pRBuffer, 
+    __IN uint32_t Arg1      , 
+    __IN void    *pWBuffer  , 
+    __IN uint32_t WriteBCnt , 
+    __OUT void   *pRBuffer  , 
     __IN uint32_t ReadBCnt
     )
 {
@@ -663,8 +665,8 @@ EApiI2CGetBusCapEmul(
     EAPI_STATUS_UNSUPPORTED  , 
     "Unrecognised I2C ID"
     );
-ErrorExit:
-ExitSuccess:
+EAPI_LIB_ASSERT_EXIT
+
   return EApiStatusCode;
 }
 
@@ -757,8 +759,8 @@ EApiI2CWriteReadEmul(
       EAPI_STATUS_UNSUPPORTED  , 
       "Unrecognised I2C ID"
       );
-ErrorExit:
-/* ExitSuccess: */
+EAPI_LIB_ASSERT_EXIT
+/*  */
   return EApiStatusCode;
 }
 

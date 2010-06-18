@@ -106,7 +106,7 @@ EApiAHWriteStorage(
       EApiStatusCode=EApiStorageAreaWrite(Id, ByteOffset, pBuffer, ByteCnt);
     }
 ErrorExit:
-/* ExitSuccess: */
+EAPI_APP_ASSERT_EXIT
     if(pLclBuffer!=NULL)free(pLclBuffer);
 
     return EApiStatusCode;

@@ -139,8 +139,8 @@ SMBIOS_CE_Help(
 EApiStatusCode_t
 SMBIOS_CE_Element(
     struct  CfgElementDesc_s *pElementDesc, 
-    void        *pElement,
-    char          *pszValue
+    void   *pElement,
+    char   *pszValue
   )
 { 
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
@@ -240,15 +240,15 @@ COM0PCIe_Help(
 { 
   unsigned int i;
   pElementDesc=pElementDesc;
-  fprintf(stream, "%s %s\n", Indent, "COM0 PCIe Port Description");
-  fprintf(stream, "%s %s\n", Indent, "  Format:");
-  fprintf(stream, "%s %s\n", Indent, "    Starting Lane, Link Width, PCIe Generation");
-  fprintf(stream, "%s %s\n", Indent, "  Examples:");
-  fprintf(stream, "%s %s\n", Indent, "     0,   x1, Gen1");
-  fprintf(stream, "%s %s\n", Indent, "    16,  x16, Gen2");
-  fprintf(stream, "%s %s\n", Indent, "  Starting Lanes:");
-  fprintf(stream, "%s %s\n", Indent, "    0 - 31      ");
-  fprintf(stream, "%s %s\n", Indent, "  Link Widths Tokens:"  );
+  fprintf(stream, "%s %s\n", Indent, "COM0 PCIe Port Description"                     );
+  fprintf(stream, "%s %s\n", Indent, "  Format:"                                      );
+  fprintf(stream, "%s %s\n", Indent, "    Starting Lane, Link Width, PCIe Generation" );
+  fprintf(stream, "%s %s\n", Indent, "  Examples:"                                    );
+  fprintf(stream, "%s %s\n", Indent, "     0,   x1, Gen1"                             );
+  fprintf(stream, "%s %s\n", Indent, "    16,  x16, Gen2"                             );
+  fprintf(stream, "%s %s\n", Indent, "  Starting Lanes:"                              );
+  fprintf(stream, "%s %s\n", Indent, "    0 - 31      "                               );
+  fprintf(stream, "%s %s\n", Indent, "  Link Widths Tokens:"                          );
   for(i=0;i<ARRAY_SIZE(PCIeLaneWidths);i++){
     fprintf(stream, "%s     %s\n", Indent, PCIeLaneWidths[i].pszTokenList);
   }
@@ -1138,7 +1138,7 @@ HandleEeePExpI2CBlock(
 
   DO(EeePAddBlock(BHandel, &Header, NULL, pExtI2C_cgf->aulInsideCrc[0]));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1165,7 +1165,7 @@ HandleCOM0R20SerialCfgBlock(
 
   DO(EeePAddBlock(BHandel, &Header, NULL, pCOM0Serial_cgf->aulInsideCrc[0]));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1218,7 +1218,7 @@ HandleCOM0R20ExpCardCfgBlock(
 
   DO(EeePAddBlock(BHandel, pHeader, NULL, pCOM0ExpCard_cgf->aulInsideCrc[0]));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1303,7 +1303,7 @@ HandleSmbiosChassisBlock(
   free(pHeader);
   pHeader=NULL;
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1363,7 +1363,7 @@ HandleSmbiosSystemBlock(
   free(pHeader);
   pHeader=NULL;
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1451,7 +1451,7 @@ HandleSmbiosModuleBlock(
   free(pHeader);
   pHeader=NULL;
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1497,7 +1497,7 @@ HandleVendorBlock(
   free(pHeader);
   pHeader=NULL;
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1538,7 +1538,7 @@ HandleLFPDescBlock(
   free(pHeader);
   pHeader=NULL;
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1578,7 +1578,7 @@ HandleCustomBlock(
   free(pHeader);
   pHeader=NULL;
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 
@@ -1730,7 +1730,7 @@ EeeP_CreateEEPROMImage(
    */
   DO(CleanStruct(pCfgBlockDesc, stCfgBlockCnt));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
 EApiStatusCode_t
@@ -1826,8 +1826,8 @@ EeeP_CreateEeePExtEEPCfg(
     );                \
   EApiStatusCode=x;   \
   if(!EAPI_STATUS_TEST_OK(EApiStatusCode)) \
-    goto ErrorExit \
-  }while(0);
+    goto ErrorExit; \
+  }while(0)
 
 /*
  * Create Block Content
@@ -1864,7 +1864,7 @@ main(void)
   DO_MAIN(EeeP_CreateCOM0R20_MEEPCfg(stdout));
   DO_MAIN(EeeP_CreateEeePExtEEPCfg(stdout));
 
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   exit(EApiStatusCode);
 }
 

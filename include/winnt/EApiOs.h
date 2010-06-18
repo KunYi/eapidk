@@ -99,7 +99,7 @@ void EApiSleepus(unsigned long ms);
 /* unreferenced formal parameter */
 #  if ( _MSC_VER >= MSVC_1_5 )
 #    pragma warning(disable:4127) /* conditional expression is constant */
-#endif /* if ( _MSC_VER >= MSVC_1_5 ) */
+#  endif /* if ( _MSC_VER >= MSVC_1_5 ) */
 #endif /* _MSC_VER */
 
 #endif /* _EAPIOS_H_ */
