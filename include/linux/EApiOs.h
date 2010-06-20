@@ -140,6 +140,8 @@ void EApiSleepns(unsigned long ns);
 #define EAPI_strdup         strdup
 #define EAPI_strncpyA       strncpy
 
+#define _strdup strdup
+
 #endif /* _EAPIOS_H_ */
 
 

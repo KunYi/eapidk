@@ -234,23 +234,24 @@ function Usage {
 #########################################################################
 # Argument Processing
 #########################################################################
+local ARG ;
 for ARG in "$@"; do
+  ARG=`echo $ARG | tr [:lower:] [:upper:]`
 	if [ "$ARG" = "/H" ]; then Usage; fi
-	if [ "$ARG" = "/h" ]; then Usage; fi
 	if [ "$ARG" = "/?" ]; then Usage; fi
 	if [ "$ARG" = "-H" ]; then Usage; fi
-	if [ "$ARG" = "-h" ]; then Usage; fi
 	if [ "$ARG" = "-?" ]; then Usage; fi
 done
 
 if [ "$1" != "" ]; then 
-  if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APPS" ]; then BUILD_APPS $2; NormalExit $?; fi
-  if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APP1" ]; then BUILD_APP1 $2; NormalExit $?; fi
-  if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_APP2" ]; then BUILD_APP2 $2; NormalExit $?; fi
-  if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_LIB" ]; then BUILD_LIB $2; NormalExit $?; fi
-  if [ `echo $1 | tr [:lower:] [:upper:]` = "PACK"      ]; then PACK $2;      NormalExit $?; fi
-  if [ `echo $1 | tr [:lower:] [:upper:]` = "BUILD_INC" ]; then BUILD_INC $2; NormalExit $?; fi
-  if [ `echo $1 | tr [:lower:] [:upper:]` = "INSTALL"   ]; then INSTALL $2; NormalExit $?; fi
+  local ARG=`echo $1 | tr [:lower:] [:upper:]`
+  if [ $ARG = "BUILD_APPS" ]; then BUILD_APPS $2; NormalExit $?; fi
+  if [ $ARG = "BUILD_APP1" ]; then BUILD_APP1 $2; NormalExit $?; fi
+  if [ $ARG = "BUILD_APP2" ]; then BUILD_APP2 $2; NormalExit $?; fi
+  if [ $ARG = "BUILD_LIB"  ]; then BUILD_LIB $2; NormalExit $?; fi
+  if [ $ARG = "PACK"       ]; then PACK $2;      NormalExit $?; fi
+  if [ $ARG = "BUILD_INC"  ]; then BUILD_INC $2; NormalExit $?; fi
+  if [ $ARG = "INSTALL"    ]; then INSTALL $2; NormalExit $?; fi
   Error_Exit 2 "ERROR: Unsupported Argument \"$1\"" 
 fi
 
