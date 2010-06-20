@@ -143,8 +143,8 @@ typedef struct COM0R20_CB_s{
                             *      | 7     | Reserved                      |
                             *      +=======+===============================+
                             */
-#       define COM0R20_USB3_PCNT_MASK        EEEP_UINT8_C(0x07)
-#       define COM0R20_USB3_PCNT_OFFSET      EEEP_UINT8_C(0x04)
+#       define COM0R20_USBSS_PCNT_MASK       EEEP_UINT8_C(0x07)
+#       define COM0R20_USBSS_PCNT_OFFSET     EEEP_UINT8_C(0x04)
 #       define COM0R20_USB_PCNT_MASK         EEEP_UINT8_C(0x0F)
 #       define COM0R20_USB_PCNT_OFFSET       EEEP_UINT8_C(0x00)
 

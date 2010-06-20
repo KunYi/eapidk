@@ -41,10 +41,13 @@
  * in the OS Specific Header File EApiOs.h
  */
 #ifndef ELEMENT_SIZE
-#  define ELEMENT_SIZE(x) (sizeof(x[0]))
+#  define ELEMENT_SIZE(x) (sizeof((x)[0]))
 #endif
 #ifndef ARRAY_SIZE
 #  define ARRAY_SIZE(x) (sizeof(x)/ELEMENT_SIZE(x))
+#endif
+#ifndef STRLEN
+#  define STRLEN(x) (ARRAY_SIZE(x)- ARRAY_SIZE(""))
 #endif
 
 #define EAPI_CREATE_PTR(Base, ByteOffset, PtrType) \

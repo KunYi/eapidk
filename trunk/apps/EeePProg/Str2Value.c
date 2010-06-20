@@ -817,7 +817,7 @@ AssignValue_VA(
       {
         EAPI_APP_RETURN_ERROR(
             ParseAsciiEqu_VA,
-            EAPI_STATUS_ERROR,
+            EAPI_STATUS_MORE_DATA,
             "Value Too Large for unsigned long"
           );
       }
@@ -829,7 +829,7 @@ AssignValue_VA(
       {
         EAPI_APP_RETURN_ERROR(
             ParseAsciiEqu_VA,
-            EAPI_STATUS_ERROR,
+            EAPI_STATUS_MORE_DATA,
             "Value Too Large for unsigned int"
           );
       }
@@ -841,7 +841,7 @@ AssignValue_VA(
       {
         EAPI_APP_RETURN_ERROR(
             ParseAsciiEqu_VA,
-            EAPI_STATUS_ERROR,
+            EAPI_STATUS_MORE_DATA,
             "Value Too Large for unsigned short"
           );
       }
@@ -853,7 +853,7 @@ AssignValue_VA(
       {
         EAPI_APP_RETURN_ERROR(
             ParseAsciiEqu_VA,
-            EAPI_STATUS_ERROR,
+            EAPI_STATUS_MORE_DATA,
             "Value Too Large for unsigned char"
           );
       }
@@ -862,7 +862,7 @@ AssignValue_VA(
       EAPI_APP_RETURN_ERROR(
           ParseAsciiEqu_VA,
           EAPI_STATUS_ERROR,
-          "Invalid Variable Lenght"
+          "Unsupported Variable Lenght"
         );
   }
 
@@ -871,8 +871,53 @@ EAPI_APP_ASSERT_EXIT
 }
 
 EApiStatusCode_t
+AssignValue_VAB(
+    __IN  const signed long long csllValue,
+    __OUT void             *pValue,
+    __IN  signed int        siBitOffset ,
+    __IN  signed int        siBitLen    ,
+    __IN  signed int        siElementSize
+  )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  unsigned long *pulValue=EAPI_CREATE_PTR(pValue, siBitOffset/8, unsigned long*);
+  siBitOffset%=8;
+
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      AssignValue_VAB, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      pValue
+    );
+  EAPI_APP_ASSERT_PARAMATER_ZERO(
+      AssignValue_VAB, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      siElementSize
+    );
+  if(siBitOffset||siBitLen!=siElementSize*8){
+    unsigned long ulMask=(((unsigned long )1<<siBitLen)-1);
+    EAPI_APP_RETURN_ERROR_IF_S(
+        AssignValue_VAB, 
+        sizeof(unsigned long)*8<siBitOffset+siBitLen,
+        EAPI_STATUS_INVALID_PARAMETER
+      );
+    EAPI_APP_RETURN_ERROR_IF_S(
+        AssignValue_VAB, 
+        (unsigned long long)csllValue>ulMask,
+        EAPI_STATUS_MORE_DATA
+      );
+    *pulValue&=~(ulMask<<siBitOffset);
+    *pulValue|=((csllValue&ulMask)<<siBitOffset) ;
+  }else{
+    DO(AssignValue_VA(csllValue, pulValue, siBitLen/8));
+  }
+
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t
 RecoverValue_VA(
-    __OUT const signed long long *pcsllValue,
+    __OUT signed long long *psllValue,
     __IN  void             *pvalue,
     __IN  signed int        siElementSize
   )
@@ -882,7 +927,7 @@ RecoverValue_VA(
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ParseAsciiEqu_VA, 
       EAPI_STATUS_INVALID_PARAMETER, 
-      pcsllValue
+      psllValue
     );
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ParseAsciiEqu_VA, 
@@ -895,21 +940,65 @@ RecoverValue_VA(
       siElementSize
     );
   if(siElementSize==sizeof(unsigned long long)){
-      *(unsigned long long*)pcsllValue=*(unsigned long long*)pvalue;
+      *(unsigned long long*)psllValue=*(unsigned long long*)pvalue;
   }else if(siElementSize==sizeof(unsigned long)){
-      *(unsigned long long*)pcsllValue=*(unsigned long *)pvalue;
+      *(unsigned long long*)psllValue=*(unsigned long *)pvalue;
   }else if(siElementSize==sizeof(unsigned int)){
-      *(unsigned long long*)pcsllValue=*(unsigned int*)pvalue;
+      *(unsigned long long*)psllValue=*(unsigned int*)pvalue;
    }else if(siElementSize==sizeof(unsigned short)){
-      *(unsigned long long*)pcsllValue=*(unsigned short*)pvalue;
+      *(unsigned long long*)psllValue=*(unsigned short*)pvalue;
   }else if(siElementSize==sizeof(unsigned char)){
-      *(unsigned long long*)pcsllValue=*(unsigned char*)pvalue;
+      *(unsigned long long*)psllValue=*(unsigned char*)pvalue;
   }else{
       EAPI_APP_RETURN_ERROR(
           ParseAsciiEqu_VA,
           EAPI_STATUS_ERROR,
-          "Invalid Variable Lenght"
+          "Unsupported Variable Lenght"
         );
+  }
+
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
+}
+
+EApiStatusCode_t
+RecoverValue_VAB(
+    __OUT signed long long *psllValue,
+    __IN  void             *pValue,
+    __IN  signed int        siBitOffset ,
+    __IN  signed int        siBitLen    ,
+    __IN  signed int        siElementSize
+  )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  unsigned long *pulValue=EAPI_CREATE_PTR(pValue, siBitOffset/8, unsigned long*);
+  siBitOffset%=8;
+
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      RecoverValue_VAB, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      psllValue
+    );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      RecoverValue_VAB, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      pValue
+    );
+  EAPI_APP_ASSERT_PARAMATER_ZERO(
+      RecoverValue_VAB, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      siElementSize
+    );
+  if(siBitOffset||siBitLen%8){
+    unsigned long ulMask=(((unsigned long)1<<siBitLen)-1);
+    EAPI_APP_RETURN_ERROR_IF_S(
+        RecoverValue_VAB, 
+        sizeof(unsigned long)*8<siBitOffset+siBitLen,
+        EAPI_STATUS_INVALID_PARAMETER
+      );
+    *(unsigned long long*)psllValue=(*pulValue>>siBitOffset)&ulMask;
+  }else{
+    DO(RecoverValue_VA(psllValue, pulValue, siBitLen/8));
   }
 
 EAPI_APP_ASSERT_EXIT

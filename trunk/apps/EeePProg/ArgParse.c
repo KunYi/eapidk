@@ -180,8 +180,8 @@ PrintUsage(
       fprintf( OutStream, "|                                  Arg%lu ", (unsigned long)stArgCount);
       PrintStringBlock(
           OutStream         ,
-          pArgDesc->cszHelp , 
-          37                , 
+          pArgDesc->cszHelp ,
+          37                ,
           "%-*.*s |\n"      ,
           "|                                       %-*.*s |\n"
         );

@@ -72,12 +72,28 @@ AssignValue_VA(
   );
 
 EApiStatusCode_t
-RecoverValue_VA(
-    __OUT const signed long long *pcsllValue,
-    __IN  void             *pvalue,
+AssignValue_VAB(
+    __IN  const signed long long csllValue,
+    __OUT void             *pvalue,
+    __IN  signed int        siBitOffset ,
+    __IN  signed int        siBitLen    ,
     __IN  signed int        siElementSize
   );
 
+EApiStatusCode_t
+RecoverValue_VA(
+    __OUT signed long long *psllValue,
+    __IN  void             *pvalue,
+    __IN  signed int        siElementSize
+  );
+EApiStatusCode_t
+RecoverValue_VAB(
+    __OUT signed long long *psllValue,
+    __IN  void             *pValue,
+    __IN  signed int        siBitOffset ,
+    __IN  signed int        siBitLen    ,
+    __IN  signed int        siElementSize
+  );
 
 
 #ifdef __cplusplus
