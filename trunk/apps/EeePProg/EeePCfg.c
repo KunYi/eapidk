@@ -518,10 +518,10 @@ typedef struct EeePLFP_s{
   uint8_t       au8FillChar     [1];
 }EeePLFP_t;
 
-EeePLFP_t EeeP_LFP0_Cfg={0};
-EeePLFP_t EeeP_LFP1_Cfg={0};
-EeePLFP_t EeeP_LFP2_Cfg={0};
-EeePLFP_t EeeP_LFP3_Cfg={0};
+EeePLFP_t EeeP_LFP0_Cfg={{0},{0},{0},{0},{0}};
+EeePLFP_t EeeP_LFP1_Cfg={{0},{0},{0},{0},{0}};
+EeePLFP_t EeeP_LFP2_Cfg={{0},{0},{0},{0},{0}};
+EeePLFP_t EeeP_LFP3_Cfg={{0},{0},{0},{0},{0}};
 
 typedef struct EeePVendorBlock_s{
   char *        aszFilename   [1];
@@ -532,13 +532,13 @@ typedef struct EeePVendorBlock_s{
   uint8_t       au8VSBlockId  [1];
 }EeePVendorBlock_t;
 
-EeePVendorBlock_t EeeP_VendorBlock0_Cfg={0};
-EeePVendorBlock_t EeeP_VendorBlock1_Cfg={0};
-EeePVendorBlock_t EeeP_VendorBlock2_Cfg={0};
-EeePVendorBlock_t EeeP_VendorBlock3_Cfg={0};
-EeePVendorBlock_t EeeP_VendorBlock4_Cfg={0};
-EeePVendorBlock_t EeeP_VendorBlock5_Cfg={0};
-EeePVendorBlock_t EeeP_VendorBlock6_Cfg={0};
+EeePVendorBlock_t EeeP_VendorBlock0_Cfg={{0},{0},{0},{0},{0},{0}};
+EeePVendorBlock_t EeeP_VendorBlock1_Cfg={{0},{0},{0},{0},{0},{0}};
+EeePVendorBlock_t EeeP_VendorBlock2_Cfg={{0},{0},{0},{0},{0},{0}};
+EeePVendorBlock_t EeeP_VendorBlock3_Cfg={{0},{0},{0},{0},{0},{0}};
+EeePVendorBlock_t EeeP_VendorBlock4_Cfg={{0},{0},{0},{0},{0},{0}};
+EeePVendorBlock_t EeeP_VendorBlock5_Cfg={{0},{0},{0},{0},{0},{0}};
+EeePVendorBlock_t EeeP_VendorBlock6_Cfg={{0},{0},{0},{0},{0},{0}};
 
 typedef struct EeePCustomBlock_s{
   uint8_t       au8BlockId    [1];
@@ -548,13 +548,13 @@ typedef struct EeePCustomBlock_s{
   uint8_t       au8FillChar   [1];
 }EeePCustomBlock_t;
 
-EeePCustomBlock_t EeeP_CustomBlock0_Cfg={0};
-EeePCustomBlock_t EeeP_CustomBlock1_Cfg={0};
-EeePCustomBlock_t EeeP_CustomBlock2_Cfg={0};
-EeePCustomBlock_t EeeP_CustomBlock3_Cfg={0};
-EeePCustomBlock_t EeeP_CustomBlock4_Cfg={0};
-EeePCustomBlock_t EeeP_CustomBlock5_Cfg={0};
-EeePCustomBlock_t EeeP_CustomBlock6_Cfg={0};
+EeePCustomBlock_t EeeP_CustomBlock0_Cfg={{0},{0},{0},{0},{0}};
+EeePCustomBlock_t EeeP_CustomBlock1_Cfg={{0},{0},{0},{0},{0}};
+EeePCustomBlock_t EeeP_CustomBlock2_Cfg={{0},{0},{0},{0},{0}};
+EeePCustomBlock_t EeeP_CustomBlock3_Cfg={{0},{0},{0},{0},{0}};
+EeePCustomBlock_t EeeP_CustomBlock4_Cfg={{0},{0},{0},{0},{0}};
+EeePCustomBlock_t EeeP_CustomBlock5_Cfg={{0},{0},{0},{0},{0}};
+EeePCustomBlock_t EeeP_CustomBlock6_Cfg={{0},{0},{0},{0},{0}};
 
 typedef struct EeePExtI2CDevice_s{
   uint16_t      au16Addr     [1];
@@ -565,8 +565,8 @@ typedef struct EeePExtI2CDevice_s{
   uint8_t       au8FillChar  [1];
 }EeePExtI2CDevice_t;
 
-EeePExtI2CDevice_t EeePExtI2CDevice0={0};
-EeePExtI2CDevice_t EeePExtI2CDevice1={0};
+EeePExtI2CDevice_t EeePExtI2CDevice0={{0},{0},{0},{0},{0},{0}};
+EeePExtI2CDevice_t EeePExtI2CDevice1={{0},{0},{0},{0},{0},{0}};
 
 typedef struct EeePI2CDevice_s{
   uint8_t       au8DeviceDesc [1];
@@ -575,7 +575,7 @@ typedef struct EeePI2CDevice_s{
   uint8_t       au8FillChar   [1];
 }EeePI2CDevice_t;
 
-EeePI2CDevice_t EeePI2CDevice={0};
+EeePI2CDevice_t EeePI2CDevice={{0},{0},{0},{0}};
 
 typedef struct COM0R20_CB_HDR_s{
   uint8_t       au8DeviceDesc [1];
@@ -595,7 +595,7 @@ typedef struct COM0R20_CB_HDR_s{
   unsigned long aulPCIePorts  [32];
 }COM0R20_CB_HDR_t;
 
-COM0R20_CB_HDR_t COM0R20_CB_cgf={0};
+COM0R20_CB_HDR_t COM0R20_CB_cgf={{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0}};
 
 typedef struct COM0R20_M_HDR_s{
   uint8_t       au8DeviceDesc  [1];
@@ -607,7 +607,7 @@ typedef struct COM0R20_M_HDR_s{
   uint8_t       au8SpecRev     [1];
 }COM0R20_M_HDR_t;
 
-COM0R20_M_HDR_t COM0R20_M_cgf={0};
+COM0R20_M_HDR_t COM0R20_M_cgf={{0},{0},{0},{0},{0},{0},{0}};
 
 typedef struct COM0R20_ECard_s{
   uint8_t       au8ExpCardNum [1];
@@ -630,7 +630,7 @@ typedef struct COM0R20_SERIAL_s{
   uint8_t       au8FillChar               [1];
 }COM0R20_SERIAL_t;
 
-COM0R20_SERIAL_t COM0R20_SER_cgf={0};
+COM0R20_SERIAL_t COM0R20_SER_cgf={{0},{0},{0},{0},{0},{0}};
 
 typedef struct EeeP_Exp_Hdr_s{
   uint8_t       au8DeviceDesc  [1];
@@ -641,7 +641,7 @@ typedef struct EeeP_Exp_Hdr_s{
   unsigned long aulInsideCrc   [1];
 }EeeP_Exp_Hdr_t;
 
-EeeP_Exp_Hdr_t EeePExpHdr_cgf={0};
+EeeP_Exp_Hdr_t EeePExpHdr_cgf={{0},{0},{0},{0},{0},{0}};
 NumberRange_t ValidMinSize[]={
   {0x0, 0xFFFE*EEEP_SIZE_UNITS, RANGE_INCLUSIVE},
 };
@@ -1139,7 +1139,7 @@ HandleEeePExpEepHeaderBlock(
 
 EApiStatusCode_t
 DBlockAllocWrap(
-    void        **pvBuffer    ,
+    DBlockIdHdr_t**pvBuffer    ,
     uint8_t       u8BlockId   ,
     size_t        stBlockLength,
     size_t        stMinBlckLen,
@@ -1181,16 +1181,18 @@ HandleEeePExpI2CBlock(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePExtI2CDeviceDesc_t *pHeader=NULL;
+  DBlockIdHdr_t *pdHeader=NULL;
   EeePExtI2CDevice_t *pExtI2C_cgf=pDesc->pDataContainer;
   size_t stBlockLength=EeePAlignLength(sizeof(*pHeader));
 
   DO(DBlockAllocWrap(
-        &pHeader, 
+        &pdHeader, 
         EEEP_BLOCK_ID_EXP_EEPROM, 
         stBlockLength, 
         pExtI2C_cgf->aulMinSize[0], 
         pExtI2C_cgf->au8FillChar[0]
       ));
+  pHeader=(EeePExtI2CDeviceDesc_t*)pdHeader;
 
 
   EeeP_Set16BitValue_BE(pHeader->DeviceAddr  , pExtI2C_cgf->au16Addr[0]);
@@ -1215,17 +1217,19 @@ HandleCOM0R20SerialCfgBlock(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   SerPortCfgBlock_t*pHeader=NULL;
+  DBlockIdHdr_t *pdHeader=NULL;
   COM0R20_SERIAL_t *pCOM0Serial_cgf=pDesc->pDataContainer;
   size_t stBlockLength=EeePAlignLength(sizeof(*pHeader));
 
 
   DO(DBlockAllocWrap(
-        &pHeader, 
+        &pdHeader, 
         COM0R20_BLOCK_ID_SERIO_DESC, 
         stBlockLength, 
         pCOM0Serial_cgf->aulMinSize[0], 
         pCOM0Serial_cgf->au8FillChar[0]
       ));
+  pHeader=(SerPortCfgBlock_t*)pdHeader;
 
   EeeP_Set16BitValue_BE(pHeader->Ser0BaseAddr  , pCOM0Serial_cgf->au16SER0_IOADDRESS[0]);
   EeeP_Set16BitValue_BE(pHeader->Ser1BaseAddr  , pCOM0Serial_cgf->au16SER1_IOADDRESS[0]);
@@ -1248,6 +1252,7 @@ HandleCOM0R20ExpCardCfgBlock(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   ExpCardBlock_t   *pHeader=NULL;
+  DBlockIdHdr_t *pdHeader=NULL;
   COM0R20_ECard_t  *pCOM0ExpCard_cgf=pDesc->pDataContainer;
   size_t stElementCnt =pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount;
   size_t stBlockLength=EeePAlignLength(
@@ -1258,12 +1263,13 @@ HandleCOM0R20ExpCardCfgBlock(
   uint8_t *pSwitchDevFuncAddr;
   uint8_t *pu8SwitchDevFuncAddr;
   DO(DBlockAllocWrap(
-        &pHeader, 
+        &pdHeader, 
         COM0R20_BLOCK_ID_EXP_CARD_DESC, 
         stBlockLength, 
         pCOM0ExpCard_cgf->aulMinSize[0], 
         pCOM0ExpCard_cgf->au8FillChar[0]
       ));
+  pHeader=(ExpCardBlock_t*)pdHeader;
 
   pHeader->ExpressCardNumber=pCOM0ExpCard_cgf->au8ExpCardNum[0];
   pHeader->ComExpressPort   =pCOM0ExpCard_cgf->au8PortDesc[0];
@@ -1310,6 +1316,7 @@ HandleSmbiosChassisBlock(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePChassisInfo_t *pHeader;
+  DBlockIdHdr_t *pdHeader=NULL;
   unsigned int i;
   SmbiosChassis_t *pSmbiosChassis_cgf=pDesc->pDataContainer;
   size_t stHeaderLength=sizeof(*pHeader)- sizeof(pHeader->CElement[0]);
@@ -1329,12 +1336,13 @@ HandleSmbiosChassisBlock(
 
   stHeaderLength -=sizeof(DBlockIdHdr_t) ;
   DO(DBlockAllocWrap(
-        &pHeader, 
+        &pdHeader, 
         EEEP_BLOCK_ID_SMBIOS, 
         stBlockLength, 
         pSmbiosChassis_cgf->aulMinSize[0], 
         pSmbiosChassis_cgf->au8FillChar[0]
       ));
+  pHeader=(EeePChassisInfo_t*)pdHeader;
 
   pHeader->Type         =pSmbiosChassis_cgf->au8ChassisType[0]     ;
   EeeP_Set32BitValue_BE(pHeader->OEM.b  , (uint32_t)pSmbiosChassis_cgf->au32OEM[0]);
@@ -1384,6 +1392,7 @@ HandleSmbiosSystemBlock(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePSystemInfo_t *pHeader;
+  DBlockIdHdr_t *pdHeader=NULL;
   unsigned int i;
   SmbiosSystem_t *pSmbiosSystem_cgf=pDesc->pDataContainer;
   size_t stHeaderLength=sizeof(*pHeader);
@@ -1403,12 +1412,13 @@ HandleSmbiosSystemBlock(
   stHeaderLength -=sizeof(DBlockIdHdr_t) ;
 
   DO(DBlockAllocWrap(
-        &pHeader, 
+        &pdHeader, 
         EEEP_BLOCK_ID_SMBIOS,
         stBlockLength, 
         pSmbiosSystem_cgf->aulMinSize[0], 
         pSmbiosSystem_cgf->au8FillChar[0]
       ));
+  pHeader=(EeePSystemInfo_t*)pdHeader;
 
 
   pHeader->UUID=pSmbiosSystem_cgf->aUUID[0];
@@ -1445,6 +1455,7 @@ HandleSmbiosModuleBlock(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePModuleInfo_t *pHeader;
+  DBlockIdHdr_t *pdHeader=NULL;
   unsigned int i;
   SmbiosModule_t *pSmbiosModule_cgf=pDesc->pDataContainer;
   size_t stHeaderLength=sizeof(*pHeader)- sizeof(pHeader->Handles[0].b);
@@ -1469,12 +1480,13 @@ HandleSmbiosModuleBlock(
   stHeaderLength -=sizeof(DBlockIdHdr_t) ;
 
   DO(DBlockAllocWrap(
-        &pHeader, 
+        &pdHeader, 
         EEEP_BLOCK_ID_SMBIOS,
         stBlockLength, 
         pSmbiosModule_cgf->aulMinSize[0], 
         pSmbiosModule_cgf->au8FillChar[0]
       ));
+  pHeader=(EeePModuleInfo_t*)pdHeader;
 
   pHeader->FeatureFlag   =0   ;
   for(
@@ -1535,6 +1547,7 @@ HandleVendorBlock(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePVendBlockHdr_t *pHeader;
+  DBlockIdHdr_t *pdHeader=NULL;
   void *pvFileBuffer;
   size_t stFileSize;
   size_t stBlockLength;
@@ -1547,12 +1560,13 @@ HandleVendorBlock(
   stBlockLength=EeePAlignLength(stFileSize+sizeof(*pHeader));
 
   DO(DBlockAllocWrap(
-        &pHeader, 
+        &pdHeader, 
         EEEP_BLOCK_ID_VENDOR_SPECIFIC, 
         stBlockLength, 
         pVendorBlock->aulMinSize[0], 
         pVendorBlock->au8FillChar[0]
       ));
+  pHeader=(EeePVendBlockHdr_t*)pdHeader;
 
   EeeP_Set16BitValue_BE(pHeader->VendId, (uint16_t)pVendorBlock->au16VendorId[0]);
   pHeader->VendBlockId=pVendorBlock->au8VSBlockId[0];
@@ -1581,6 +1595,7 @@ HandleLFPDescBlock(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EeePLFPDataBlock_t *pHeader;
+  DBlockIdHdr_t *pdHeader=NULL;
   void *pvFileBuffer;
   size_t stFileSize;
   size_t stBlockLength;
@@ -1593,12 +1608,13 @@ HandleLFPDescBlock(
   stBlockLength=EeePAlignLength(stFileSize+sizeof(*pHeader) - sizeof(pHeader->RawData));
 
   DO(DBlockAllocWrap(
-        &pHeader, 
+        &pdHeader, 
         EEEP_BLOCK_ID_LFP, 
         stBlockLength, 
         pLfpBlock->aulMinSize[0], 
         pLfpBlock->au8FillChar[0]
       ));
+  pHeader=(EeePLFPDataBlock_t*)pdHeader;
 
   pHeader->Interface=pLfpBlock->au8Interface[0];
 
@@ -1621,7 +1637,7 @@ HandleCustomBlock(
   )
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
-  DBlockIdHdr_t *pHeader;
+  DBlockIdHdr_t *pHeader=NULL;
   void *pvFileBuffer;
   size_t stFileSize;
   size_t stBlockLength;

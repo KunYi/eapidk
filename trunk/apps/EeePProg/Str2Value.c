@@ -897,7 +897,7 @@ AssignValue_VAB(
     unsigned long ulMask=(((unsigned long )1<<siBitLen)-1);
     EAPI_APP_RETURN_ERROR_IF_S(
         AssignValue_VAB, 
-        sizeof(unsigned long)*8<siBitOffset+siBitLen,
+        sizeof(unsigned long)*8<(unsigned)(siBitOffset+siBitLen),
         EAPI_STATUS_INVALID_PARAMETER
       );
     EAPI_APP_RETURN_ERROR_IF_S(
@@ -993,7 +993,7 @@ RecoverValue_VAB(
     unsigned long ulMask=(((unsigned long)1<<siBitLen)-1);
     EAPI_APP_RETURN_ERROR_IF_S(
         RecoverValue_VAB, 
-        sizeof(unsigned long)*8<siBitOffset+siBitLen,
+        sizeof(unsigned long)*8<(unsigned)(siBitOffset+siBitLen),
         EAPI_STATUS_INVALID_PARAMETER
       );
     *(unsigned long long*)psllValue=(*pulValue>>siBitOffset)&ulMask;

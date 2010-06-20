@@ -56,9 +56,9 @@ BinFolder=../../bin/$(ARCH)/$(MACH)/rel
 DBinFolder=../../bin/$(ARCH)/$(MACH)/dbg
 BuildDir=./build/$(MACH)/rel
 DBuildDir=./build/$(MACH)/dbg
-PrgFldr=..
-CmnFldr=../../common
-EAPI_INC=../../../include/EApi.h
+PrgFldr=$(join $(shell pwd)/, ..)
+CmnFldr=$(join $(shell pwd)/, ../../common)
+EAPI_INC=$(join $(shell pwd)/, ../../../include/EApi.h)
 GET_VAR_FROM_CFILE=$(shell grep "$(2)" $(1) |sed -rn "s/^\#\s*define\s+$2\s+([0-9]+).*/\1/p")
 EAPI_VERSION=$(call GET_VAR_FROM_CFILE,$(EAPI_INC),EAPI_VER)
 EAPI_REVISION=$(call GET_VAR_FROM_CFILE,$(EAPI_INC),EAPI_REVISION)
@@ -95,7 +95,7 @@ objcopy --add-gnu-debuglink="$(@).debug" "$(@)"
 endef
 
 define C_BUILD_RULE
-$(CC) $(CFLAGS) $(1) -x c -c -Wa,-a,-ad -o  $(@) $< > $(basename $(@)).lst
+$(CC) $(CFLAGS) $(1) -x c -c -g -Wa,-a,-ad -o  $(@) $< > $(basename $(@)).lst
 $(CC) $(CFLAGS) $(1) -x c -S -o  $(basename $(@)).s $<
 endef
 
@@ -113,6 +113,7 @@ endef
 define REMOVE_BIN_FILES
 @rm -f $(1)
 @rm -f $(basename $(1)).map
+@rm -f $(basename $(1)).debug
 endef
 
 OBJECTS=$(ExeName).o \

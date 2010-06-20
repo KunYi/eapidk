@@ -52,7 +52,7 @@ extern "C" {
   do{ \
     EApiStatusCode=x;\
     if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){ \
-        siFormattedMessage_SC('E', __FILE__, "TB " ## __FUNCTION__, __LINE__, \
+        siFormattedMessage_SC('E', __FILE__, "TB " "__FUNCTION__", __LINE__, \
         EApiStatusCode, "%s\n", #x );\
       EAPI_APP_EXIT;\
     }\

@@ -74,8 +74,8 @@ StringBlock(
   *pstLastPos=0;
 /*   printf("D%04u %s\n", __LINE__, cszLastPos); */
 
-  if(*cszLastPos=='\n')
-    cszLastPos++;
+	if(*cszLastPos=='\n')
+		cszLastPos++;
   while(stMaxBlockLen --){
 /*   printf("%c", *cszLastPos); */
     switch(*cszLastPos++){
@@ -85,13 +85,13 @@ StringBlock(
         else
           stMaxBlockLen=0;
       case ' ':
-        *pstLastPos=cszLastPos - cszStr;
+        *pstLastPos=cszLastPos - cszStr - 1;
         break;
       case '\0':
-        *pstLastPos=cszLastPos - cszStr -1;
+        *pstLastPos=cszLastPos - cszStr - 1;
         return EAPI_STATUS_SUCCESS;
       case '\n':
-        *pstLastPos=cszLastPos - cszStr -1;
+        *pstLastPos=cszLastPos - cszStr - 1;
         return EAPI_STATUS_MORE_DATA;
       default:
         break;
@@ -155,14 +155,14 @@ PrintUsage(
     if(pCmdDesc->cShort)
       fprintf(OutStream, "| -%c ", pCmdDesc->cShort );
     else
-      fprintf(OutStream, "|    " );
+      fprintf(OutStream, "|  %c ", ' ' );
     /*
      *
      */
     if(pCmdDesc->cszLong!=NULL)
       fprintf(OutStream, " --%-25s ", pCmdDesc->cszLong );
     else
-      fprintf(OutStream, "                             ");
+      fprintf(OutStream, "   %-25s ", "");
     /*
      *
      */
@@ -177,7 +177,10 @@ PrintUsage(
     
     pArgDesc=pCmdDesc->pArgs;
     for(stArgCount=0; stArgCount< pCmdDesc->stArgs; stArgCount++){
-      fprintf( OutStream, "|                                  Arg%lu ", (unsigned long)stArgCount);
+      fprintf( OutStream, 
+							 "|                                  Arg%lu ", 
+							 (unsigned long)stArgCount
+						);
       PrintStringBlock(
           OutStream         ,
           pArgDesc->cszHelp ,

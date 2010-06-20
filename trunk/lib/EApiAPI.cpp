@@ -154,7 +154,6 @@ EApiI2CWriteReadRaw(
   if(ErrorCode2!=EAPI_STATUS_SUCCESS)
     EApiStatusCode=ErrorCode2;
 EAPI_LIB_ASSERT_EXIT
-// 
   return EApiStatusCode;
 
 }
