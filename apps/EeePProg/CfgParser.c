@@ -121,12 +121,12 @@ CleanBlock(
     while(stElementCount--){
       while(pCurElement->stElementCount--){
         DO(pCurElement->pHandlers->Clean(
+              pCurElement,
               EAPI_CREATE_PTR(
                   pCurElement->Elements.pv, 
                   pCurElement->cstElementSize*(pCurElement->stElementCount), 
                   void*
-                ),
-              pCurElement->cstElementSize
+                )
             ));
       }
       pCurElement->stElementCount=0;
@@ -212,7 +212,7 @@ ParseCfgFile(
     /*
      * Remove Comments And New Lines etc..
      */
-    szName=strpbrk(LineBuffer, "#\n\r");
+    szName=strpbrk(LineBuffer, ";#\n\r");
     if(szName!=NULL)
       *szName='\0';
 #if TEST_EEPCFG

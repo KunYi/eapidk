@@ -48,8 +48,6 @@ StringLookup_t BlockIdLookup[]={
   { "EEEP_BLOCK_ID_LFP"             , EEEP_BLOCK_ID_LFP             },
   { "EEEP_BLOCK_ID_CRC_CHK"         , EEEP_BLOCK_ID_CRC_CHK         },
   { "EEEP_BLOCK_ID_IGNORE"          , EEEP_BLOCK_ID_IGNORE          },
-  { "EEEP_OFFSET_VALUE_EOL"         , EEEP_OFFSET_VALUE_EOL         },
-  { "EEEP_OFFSET_VALUE_EOL_ALT"     , EEEP_OFFSET_VALUE_EOL_ALT     },
 
   { "COM0R20_BLOCK_ID_EXP_CARD_DESC", COM0R20_BLOCK_ID_EXP_CARD_DESC},
   { "COM0R20_BLOCK_ID_SERIO_DESC"   , COM0R20_BLOCK_ID_SERIO_DESC   },
@@ -143,18 +141,11 @@ GetBlockLength(
     const void * pcvBHandel
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
-  EAPI_APP_ASSERT_PARAMATER_NULL(
-      GetBlockLength,
-      0,
-      pcvBHandel
-    );
-  EApiStatusCode=
-    EeeP_Get16BitValue_BE(((DBlockIdHdr_t*)pcvBHandel)->DBlockLength )*EEEP_SIZE_UNITS;
-EAPI_APP_ASSERT_EXIT
-  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
-  }
-  return EApiStatusCode;
+  size_t stBlockSize=EEEP_OFFSET_VALUE_EOL;
+  if(!pcvBHandel) return stBlockSize;
+
+  stBlockSize=EeeP_Get16BitValue_BE(((DBlockIdHdr_t*)pcvBHandel)->DBlockLength )*EEEP_SIZE_UNITS;
+  return stBlockSize;
 }
 DBlockIdHdr_t * 
 GetNextBlock(
@@ -171,7 +162,7 @@ GetNextBlock(
   stBlockLength=GetBlockLength(pCurBlock);
   switch(stBlockLength){
     case EEEP_OFFSET_VALUE_EOL:
-    case EEEP_OFFSET_VALUE_EOL_ALT:
+    case EEEP_OFFSET_VALUE_EOL_ALT*EEEP_SIZE_UNITS:
       goto ErrorExit;
       break;
     default:
@@ -642,7 +633,7 @@ EeePSetCRC(
     DO(CRC_CCITT.init(&pContext));
     DO(CRC_CCITT.bytes(
                 pContext, 
-        BufferMap.pCmnHdr, 
+                BufferMap.pCmnHdr, 
         EAPI_GET_PTR_OFFSET(BufferMap.pEeePCRCBlock->CrC16, BufferMap.pCmnHdr)
         ));
     DO(CRC_CCITT.fini(&pContext, BufferMap.pEeePCRCBlock->CrC16));

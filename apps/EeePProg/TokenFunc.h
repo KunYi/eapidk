@@ -51,6 +51,11 @@ TokenListDesc_t TLName={ \
   ARRAY_SIZE(TokenList), TokenList \
 }
 
+typedef struct TokenNumDesc_s{
+  TokenListDesc_t   *pTokens;
+  NumberRangeDesc_t *pRange ;
+}TokenNumDesc_t;
+
 
 
 EApiStatusCode_t

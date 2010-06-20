@@ -43,10 +43,12 @@ typedef struct CfgElementDesc_s{
 #define ELEMENT_OPTIONAL    0
 #define ELEMENT_REQUIRED    1
   const size_t cstElementMax  ;
+  const size_t cstBitOffset   ;
+  const size_t cstBitLength   ;
   const size_t cstElementSize ;
   struct Handlers_s{
   EApiStatusCode_t (*Handler)(struct CfgElementDesc_s *pElementDesc, void *pvElement, char *Value);
-  EApiStatusCode_t (*Clean  )(void *pvElement, size_t stElementSize);
+  EApiStatusCode_t (*Clean  )(struct CfgElementDesc_s *pElementDesc, void *pvElement);
   EApiStatusCode_t (*Help   )(struct CfgElementDesc_s *pElementDesc, FILE * stream, const char *Indent );
   EApiStatusCode_t (*Default)(struct CfgElementDesc_s *pElementDesc, FILE * stream, unsigned int uiCount );
   } *pHandlers;
@@ -57,7 +59,8 @@ typedef struct CfgElementDesc_s{
   }Elements;
   void            *pExtraInfo;
 }CfgElementDesc_t;
-#define ELEMENT_DESC(Name, Array, Type, Tokens, Required) {Name, 0, Required, ARRAY_SIZE(Array), sizeof(Array[0]), Type, {Array} , Tokens},
+#define ELEMENT_DESC(Name, Array, Type, Tokens, Required) {Name, 0, Required, ARRAY_SIZE(Array), 0, 8*sizeof(Array[0]), sizeof(Array[0]), Type, {Array} , Tokens},
+#define ELEMENT_BDESC(Name, Array, BO, BL, Type, Tokens, Required) {Name, 0, Required, ARRAY_SIZE(Array), BO, BL, sizeof(Array[0]), Type, {Array} , Tokens},
 
 typedef struct Handlers_s Handlers_t;
 
@@ -77,8 +80,8 @@ ElementHandler_t(
 typedef 
 EApiStatusCode_t 
 ElementCleaner_t(
-    __INOUT void  *pvElement   ,
-    __IN    size_t stElementSize 
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __INOUT void  *pvElement
   );
 typedef 
 EApiStatusCode_t 
@@ -98,6 +101,7 @@ ElementDefaultTxt_t(
 extern Handlers_t  String_Element_funcs  ;
 extern Handlers_t  Number_Element_funcs  ;
 extern Handlers_t  Token_Element_funcs   ;
+extern Handlers_t  TokenNum_Element_funcs;
 extern Handlers_t  SpecRev_Element_funcs ;
 extern Handlers_t  PNPID_Element_funcs   ;
 extern Handlers_t  I2C_EEPROM_Addr_funcs ;
@@ -136,6 +140,7 @@ BlockHandler_t(
 
 ElementHandler_t String_Element;
 ElementHandler_t Number_Element;
+ElementHandler_t TokenNum_Element;
 ElementHandler_t Token_Element;
 ElementHandler_t SpecRev_Element;
 ElementHandler_t PNPID_Element;
@@ -148,6 +153,7 @@ ElementCleaner_t GenClear_Element;
 
 ElementHelpTxt_t String_Help;
 ElementHelpTxt_t Token_List_Help;
+ElementHelpTxt_t TokenNum_List_Help;
 ElementHelpTxt_t Range_List_Help;
 ElementHelpTxt_t SpecRev_Help;
 ElementHelpTxt_t PNPID_Help;
@@ -156,6 +162,7 @@ ElementHelpTxt_t GUID_Help;
 
 ElementDefaultTxt_t No_Default_Txt;
 ElementDefaultTxt_t Token_List_Default;
+ElementDefaultTxt_t TokenNum_List_Default;
 ElementDefaultTxt_t Range_Default_Txt;
 ElementDefaultTxt_t GUID_Default;
 
