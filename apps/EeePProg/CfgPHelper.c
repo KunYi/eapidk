@@ -314,17 +314,17 @@ Dealloc_Element(
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 Dealloc_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstBitOffset != 0
+                pElementDesc->stBitOffset != 0
         );
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 Dealloc_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstBitLength != 8*sizeof(char*)
+                pElementDesc->stBitLength != 8*sizeof(char*)
         );
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 Dealloc_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstElementSize != sizeof(char*)
+                pElementDesc->Instances.stElementSize != sizeof(char*)
         );
   if(*(char**)pCurElement!=NULL){
     free(*(char**)pCurElement);
@@ -342,14 +342,14 @@ GenClear_Element(
 { 
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   uint8_t *pu8CurElement=pvCurElement;
-  size_t stByteOffset=pElementDesc->cstBitOffset/8;
-  size_t stBitOffset =pElementDesc->cstBitOffset%8;
-  size_t stByteLen   =((pElementDesc->cstBitLength + stBitOffset)/8) ;
-  size_t stBitLen    =(pElementDesc->cstBitLength + stBitOffset - 8)%8;
+  size_t stByteOffset=pElementDesc->stBitOffset/8;
+  size_t stBitOffset =pElementDesc->stBitOffset%8;
+  size_t stByteLen   =((pElementDesc->stBitLength + stBitOffset)/8) ;
+  size_t stBitLen    =(pElementDesc->stBitLength + stBitOffset - 8)%8;
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 Dealloc_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstBitLength+ pElementDesc->cstBitOffset> pElementDesc->cstElementSize*8
+                pElementDesc->stBitLength+ pElementDesc->stBitOffset> pElementDesc->Instances.stElementSize*8
         );
   if(stBitOffset){
     *(pu8CurElement+stByteOffset)=(uint8_t)(*(pu8CurElement+stByteOffset)&((1<<stBitOffset)-1));
@@ -385,17 +385,17 @@ String_Element(
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 String_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstBitOffset != 0
+                pElementDesc->stBitOffset != 0
         );
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 String_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstBitLength != 8*sizeof(char*)
+                pElementDesc->stBitLength != 8*sizeof(char*)
         );
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 String_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstElementSize != sizeof(char*)
+                pElementDesc->Instances.stElementSize != sizeof(char*)
         );
   if(pStringDesc!=NULL){
     if(!pStringDesc->uiPreserveTrailingSpaces){
@@ -435,12 +435,12 @@ GUID_Element(
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 GUID_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstBitOffset != 0
+                pElementDesc->stBitOffset != 0
         );
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 GUID_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstElementSize != sizeof(*pGUID)
+                pElementDesc->Instances.stElementSize != sizeof(*pGUID)
         );
   szValue=skipWhiteSpaces(szValue);
   stripWhiteSpaces(szValue);
@@ -483,7 +483,7 @@ GUID_Element(
 #endif
  
 EAPI_APP_ASSERT_EXIT
-  return EAPI_STATUS_SUCCESS;
+  return EApiStatusCode;
 }
 EApiStatusCode_t
 Number_Element(
@@ -509,9 +509,9 @@ Number_Element(
   	DO(AssignValue_VAB(
             sllValue, 
             pCurElement, 
-            (signed int)pElementDesc->cstBitOffset  ,
-            (signed int)pElementDesc->cstBitLength     , 
-            (signed int)pElementDesc->cstElementSize
+            (signed int)pElementDesc->stBitOffset  ,
+            (signed int)pElementDesc->stBitLength     , 
+            (signed int)pElementDesc->Instances.stElementSize
           ));
   }
 
@@ -533,7 +533,7 @@ Size_Element(
   char *szCurArg=_strdup(skipWhiteSpaces(szValue));
   char *szScalar;
 
-  memset(pCurElement, 0x00, (signed int)pElementDesc->cstElementSize);
+  memset(pCurElement, 0x00, (signed int)pElementDesc->Instances.stElementSize);
 
   szScalar=strstr(szCurArg, "GB");
   if(szScalar){
@@ -570,9 +570,9 @@ Size_Element(
     DO(AssignValue_VAB(
             sllValue, 
             pCurElement, 
-            (signed int)pElementDesc->cstBitOffset  ,
-            (signed int)pElementDesc->cstBitLength     , 
-            (signed int)pElementDesc->cstElementSize
+            (signed int)pElementDesc->stBitOffset  ,
+            (signed int)pElementDesc->stBitLength     , 
+            (signed int)pElementDesc->Instances.stElementSize
           ));
   }
 
@@ -595,12 +595,12 @@ I2C_EEPROM_Addr(
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 I2C_EEPROM_Addr,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstElementSize < sizeof(uint16_t)
+                pElementDesc->Instances.stElementSize < sizeof(uint16_t)
         );
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 I2C_EEPROM_Addr,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstBitLength < 8*sizeof(uint16_t)
+                pElementDesc->stBitLength < 8*sizeof(uint16_t)
         );
 
   if((ulDeviceAddress<=0xAE)&&(ulDeviceAddress>=0xA0)&&!(ulDeviceAddress&1)){
@@ -608,9 +608,9 @@ I2C_EEPROM_Addr(
   	DO(AssignValue_VAB(
             ulDeviceAddress, 
             pCurElement, 
-            (signed int)pElementDesc->cstBitOffset  ,
-            (signed int)pElementDesc->cstBitLength     , 
-            (signed int)pElementDesc->cstElementSize
+            (signed int)pElementDesc->stBitOffset  ,
+            (signed int)pElementDesc->stBitLength     , 
+            (signed int)pElementDesc->Instances.stElementSize
           ));
   }else{
   	printf("\tI2C_EEPROM_Addr = Invalid Address 0x%02lX, %s\n", ulDeviceAddress, szValue);
@@ -647,9 +647,9 @@ Token_Element(
   	DO(AssignValue_VAB(
             ulValue, 
             pCurElement, 
-            (signed int)pElementDesc->cstBitOffset  ,
-            (signed int)pElementDesc->cstBitLength     , 
-            (signed int)pElementDesc->cstElementSize
+            (signed int)pElementDesc->stBitOffset  ,
+            (signed int)pElementDesc->stBitLength     , 
+            (signed int)pElementDesc->Instances.stElementSize
           ));
   }
 EAPI_APP_ASSERT_EXIT
@@ -677,7 +677,7 @@ TokenNum_Element(
     DO(AssignValue_VA(
         ulValue, 
         pCurElement, 
-        (signed int)pElementDesc->cstElementSize
+        (signed int)pElementDesc->Instances.stElementSize
     ));
   }else{
     struct  CfgElementDesc_s LclElementDesc=*pElementDesc;
@@ -713,9 +713,9 @@ SpecRev_Element(
   DO(AssignValue_VAB(
             uiValue, 
             pCurElement, 
-            (signed int)pElementDesc->cstBitOffset  ,
-            (signed int)pElementDesc->cstBitLength     , 
-            (signed int)pElementDesc->cstElementSize
+            (signed int)pElementDesc->stBitOffset  ,
+            (signed int)pElementDesc->stBitLength     , 
+            (signed int)pElementDesc->Instances.stElementSize
           ));
 EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
@@ -736,12 +736,12 @@ PNPID_Element(
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 PNPID_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstElementSize < sizeof(uint16_t)
+                pElementDesc->Instances.stElementSize < sizeof(uint16_t)
         );
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 PNPID_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
-                pElementDesc->cstBitLength < 8*sizeof(uint16_t)
+                pElementDesc->stBitLength < 8*sizeof(uint16_t)
         );
 
   EAPI_APP_RETURN_ERROR_IF_S(
@@ -763,9 +763,9 @@ PNPID_Element(
   DO(AssignValue_VAB(
             uiPNPID, 
             pCurElement, 
-            (signed int)pElementDesc->cstBitOffset  ,
-            (signed int)pElementDesc->cstBitLength     , 
-            (signed int)pElementDesc->cstElementSize
+            (signed int)pElementDesc->stBitOffset  ,
+            (signed int)pElementDesc->stBitLength  , 
+            (signed int)pElementDesc->Instances.stElementSize
           ));
 /*   printf("\tPNPID_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
 EAPI_APP_ASSERT_EXIT

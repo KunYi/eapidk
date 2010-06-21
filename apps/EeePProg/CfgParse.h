@@ -36,31 +36,54 @@ extern "C" {
 #include <TokenFunc.h>
 #include <RangeFunc.h>
 
+        
+typedef 
+signed int 
+CompareFunction_t(
+      __IN  const void*pcvContext ,
+      __IN  const void*pcvArgA    , 
+      __IN  const void*pcvArgB
+    );
+
+
+
+typedef struct IndxDesc_s{
+  size_t  stUsedCnt     ;
+  size_t  stTotalCnt    ;
+  size_t  stElementSize ;
+  int     Flags         ;
+#define INDX_ELEMENTS_ALLOC         (1<<0)
+#define INDX_ELEMENTS_SORTED        (1<<1)
+#define INDX_ELEMENTS_DUP_ALLOWED   (1<<2)
+#define INDX_ELEMENTS_REPLACE_ENTRY (1<<3)
+  void   *pIndx         ;
+  CompareFunction_t*pCmp;
+  void   *pCmpContext   ;
+}IndxDesc_t;
+
+
+#define INDEX_STATIC_FULL(a, flags, search, context) {ARRAY_SIZE(a), ARRAY_SIZE(a), sizeof(*(a)), flags, a, search, context}
+#define INDEX_STATIC_EMPTY(a, flags, search, context) {0, ARRAY_SIZE(a), sizeof(*(a)), flags, a, search, context}
+
+
 typedef struct CfgElementDesc_s{
   const char * pcszElementName;
-  size_t stElementCount;
-  const unsigned int  cuiRequired;
+  unsigned int  cuiRequired;
 #define ELEMENT_OPTIONAL    0
 #define ELEMENT_REQUIRED    1
-  const size_t cstElementMax  ;
-  const size_t cstBitOffset   ;
-  const size_t cstBitLength   ;
-  const size_t cstElementSize ;
+  IndxDesc_t   Instances;
+  size_t stBitOffset   ;
+  size_t stBitLength   ;
   struct Handlers_s{
   EApiStatusCode_t (*Handler)(struct CfgElementDesc_s *pElementDesc, void *pvElement, char *Value);
   EApiStatusCode_t (*Clean  )(struct CfgElementDesc_s *pElementDesc, void *pvElement);
   EApiStatusCode_t (*Help   )(struct CfgElementDesc_s *pElementDesc, FILE * stream, const char *Indent );
   EApiStatusCode_t (*Default)(struct CfgElementDesc_s *pElementDesc, FILE * stream, unsigned int uiCount );
   } *pHandlers;
-  union {
-    void *pv;
-    char **psz;
-    unsigned long *pul;
-  }Elements;
   void            *pExtraInfo;
 }CfgElementDesc_t;
-#define ELEMENT_DESC(Name, Array, Type, Tokens, Required) {Name, 0, Required, ARRAY_SIZE(Array), 0, 8*sizeof(Array[0]), sizeof(Array[0]), Type, {Array} , Tokens},
-#define ELEMENT_BDESC(Name, Array, BO, BL, Type, Tokens, Required) {Name, 0, Required, ARRAY_SIZE(Array), BO, BL, sizeof(Array[0]), Type, {Array} , Tokens},
+#define ELEMENT_DESC(Name, Array, Type, Tokens, Required)          {Name, Required, INDEX_STATIC_EMPTY(Array, INDX_ELEMENTS_DUP_ALLOWED, NULL, NULL), 0, 8*sizeof(*(Array)), Type, Tokens},
+#define ELEMENT_BDESC(Name, Array, BO, BL, Type, Tokens, Required) {Name, Required, INDEX_STATIC_EMPTY(Array, INDX_ELEMENTS_DUP_ALLOWED, NULL, NULL), BO, BL, Type, Tokens},
 
 typedef struct Handlers_s Handlers_t;
 
@@ -116,17 +139,17 @@ extern NumberRangeDesc_t  UINT32RangeDesc;
 extern TokenListDesc_t  InsideCrcTL;
 
 typedef struct CfgBlockDesc_s{
-  char *              pszBlockName;
-  unsigned int        uiFound;
-#define BLOCK_FOUND (unsigned)-1
-  const unsigned int  cuiRequired;
+  const char         *  pszBlockName;
+  unsigned int  cuiRequired;
 #define BLOCK_OPTIONAL    0
 #define BLOCK_REQUIRED    (unsigned)-1
-  size_t              stElementCount;
-  CfgElementDesc_t   *pElementsDesc;
-  void *              pDataContainer;
-  EApiStatusCode_t   (*Handler)(struct CfgBlockDesc_s *pDesc, void *pvExecContext);
+  unsigned int          uiFound;
+#define BLOCK_FOUND (unsigned)-1
+  IndxDesc_t            Elements;
+  void *                pDataContainer;
+  EApiStatusCode_t    (*Handler)(struct CfgBlockDesc_s *pDesc, void *pvExecContext);
 }CfgBlockDesc_t;
+#define BLOCK_DESC(Name, Array, DataContainer, Handler, Required) {Name, Required, 0, INDEX_STATIC_FULL(Array, INDX_ELEMENTS_DUP_ALLOWED, NULL, NULL), DataContainer, Handler},
 
 typedef 
 EApiStatusCode_t 
@@ -135,7 +158,6 @@ BlockHandler_t(
     __IN  void *pvExecContext
   );
 
-#define BLOCK_DESC(Name, Array, DataContainer, Handler, Required) {Name, 0, Required, ARRAY_SIZE(Array), Array, DataContainer, Handler},
 
 
 ElementHandler_t String_Element;
@@ -189,6 +211,12 @@ ParseCfgFile(
     __IN    size_t         stCfgBDescElements
     );
 
+EApiStatusCode_t
+GetElementDesc(
+    struct CfgBlockDesc_s *pDesc,
+    CfgElementDesc_t     **ppElementsDesc,
+    const char            *cszElementName
+  );
 
 
 #ifdef __cplusplus
