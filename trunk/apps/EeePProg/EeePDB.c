@@ -458,7 +458,7 @@ EeePMapBuffer(
       memcmp(
           pBufMap->pCmnHdr->EepId, 
           EEEP_EEPROM_MARKER, 
-          sizeof(EEEP_EEPROM_MARKER)-1
+          STRLEN(EEEP_EEPROM_MARKER)
         ),
       EAPI_STATUS_ERROR,
       "Invalid EeeP Buffer"

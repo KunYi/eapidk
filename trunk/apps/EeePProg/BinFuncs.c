@@ -309,7 +309,7 @@ PrintHexAsciiTableEx(
          * Print Block Header
          */
         EAPI_printf(TEXT("\n"));
-        if(cuiFlags&HEXTBL_OFFSEt_BAR)
+        if(cuiFlags&HEXTBL_OFFSET_BAR)
           EAPI_printf(TEXT("         "));
         if(cuiFlags&HEXTBL_OFFSET_COUNT){
           for(stOffset=0;stOffset<stElementCount;stOffset++){
@@ -324,7 +324,7 @@ PrintHexAsciiTableEx(
         }
         stOffset=pcu8Mem - (uint8_t*)pcvBase;
       }
-      if(cuiFlags&HEXTBL_OFFSEt_BAR)
+      if(cuiFlags&HEXTBL_OFFSET_BAR)
         EAPI_printf(TEXT("%08lX ") , (unsigned long)stOffset);
 
         /*
@@ -367,10 +367,10 @@ EAPI_APP_ASSERT_EXIT
 
 void 
 PrintHexAsciiTable(
-	const void *const pcvBuffer	,
-	const size_t cstBufSize		,
-	const void *const pcvBase		,
-	const TCHAR *const pcszDescription
+	__IN    const void *const pcvBuffer             ,
+	__IN    const size_t      cstBufSize	        ,
+	__IN    const void *const pcvBase		,
+	__IN    const TCHAR *const pcszDescription
 	)
 {
   PrintHexAsciiTableEx(

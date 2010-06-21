@@ -270,11 +270,11 @@ COM0PCIe_Element(
   char *pszStartingLane, *pszWidth, *pszGen;
   unsigned long uiStartingLane, uiWidth, uiGen;
   pszStartingLane=pszValue;
-  memset(pCurElement, 0x00, pElementDesc->cstElementSize);
+  memset(pCurElement, 0x00, pElementDesc->Instances.stElementSize);
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
           COM0PCIe_Element,
           EAPI_STATUS_INVALID_PARAMETER,
-          pElementDesc->cstElementSize < sizeof(unsigned long)
+          pElementDesc->Instances.stElementSize < sizeof(unsigned long)
         );
 
   pszWidth=strchr(pszStartingLane, ',');
@@ -1020,17 +1020,21 @@ CfgElementDesc_t COM0R20_SerialPortsDesc[]={
   ELEMENT_DESC("SER1_IOADDRESS", COM0R20_SER_cgf.au16SER1_IOADDRESS        , &Number_Element_funcs, &ValidIOAddrPortDesc, ELEMENT_OPTIONAL)
  ELEMENT_BDESC("SER1_IRQ"      , COM0R20_SER_cgf.au8SER_IRQ      , 4, 4    , &Token_Element_funcs , &IRQTL              , ELEMENT_OPTIONAL)
 };
+
 EApiStatusCode_t
 HandleCOM0R20CBHeaderBlock(
     struct CfgBlockDesc_s *pDesc,
     EeePHandel_t      BHandel
   )
 {
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   COM0R20_CB_t *pHeader=BHandel;
   size_t i, i2;
   COM0R20_CB_HDR_t *pCOM0R20_CB_cgf=pDesc->pDataContainer;
+  CfgElementDesc_t   *pElementsDesc;
 
-  memset(pHeader, 0x00, sizeof(*pHeader));
+  DO(GetElementDesc(pDesc, &pElementsDesc, "PCIePorts"));
+  memset(pHeader->GenId, 0x00, sizeof(*pHeader) - sizeof(EeePCmn_t));
 
   pHeader->EeePHdr.DeviceDesc =pCOM0R20_CB_cgf->au8DeviceDesc[0];
 
@@ -1057,14 +1061,14 @@ HandleCOM0R20CBHeaderBlock(
   pHeader->DDIDesc[0]      =pCOM0R20_CB_cgf->au8DDI1[0];
   pHeader->DDIDesc[1]      =pCOM0R20_CB_cgf->au8DDI2[0];
 
-  if(pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount){
+  if(pElementsDesc->Instances.stUsedCnt){
     unsigned long *pulCurPort;
     unsigned int  uiBasePort;
     unsigned int  uiEncWidth;
     unsigned int  uiEndPort ;
     unsigned int  uiGen     ;
     for(
-        i=pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount, 
+        i=pElementsDesc->Instances.stUsedCnt, 
         pulCurPort=pCOM0R20_CB_cgf->aulPCIePorts; 
         i; 
         i--,pulCurPort++
@@ -1075,6 +1079,11 @@ HandleCOM0R20CBHeaderBlock(
       uiEndPort =uiBasePort+(1<<(uiEncWidth-1));
       uiGen     =(*pulCurPort&UINT8_MAX);
       for(i2=uiBasePort;i2<uiEndPort;i2++){
+        EAPI_APP_RETURN_ERROR_IF_S(
+            HandleCOM0R20CBHeaderBlock,
+            i2>=ARRAY_SIZE(pCOM0R20_CB_cgf->aulPCIePorts),
+            EAPI_STATUS_ERROR
+          );
         /*
          *  4 PCIe Gen Per Byte
          */
@@ -1087,6 +1096,7 @@ HandleCOM0R20CBHeaderBlock(
 
     }
   }
+EAPI_APP_ASSERT_EXIT
   return EAPI_STATUS_SUCCESS;
 }
 EApiStatusCode_t
@@ -1099,6 +1109,7 @@ HandleCOM0R20MHeaderBlock(
   COM0R20_M_HDR_t *pCOM0R20_M_cgf=pDesc->pDataContainer;
 
 
+  memset(pHeader->GenId, 0x00, sizeof(*pHeader) - sizeof(EeePCmn_t));
   pHeader->EeePHdr.DeviceDesc =pCOM0R20_M_cgf->au8DeviceDesc[0];
 
   memcpy(pHeader->GenId, COM0R20_M_HEADER_ID, STRLEN(COM0R20_M_HEADER_ID));
@@ -1125,6 +1136,7 @@ HandleEeePExpEepHeaderBlock(
   pHeader=BHandel;
 
 
+  memset(pHeader->GenId, 0x00, sizeof(*pHeader) - sizeof(EeePCmn_t));
   pHeader->EeePHdr.DeviceDesc =pEeePExp_cgf->au8DeviceDesc[0];
 
   memcpy(pHeader->GenId, EEEP_EXP_HEADER_ID, STRLEN(EEEP_EXP_HEADER_ID));
@@ -1254,14 +1266,19 @@ HandleCOM0R20ExpCardCfgBlock(
   ExpCardBlock_t   *pHeader=NULL;
   DBlockIdHdr_t *pdHeader=NULL;
   COM0R20_ECard_t  *pCOM0ExpCard_cgf=pDesc->pDataContainer;
-  size_t stElementCnt =pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount;
-  size_t stBlockLength=EeePAlignLength(
+  CfgElementDesc_t   *pElementsDesc;
+  size_t stElementCnt ;
+  size_t stBlockLength;
+  uint8_t *pSwitchDevFuncAddr;
+  uint8_t *pu8SwitchDevFuncAddr;
+  DO(GetElementDesc(pDesc, &pElementsDesc, "SwitchPFA"));
+  stElementCnt =pElementsDesc->Instances.stUsedCnt;
+  stBlockLength=EeePAlignLength(
             sizeof(*pHeader)- 
             sizeof(pHeader->SwitchDevFuncAddr)+
             (stElementCnt*sizeof(pHeader->SwitchDevFuncAddr[0]))
           );
-  uint8_t *pSwitchDevFuncAddr;
-  uint8_t *pu8SwitchDevFuncAddr;
+
   DO(DBlockAllocWrap(
         &pdHeader, 
         COM0R20_BLOCK_ID_EXP_CARD_DESC, 
@@ -1278,8 +1295,7 @@ HandleCOM0R20ExpCardCfgBlock(
   for(
         pSwitchDevFuncAddr=pHeader->SwitchDevFuncAddr,
         pu8SwitchDevFuncAddr=pCOM0ExpCard_cgf->au8SwitchPFA;
-        stElementCnt;
-        stElementCnt--,
+        stElementCnt --;
         pSwitchDevFuncAddr++,
         pu8SwitchDevFuncAddr++
       )
@@ -1324,13 +1340,16 @@ HandleSmbiosChassisBlock(
   CCElement_t *pHandles1;
   CCElement_t *pHandles2;
   char *pszStrBuffer;
+  CfgElementDesc_t   *pElementsDesc;
+
+  DO(GetElementDesc(pDesc, &pElementsDesc, "CElements"));
 
   COUNT_STRLEN(pSmbiosChassis_cgf->aszManuf[0]     );
   COUNT_STRLEN(pSmbiosChassis_cgf->aszVersion[0]   );
   COUNT_STRLEN(pSmbiosChassis_cgf->aszSerialNum[0] );
   COUNT_STRLEN(pSmbiosChassis_cgf->aszAssetTag[0]  );
 
-  stHeaderLength +=pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount*sizeof(pHeader->CElement[0]);
+  stHeaderLength +=pElementsDesc->Instances.stUsedCnt*sizeof(pHeader->CElement[0]);
   stBlockLength  +=stHeaderLength+1;
   stBlockLength   =EeePAlignLength(stBlockLength);
 
@@ -1348,7 +1367,7 @@ HandleSmbiosChassisBlock(
   EeeP_Set32BitValue_BE(pHeader->OEM.b  , (uint32_t)pSmbiosChassis_cgf->au32OEM[0]);
   pHeader->Height       =pSmbiosChassis_cgf->au8Height[0]     ;
   pHeader->NumPowerCords=pSmbiosChassis_cgf->au8NumPowerCords[0]     ;
-  pHeader->CElementCnt  =(uint8_t)pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount;
+  pHeader->CElementCnt  =(uint8_t)pElementsDesc->Instances.stUsedCnt;
   pHeader->CElementSize =(uint8_t)sizeof(pHeader->CElement[0]);
   for(
         i=pHeader->CElementCnt,
@@ -1464,6 +1483,7 @@ HandleSmbiosModuleBlock(
   uint16_t      *pu16Handles2;
   uint8_t       *pu8Handles2;
   char *pszStrBuffer;
+  CfgElementDesc_t   *pElementsDesc=EAPI_CREATE_PTR(pDesc->Elements.pIndx, pDesc->Elements.stElementSize*(pDesc->Elements.stUsedCnt - 1), void*);
 
 
   COUNT_STRLEN(pSmbiosModule_cgf->aszManuf[0]     );
@@ -1473,7 +1493,7 @@ HandleSmbiosModuleBlock(
   COUNT_STRLEN(pSmbiosModule_cgf->aszAssetTag[0]  );
   COUNT_STRLEN(pSmbiosModule_cgf->aszLocation[0]  );
 
-  stHeaderLength +=pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount*sizeof(pHeader->Handles[0].b);
+  stHeaderLength +=pElementsDesc->Instances.stUsedCnt*sizeof(pHeader->Handles[0].b);
   stBlockLength  +=stHeaderLength+1;
   stBlockLength   =EeePAlignLength(stBlockLength);
 
@@ -1501,7 +1521,7 @@ HandleSmbiosModuleBlock(
   }
   EeeP_Set16BitValue_BE(pHeader->LocHdl.b  , pSmbiosModule_cgf->au16LocationHandle[0]);
   pHeader->BoardType     =(uint8_t)pSmbiosModule_cgf->au8BoardType[0]     ;
-  pHeader->ContainedHndls=(uint8_t)pDesc->pElementsDesc[pDesc->stElementCount - 1].stElementCount;
+  pHeader->ContainedHndls=(uint8_t)pElementsDesc->Instances.stUsedCnt;
   for(
         i=pHeader->ContainedHndls,
         pHandles1=pHeader->Handles,

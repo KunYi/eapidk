@@ -100,6 +100,7 @@ IF /I "%~1"=="BUILD_LIB" GOTO Exit
   ECHO *.tar.gz  >> "%IGNOREFILE%"
   ECHO *.tar     >> "%IGNOREFILE%"
   ECHO bin   >> "%IGNOREFILE%"
+  ECHO CVS   >> "%IGNOREFILE%"
   ECHO .cvs  >> "%IGNOREFILE%"
   ECHO .svn  >> "%IGNOREFILE%"
   ECHO *.doc  >> "%IGNOREFILE%"
@@ -339,6 +340,7 @@ REM ########################################################################
   SET EAPILIBBASE=
   SET APPHELPFILES=
   SET LIBFILES=
+  SET LCLFILES=
 
 :Return
 

@@ -52,35 +52,35 @@ PrintCfgFile(
   size_t i;
   unsigned int i2;
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      ParseCfgFile,
+      PrintCfgFile,
       EAPI_STATUS_INVALID_PARAMETER,
       pCfgBDesc
     );
   EAPI_APP_ASSERT_PARAMATER_ZERO(
-      ParseCfgFile,
+      PrintCfgFile,
       EAPI_STATUS_INVALID_PARAMETER,
       stCfgBDescElements
     );
   while(stCfgBDescElements--){
-    CfgElementDesc_t *pCurElement=pCfgBDesc->pElementsDesc;
-    i=pCfgBDesc->stElementCount;
+    CfgElementDesc_t *pCurElement=pCfgBDesc->Elements.pIndx;
+    i=pCfgBDesc->Elements.stUsedCnt;
     fprintf(OutStream, "%s[%s]\n", (pCfgBDesc->cuiRequired?"":"#"), pCfgBDesc->pszBlockName);
     while(i--){
-      fprintf(OutStream, "##################################################\n");
-      fprintf(OutStream, "#  %s\n", pCurElement->pcszElementName);
-      fprintf(OutStream, "##################################################\n");
+      fprintf(OutStream, "###################################################\n");
+      fprintf(OutStream, "##  %s\n", pCurElement->pcszElementName);
+      fprintf(OutStream, "###################################################\n");
       fprintf(OutStream, 
-          "#\t\t %s\n", 
+          "##\t\t %s\n", 
           (pCurElement->cuiRequired?"Required Element":"Optional Element")
         );
       fprintf(OutStream, 
-          "#\t\t Allowed Maximum of %lu times in block\n", 
-          (unsigned long)pCurElement->cstElementMax
+          "##\t\t Allowed Maximum of %lu times in block\n", 
+          (unsigned long)pCurElement->Instances.stTotalCnt
         );
       DO(pCurElement->pHandlers->Help(
             pCurElement, 
             OutStream, 
-            "#\t\t"
+            "##\t\t"
           ));
       i2=0;
       do{
@@ -109,27 +109,27 @@ CleanBlock(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      pCurElement,
+      CleanBlock,
       EAPI_STATUS_INVALID_PARAMETER,
       pCurElement
     );
   EAPI_APP_ASSERT_PARAMATER_ZERO(
-      ParseCfgFile,
+      CleanBlock,
       EAPI_STATUS_INVALID_PARAMETER,
       stElementCount
     );
     while(stElementCount--){
-      while(pCurElement->stElementCount--){
+      while(pCurElement->Instances.stUsedCnt--){
         DO(pCurElement->pHandlers->Clean(
               pCurElement,
               EAPI_CREATE_PTR(
-                  pCurElement->Elements.pv, 
-                  pCurElement->cstElementSize*(pCurElement->stElementCount), 
+                  pCurElement->Instances.pIndx, 
+                  pCurElement->Instances.stElementSize*(pCurElement->Instances.stUsedCnt), 
                   void*
                 )
             ));
       }
-      pCurElement->stElementCount=0;
+      pCurElement->Instances.stUsedCnt=0;
       pCurElement++;
     }
 EAPI_APP_ASSERT_EXIT
@@ -144,23 +144,68 @@ CleanStruct(
 {
   EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
-      ParseCfgFile,
+      CleanStruct,
       EAPI_STATUS_INVALID_PARAMETER,
       pCfgBDesc
     );
   EAPI_APP_ASSERT_PARAMATER_ZERO(
-      ParseCfgFile,
+      CleanStruct,
       EAPI_STATUS_INVALID_PARAMETER,
       stCfgBDescElements
     );
   while(stCfgBDescElements --){
     pCfgBDesc->uiFound=0;
-    DO(CleanBlock(pCfgBDesc->pElementsDesc, pCfgBDesc->stElementCount));
+    DO(CleanBlock(pCfgBDesc->Elements.pIndx, pCfgBDesc->Elements.stUsedCnt));
     pCfgBDesc++;
   }
 EAPI_APP_ASSERT_EXIT
   return EApiStatusCode;
 }
+EApiStatusCode_t
+GetElementDesc(
+    struct CfgBlockDesc_s *pDesc,
+    CfgElementDesc_t     **ppElementsDesc,
+    const char            *cszElementName
+  )
+{
+  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_NOT_FOUND;
+  CfgElementDesc_t     *pElementsDesc;
+  int   i;
+
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+        GetElementDesc,
+        EAPI_STATUS_INVALID_PARAMETER,
+        pDesc
+      );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+        GetElementDesc,
+        EAPI_STATUS_INVALID_PARAMETER,
+        ppElementsDesc
+      );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+        GetElementDesc,
+        EAPI_STATUS_INVALID_PARAMETER,
+        cszElementName
+      );
+  *ppElementsDesc=NULL;
+  for(
+      i=(int)pDesc->Elements.stUsedCnt,
+      pElementsDesc=pDesc->Elements.pIndx;
+      i--;
+      pElementsDesc++
+      )
+  {
+    if(!strcmp(cszElementName, pElementsDesc->pcszElementName)){
+      *ppElementsDesc=pElementsDesc;
+      EApiStatusCode=EAPI_STATUS_SUCCESS;
+      break;
+    }
+  }
+
+EAPI_APP_ASSERT_EXIT
+  return EApiStatusCode;
+}
+
 #define MAX_LINE_LEN 2048
 EApiStatusCode_t
 ParseCfgFile(
@@ -226,14 +271,13 @@ ParseCfgFile(
        */
       if(pCurBlockDesc!=NULL){
         for(
-            i=pCurBlockDesc->stElementCount,
-            pCurElement=pCurBlockDesc->pElementsDesc; 
-            i; 
-            i--, 
+            i=pCurBlockDesc->Elements.stUsedCnt,
+            pCurElement=pCurBlockDesc->Elements.pIndx; 
+            i--; 
             pCurElement++
           )
         {
-          if(pCurElement->cuiRequired>pCurElement->stElementCount){
+          if(pCurElement->cuiRequired>pCurElement->Instances.stUsedCnt){
 						EApiStatusCode=EAPI_STATUS_ERROR;
 						siFormattedMessage_SC('W', __FILE__, "ParseCfgFile", __LINE__, EApiStatusCode,
                 "Missing Required Element '%s' in Block (%lu)'%s'", 
@@ -262,8 +306,7 @@ ParseCfgFile(
       }
     }else{
       unsigned int FoundElement=0;
-      szName=LineBuffer;
-      szName=skipWhiteSpaces(szName);
+      szName=skipWhiteSpaces(LineBuffer);
       if(!strlen(szName)){
         /*Skip Empty Blank Lines */
         continue;
@@ -289,21 +332,23 @@ ParseCfgFile(
       stripWhiteSpaces(szName);
       szValue=skipWhiteSpaces(szValue);
 #if TEST_EEPCFG
-		siFormattedMessage_M2('L', __FILE__, "ParseCfgFile", __LINE__, pCurBlockDesc->pszBlockName,
-        "(%04lu)%-20s = %s", ulLineNum, szName, szValue);
+		  siFormattedMessage_M2('L', __FILE__, "ParseCfgFile", __LINE__, pCurBlockDesc->pszBlockName,
+          "(%04lu)%-20s = %s", ulLineNum, szName, szValue);
 #endif
-      for(i=pCurBlockDesc->stElementCount, pCurElement=pCurBlockDesc->pElementsDesc; i; i--, pCurElement++){
-        if(!strcmp(szName, pCurElement->pcszElementName)){
+      EApiStatusCode=GetElementDesc(pCurBlockDesc, &pCurElement, szName);
+
+      switch(EApiStatusCode){
+        case EAPI_STATUS_SUCCESS:
           EAPI_APP_RETURN_ERROR_IF_S(
               ParseCfgFile,
-              (pCurElement->stElementCount+1>pCurElement->cstElementMax),
+              (pCurElement->Instances.stUsedCnt+1>pCurElement->Instances.stTotalCnt),
               EAPI_STATUS_ERROR
             );
           EApiStatusCode=pCurElement->pHandlers->Handler(
                 pCurElement, 
                 EAPI_CREATE_PTR(
-                    pCurElement->Elements.pv,
-                    pCurElement->cstElementSize*pCurElement->stElementCount, 
+                    pCurElement->Instances.pIndx,
+                    pCurElement->Instances.stElementSize*pCurElement->Instances.stUsedCnt, 
                     void*
                   ),
                 szValue
@@ -315,18 +360,18 @@ ParseCfgFile(
             );
             goto ErrorExit;
           }
-          pCurElement->stElementCount++;
+          pCurElement->Instances.stUsedCnt++;
           FoundElement++;
           break;
-        }
-      }
-      if(!FoundElement){
-        EApiStatusCode=EAPI_STATUS_ERROR;
-        siFormattedMessage_SC(
-              'E', __FILE__, "ParseCfgFile", __LINE__, EApiStatusCode,
-              "Unknown Block Element on line %li, '%s'\n", ulLineNum, szName
-        );
-        goto ErrorExit;
+        case EAPI_STATUS_NOT_FOUND:
+          siFormattedMessage_SC(
+                'E', __FILE__, "ParseCfgFile", __LINE__, EApiStatusCode,
+                "Unknown Block Element on line %li, '%s'\n", ulLineNum, szName
+          );
+          break;
+        default:
+          goto ErrorExit;
+          break;
       }
     }
   }
