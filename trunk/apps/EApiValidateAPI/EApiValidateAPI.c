@@ -45,10 +45,10 @@ typedef void EApiValidateTestFunction(void);
 /*  */
 FILE *LogStream;
 
-EApiStatusCode_t
+EApiStatus_t
 EApiGetErrorStringA(
     __OUT const char  **const pszString     , 
-    __IN EApiStatusCode_t StatusCode
+    __IN EApiStatus_t StatusCode
     );
 
 signed int
@@ -59,7 +59,7 @@ siFFormattedMessage_SC(
     const char *  cszFileName ,   
     const char *  cszFuncName ,   
     unsigned int  uiLineNum   ,
-    EApiStatusCode_t  StatusCode  ,   
+    EApiStatus_t  StatusCode  ,   
     const char *  cszFormat   ,   
     ...
     )
@@ -73,7 +73,7 @@ siFFormattedMessage_SC(
     const char *  cszFileName ,   
     const char *  cszFuncName ,   
     unsigned int  uiLineNum   ,
-    EApiStatusCode_t  StatusCode  ,   
+    EApiStatus_t  StatusCode  ,   
     const char *  cszFormat   ,   
     ...
     )
@@ -128,9 +128,9 @@ const char *FailPass[]={
 typedef struct EApiBoardStringValidate_s{
         TCHAR    *BufPtr      ; /* Buffer Pointer */
   const uint32_t *BufPtrLen   ; /* Buffer Length */
-  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
-  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
-  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
+  const EApiStatus_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatus_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatus_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiBoardStringValidate_t;
 uint32_t BufPtrLen=ARRAY_SIZE(Buffer);
 uint32_t Value0   =0;
@@ -166,7 +166,7 @@ void EApiValidateStringApi (void)
   uint32_t StringLength;
   uint32_t *pStringLength=&StringLength;
   size_t StringLength2;
-  EApiStatusCode_t StatusCode;
+  EApiStatus_t StatusCode;
   unsigned i,i2;
   for(i=0;i<ARRAY_SIZE(EApiStrings);i++){
     EApiAHGetStringAlloc(EApiStrings[i].Id, &TmpStrPtr);
@@ -245,9 +245,9 @@ void EApiValidateStringApi (void)
 
 typedef struct EApiBoardValueValidate_s{
         void *         BufPtr      ; /* Buffer Pointer */
-  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
-  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
-  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
+  const EApiStatus_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatus_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatus_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiBoardValueValidate_t;
 const EApiBoardValueValidate_t BoardValueValidate[]={
   {Buffer, EAPI_STATUS_SUCCESS          , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_UNSUPPORTED       },
@@ -289,7 +289,7 @@ void EApiValidateValuesApi (void)
 {
   TCHAR TmpStrBuf[1024];
   uint32_t Value;
-  EApiStatusCode_t StatusCode;
+  EApiStatus_t StatusCode;
   unsigned i,i2;
   for(i=0;i<ARRAY_SIZE(EApiValues);i++){
     if((StatusCode=EApiBoardGetValue(EApiValues[i].Id, &Value))==EAPI_STATUS_SUCCESS)
@@ -327,9 +327,9 @@ typedef struct EApiI2CLLInterfaceValidate_s{
         void *    RBufPtr     ; /* Read  Buffer Pointer */
   const uint32_t  RBufPtrLen  ; /* Read  Buffer Length */
   const uint32_t  RByteCnt    ; /* Read  Byte Count  */
-  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
-  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
-  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
+  const EApiStatus_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatus_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatus_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiI2CLLInterfaceValidate_t;
 const EApiI2CLLInterfaceValidate_t EApiI2CLLValidate[]={
   {0xF8, NULL  ,   0, NULL  ,                 0 ,   0, EAPI_STATUS_INVALID_PARAMETER, EAPI_STATUS_INVALID_PARAMETER , EAPI_STATUS_INVALID_PARAMETER },
@@ -350,9 +350,9 @@ typedef struct EApiI2CHLInterfaceValidate_s{
   void  *                 BufPtr      ; /* Buffer Pointer */
   const uint32_t          BufPtrLen   ; /* Buffer Length */
   const uint32_t          ByteCnt     ; /* Byte Count  */
-  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
-  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
-  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
+  const EApiStatus_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatus_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatus_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiI2CHLInterfaceValidate_t;
 const EApiI2CHLInterfaceValidate_t EApiI2CHLReadValidate[]={
   {0xF8, 0x00, Buffer, ARRAY_SIZE(Buffer),  10, EAPI_STATUS_NOT_FOUND        , EAPI_STATUS_UNSUPPORTED       , EAPI_STATUS_NOT_FOUND         },
@@ -370,9 +370,9 @@ const EApiI2CHLInterfaceValidate_t EApiI2CHLWriteValidate[]={
 
 typedef struct EApiI2CCapValidate_s{
         uint32_t         *pValue      ; /* Value Pointer*/
-  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
-  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
-  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
+  const EApiStatus_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatus_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatus_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiI2CCapValidate_t;
 uint32_t I2CMaxClk=0;
 const EApiI2CCapValidate_t EApiI2CInterfaceValidate[]={
@@ -414,7 +414,7 @@ void printHex(
 void EApiValidateI2CApi (void)
 {
   TCHAR TmpStrBuf[0x0800];
-  EApiStatusCode_t StatusCode;
+  EApiStatus_t StatusCode;
   unsigned i,i2;
     
   for(i=0;i<ARRAY_SIZE(EApiI2CBuses);i++){
@@ -427,7 +427,7 @@ void EApiValidateI2CApi (void)
             ARRAY_SIZE(TmpStrBuf) , /* For Debug Purposes */
             (uint32_t)I2CDevices[i2].DevSize
           );
-      if(EAPI_STATUS_TEST_OK(StatusCode))
+      if(EAPI_TEST_SUCCESS(StatusCode))
       {
         EAPI_MSG_OUT(
               TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : "), 
@@ -444,7 +444,7 @@ void EApiValidateI2CApi (void)
               TmpStrBuf         , 
               (uint32_t)I2CDevices[i2].DevSize/5
             );
-        if(EAPI_STATUS_TEST_NOK(StatusCode))
+        if(!EAPI_TEST_SUCCESS(StatusCode))
         {
           EAPI_MSG_OUT(
                 TEXT("%-25s %04")TEXT(PRIX16)TEXT(" : "), 
@@ -559,9 +559,9 @@ typedef struct EApiStorageValidate_s{
         void *    BufPtr      ; /* Buffer Pointer */
   const uint32_t  BufPtrLen   ; /* Buffer Length */
   const uint32_t  ByteCnt     ; /* Byte Count  */
-  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
-  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
-  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
+  const EApiStatus_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatus_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatus_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiStorageValidate_t;
 const EApiStorageValidate_t StorageValidate[]={
   {0x0000, Buffer, ARRAY_SIZE(Buffer),  10, EAPI_STATUS_SUCCESS             , EAPI_STATUS_UNSUPPORTED         , EAPI_STATUS_UNSUPPORTED       },
@@ -574,9 +574,9 @@ const EApiStorageValidate_t StorageValidate[]={
 typedef struct EApiStorageCapValidate_s{
         uint32_t *pStorgeSize ; /* Read Offset */
         uint32_t *pBlockLen   ; /* Buffer Pointer */
-  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
-  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
-  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
+  const EApiStatus_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatus_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatus_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiStorageCapValidate_t;
 uint32_t StorageSize;
 uint32_t BlockLength;
@@ -590,7 +590,7 @@ void EApiValidateStorageApi(void)
 {
   TCHAR TmpStrBuf[1024];
   unsigned i,i2;
-  EApiStatusCode_t StatusCode;
+  EApiStatus_t StatusCode;
     
   for(i=0;i<ARRAY_SIZE(EApiStorageDevices);i++){
       StatusCode=EApiStorageAreaRead(
@@ -600,7 +600,7 @@ void EApiValidateStorageApi(void)
         ARRAY_SIZE(TmpStrBuf) , /* For Debug Purposes */
         EApiStorageDevices[i].Length
         );
-      if(EAPI_STATUS_TEST_OK(StatusCode))
+      if(EAPI_TEST_SUCCESS(StatusCode))
       {
         EAPI_MSG_OUT(
               TEXT("%-30s : "), 
@@ -615,7 +615,7 @@ void EApiValidateStorageApi(void)
               TmpStrBuf                     ,
               EApiStorageDevices[i].Length/5
             );
-        if(EAPI_STATUS_TEST_OK(StatusCode))
+        if(EAPI_TEST_SUCCESS(StatusCode))
         {
           EAPI_MSG_OUT(
                 TEXT("%-30s : "), 
@@ -691,9 +691,9 @@ void EApiValidateStorageApi(void)
 typedef struct EApiGpioValidate_s{
         uint32_t *pInputs     ; /* Value Pointer*/
         uint32_t *pOutputs    ; /* Value Pointer*/
-  const EApiStatusCode_t  StatusCode1 ; /* Allowed Return Value 1 */
-  const EApiStatusCode_t  StatusCode2 ; /* Allowed Return Value 2 */
-  const EApiStatusCode_t  StatusCode3 ; /* Allowed Return Value 3 */
+  const EApiStatus_t  StatusCode1 ; /* Allowed Return Value 1 */
+  const EApiStatus_t  StatusCode2 ; /* Allowed Return Value 2 */
+  const EApiStatus_t  StatusCode3 ; /* Allowed Return Value 3 */
 }EApiGpioValidate_t;
 uint32_t GpioInputs;
 uint32_t GpioOutputs;
@@ -710,7 +710,7 @@ typedef struct EApiGpioType_s{
 }EApiGpioType_t;
 
 const EApiGpioType_t EApiGpioDevices[]={
-  {EAPI_ID_GPIO_BITMASK00, TEXT("GPIO Bitmask"    )},
+  {EAPI_ID_GPIO_BANK00   , TEXT("GPIO Bank0"      )},
   {EAPI_GPIO_GPIO_ID(0)  , TEXT("GPIO GPIO0"      )},
   {EAPI_GPIO_GPIO_ID(1)  , TEXT("GPIO GPIO1"      )},
   {EAPI_GPIO_GPIO_ID(2)  , TEXT("GPIO GPIO2"      )},
@@ -733,11 +733,11 @@ void EApiValidateGPIOApi(void)
   uint32_t Level;
   uint32_t Inputs;
   uint32_t Outputs;
-  EApiStatusCode_t StatusCode;
+  EApiStatus_t StatusCode;
   for(i=0;i<ARRAY_SIZE(EApiGpioDevices);i++){
 /*       *((int*)NULL)=0; */
       StatusCode=EApiGPIOGetDirectionCaps(EApiGpioDevices[i].Id, &Inputs, &Outputs);
-      if(EAPI_STATUS_TEST_NOK(StatusCode))
+      if(!EAPI_TEST_SUCCESS(StatusCode))
       {
         EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
@@ -756,7 +756,7 @@ void EApiValidateGPIOApi(void)
         Outputs
       );
       StatusCode=EApiGPIOGetDirection(EApiGpioDevices[i].Id, Inputs|Outputs, &Direction);
-      if(EAPI_STATUS_TEST_NOK(StatusCode))
+      if(!EAPI_TEST_SUCCESS(StatusCode))
       {
         EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
@@ -774,7 +774,7 @@ void EApiValidateGPIOApi(void)
         Direction
         );
       StatusCode=EApiGPIOGetLevel(EApiGpioDevices[i].Id, Inputs|Outputs, &Level);
-      if(EAPI_STATUS_TEST_NOK(StatusCode))
+      if(!EAPI_TEST_SUCCESS(StatusCode))
       {
         EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
@@ -796,7 +796,7 @@ void EApiValidateGPIOApi(void)
         Inputs|Outputs, 
         ((Inputs&0xFFFF))|((Outputs&0x0000))
         );
-      if(EAPI_STATUS_TEST_NOK(StatusCode))
+      if(!EAPI_TEST_SUCCESS(StatusCode))
       {
         EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
@@ -808,7 +808,7 @@ void EApiValidateGPIOApi(void)
         continue;
       }
       StatusCode=EApiGPIOGetDirection(EApiGpioDevices[i].Id, Inputs|Outputs, &Direction);
-      if(EAPI_STATUS_TEST_NOK(StatusCode))
+      if(!EAPI_TEST_SUCCESS(StatusCode))
       {
         EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
@@ -826,7 +826,7 @@ void EApiValidateGPIOApi(void)
           Direction
           );
       StatusCode=EApiGPIOSetLevel(EApiGpioDevices[i].Id, Outputs, Outputs);
-      if(EAPI_STATUS_TEST_NOK(StatusCode))
+      if(!EAPI_TEST_SUCCESS(StatusCode))
       {
         EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
@@ -838,7 +838,7 @@ void EApiValidateGPIOApi(void)
         continue;
       }
       StatusCode=EApiGPIOGetLevel(EApiGpioDevices[i].Id, Inputs|Outputs, &Level);
-      if(EAPI_STATUS_TEST_NOK(StatusCode))
+      if(!EAPI_TEST_SUCCESS(StatusCode))
       {
         EApiAHCreateErrorString(StatusCode, TmpStrBuf, ARRAY_SIZE(TmpStrBuf));
         EAPI_MSG_OUT(
@@ -899,7 +899,7 @@ main(void)
   LogStream=EAPI_fopen(TEXT("EApiValidateAPI.log"), TEXT("w"));
   if(LogStream==NULL)
     LogStream=stdout;
-  if(EAPI_STATUS_TEST_NOK(EApiLibInitialize()))
+  if(!EAPI_TEST_SUCCESS(EApiLibInitialize()))
   {
     exit(PRG_RETURN_LIB_INIT_ERROR);
   }
@@ -932,7 +932,7 @@ main(void)
 
     TestFunctions[i].TestHandler();
   }
-  if(EAPI_STATUS_TEST_NOK(EApiLibInitialize()))
+  if(!EAPI_TEST_SUCCESS(EApiLibInitialize()))
   {
     exit(PRG_RETURN_LIB_UNINIT_ERROR);
   }

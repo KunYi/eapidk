@@ -52,7 +52,7 @@
 #define I2C_EMUL_FREQ  100000
 #define I2C_EMUL_BYTE_DELAY_NS (1000000000/I2C_EMUL_FREQ*(8+1))
 typedef 
-EApiStatusCode_t 
+EApiStatus_t 
 I2CDevEmulator_t(
     __IN uint32_t Arg1      , 
     __IN void    *pWBuffer  , 
@@ -106,7 +106,7 @@ char * StdExt[]={
 };
 #endif
 
-EApiStatusCode_t 
+EApiStatus_t 
 EmulateEepromFS(
     __IN unsigned long    Arg1      , 
     __IN EepromCfgData_t *CfgData   , 
@@ -116,7 +116,7 @@ EmulateEepromFS(
     __IN unsigned long    ReadBCnt
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   
 #if (STRICT_VALIDATION>1)
         siFormattedMessage_M2(
@@ -232,11 +232,11 @@ EmulateEepromFS(
   EAPI_LIB_RETURN_SUCCESS(EmulateEepromFS, "");
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 EmulateCmdDevice(
     __IN unsigned long        Arg1      , 
     __IN CmdDeviceCfgData_t  *CfgData   , 
@@ -246,7 +246,7 @@ EmulateCmdDevice(
     __IN unsigned long        ReadBCnt
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
     unsigned long ReadBCnt2;
     CmdDesc_t *pCurCmd;
   
@@ -330,7 +330,7 @@ EmulateCmdDevice(
   EAPI_LIB_RETURN_SUCCESS(EmulateEepromFS, "");
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 #define bin_data DIDEEPROM
 #include "DIDData.h"
@@ -344,7 +344,7 @@ static EepromCfgData_t DIDEEPromData={
   "DID.EEPROM.EMUL",
   NULL
 };
-EApiStatusCode_t 
+EApiStatus_t 
 EmulateDIDEeprom(
     __IN uint32_t Arg1      , 
     __IN void    *pWBuffer  , 
@@ -374,7 +374,7 @@ static EepromCfgData_t UDSEEPromData={
   "UDS.EEPROM.EMUL",
   NULL
 };
-EApiStatusCode_t 
+EApiStatus_t 
 EmulateUDSEeprom(
     __IN uint32_t Arg1      , 
     __IN void    *pWBuffer  , 
@@ -405,7 +405,7 @@ static EepromCfgData_t EPIEEPromData={
   NULL
 };
 
-EApiStatusCode_t 
+EApiStatus_t 
 EmulateEPIEeprom(
     __IN uint32_t Arg1      , 
     __IN void    *pWBuffer  , 
@@ -467,7 +467,7 @@ EepromCfgData_t *OpenFiles[]={
 };
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 OpenI2CEepromFiles(void)
 {
   int i;
@@ -487,7 +487,7 @@ OpenI2CEepromFiles(void)
   }
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t 
+EApiStatus_t 
 CloseI2CEepromFiles(void)
 {
   int i;
@@ -501,7 +501,7 @@ CloseI2CEepromFiles(void)
   return EAPI_STATUS_SUCCESS;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 EmulateEeePExpEeprom(
     __IN uint32_t Arg1      , 
     __IN void    *pWBuffer  , 
@@ -521,7 +521,7 @@ EmulateEeePExpEeprom(
 }
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 EmulateCOM0CBEeprom(
     __IN uint32_t Arg1      , 
     __IN void    *pWBuffer  , 
@@ -540,7 +540,7 @@ EmulateCOM0CBEeprom(
       );
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 EmulateCOM0MEeprom(
     __IN uint32_t Arg1      , 
     __IN void    *pWBuffer  , 
@@ -575,7 +575,7 @@ CmdDeviceCfgData_t HWMon={
   "ADT7447",
   HwmonCmdIndx
 };
-EApiStatusCode_t 
+EApiStatus_t 
 EmulateHWMonDevice(
     __IN  uint32_t Arg1, 
     __IN  void    *pWBuffer, 
@@ -638,14 +638,14 @@ const InterfaceIdsTbl_t EmulatedInterfaces[]={
   {EAPI_ID_I2C_LVDS_1,   LVDS_1I2CDevices  , 0x00100},
   {EAPI_ID_I2C_LVDS_2,   LVDS_2I2CDevices  , 0x00020}
 };
-EApiStatusCode_t 
+EApiStatus_t 
 EAPI_CALLTYPE 
 EApiI2CGetBusCapEmul(
     __IN  EApiId_t  Id, 
     __OUT uint32_t *pMaxBlkLen
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i;
 
   for(i=0;i<ARRAY_SIZE(EmulatedInterfaces);i++)
@@ -667,7 +667,7 @@ EApiI2CGetBusCapEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 /*
@@ -679,7 +679,7 @@ EAPI_LIB_ASSERT_EXIT
  *
  *
  */
-EApiStatusCode_t 
+EApiStatus_t 
 EAPI_CALLTYPE 
 EApiI2CWriteReadEmul(
     __IN      EApiId_t Id         , 
@@ -690,7 +690,7 @@ EApiI2CWriteReadEmul(
     __IN      uint32_t ReadBCnt
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i,i2;
   uint32_t LclAddr;
 
@@ -761,6 +761,6 @@ EApiI2CWriteReadEmul(
       );
 EAPI_LIB_ASSERT_EXIT
 /*  */
-  return EApiStatusCode;
+  return StatusCode;
 }
 

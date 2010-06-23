@@ -55,7 +55,7 @@ StringLookup_t BlockIdLookup[]={
 };
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 GetString(
     __IN  StringLookup_t *pStrTbl,
     __OUT TCHAR *        pszString,
@@ -63,7 +63,7 @@ GetString(
     __IN  unsigned int   uiValue
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   for(;pStrTbl->szString!=NULL;pStrTbl++){
     if(pStrTbl->cuiValue==uiValue){
 #if UNICODE
@@ -75,12 +75,12 @@ GetString(
     }
   }
   EApiSprintf(pszString, stArrayLen, TEXT("UNKNOWN ID"));
-  EApiStatusCode=EAPI_STATUS_ERROR;
+  StatusCode=EAPI_STATUS_ERROR;
 ExitSuccess:
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 GetDBlckIdString(
     __OUT TCHAR *        pszString,
     __IN  size_t         stArrayLen,
@@ -108,13 +108,13 @@ EeePAlignLength(
 #endif
 }
 
-EApiStatusCode_t
+EApiStatus_t
 SetBlockLength(
     EeePHandel_t BHandel,
     size_t       stBlockLength
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       SetBlockLength,
       EAPI_STATUS_INVALID_PARAMETER,
@@ -136,9 +136,9 @@ SetBlockLength(
         EEEP_LO_UINT16((stBlockLength)/EEEP_SIZE_UNITS)
       );
 EAPI_APP_ASSERT_EXIT
-  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+  if(!EAPI_TEST_SUCCESS(StatusCode)){
   }
-  return EApiStatusCode;
+  return StatusCode;
 }
 size_t 
 GetBlockLength(
@@ -156,7 +156,7 @@ GetNextBlock(
     DBlockIdHdr_t *pCurBlock
     )
 {
-  DBlockIdHdr_t * EApiStatusCode=EAPI_STATUS_SUCCESS;
+  DBlockIdHdr_t * StatusCode=EAPI_STATUS_SUCCESS;
   size_t stBlockLength;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       GetNextBlock,
@@ -170,7 +170,7 @@ GetNextBlock(
       goto ErrorExit;
       break;
     default:
-      EApiStatusCode=EAPI_CREATE_PTR(
+      StatusCode=EAPI_CREATE_PTR(
           pCurBlock         ,
           stBlockLength     ,
           DBlockIdHdr_t *
@@ -179,29 +179,29 @@ GetNextBlock(
       }
 ErrorExit:
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 SetDynBlockHeader(
     void          *pCurBlock,
     uint8_t        u8BlockId,
     size_t         stBlockLength
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       SetDynBlockInfo,
       EAPI_STATUS_INVALID_PARAMETER,
       pCurBlock
     );
   ((DBlockIdHdr_t *)pCurBlock)->DBlockId=u8BlockId;
-  EApiStatusCode=SetBlockLength(pCurBlock, stBlockLength);
+  StatusCode=SetBlockLength(pCurBlock, stBlockLength);
 EAPI_APP_ASSERT_EXIT
-  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+  if(!EAPI_TEST_SUCCESS(StatusCode)){
   }
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 ReduceBlockLength(
     __IN     DBlockIdHdr_t**pvCurBlock,
     __IN     size_t         stReduceBy, 
@@ -209,7 +209,7 @@ ReduceBlockLength(
     __IN     unsigned int   uiFlags
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   DBlockIdHdr_t    *pTmpBlock   ;
   size_t NewLength;
   if(pvNewBlock!=NULL) *pvNewBlock=NULL;
@@ -239,7 +239,7 @@ ReduceBlockLength(
     pTmpBlock=EAPI_CREATE_PTR(*pvCurBlock, EeePAlignLength(stReduceBy), DBlockIdHdr_t *);
     memmove(pTmpBlock, *pvCurBlock, NewLength);
   }
-  EApiStatusCode=SetBlockLength(
+  StatusCode=SetBlockLength(
         pTmpBlock, 
         NewLength
       );
@@ -252,15 +252,15 @@ ReduceBlockLength(
     *pvCurBlock=pTmpBlock;
   }
 EAPI_APP_ASSERT_EXIT
-  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+  if(!EAPI_TEST_SUCCESS(StatusCode)){
   }
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 /*
  * Create and Handle Blocks 
  */
-EApiStatusCode_t
+EApiStatus_t
 EeePCreateNewBuffer(
     EeePHandel_t *pBHandel,
     size_t   stBufferSize ,
@@ -270,7 +270,7 @@ EeePCreateNewBuffer(
 {
   EeePCmn_t     *pEeePCmnHdr; 
   DBlockIdHdr_t *pEeePEmptyBlock; 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   DBlockIdHdr_t *pEeePTBlock; 
   
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
@@ -360,14 +360,14 @@ EeePCreateNewBuffer(
     EeeP_Set16BitValue_BE( pEeePCRCBlock->CrC16, 0);
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 EeePFreeBuffer(
     EeePHandel_t *pBHandel
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePFreeBuffer,
       EAPI_STATUS_INVALID_PARAMETER,
@@ -379,16 +379,16 @@ EeePFreeBuffer(
 		*pBHandel=NULL;
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 EeePGetFirstDB(
     EeePHandel_t     BHandel,
     DBlockIdHdr_t ** pFirstDB, 
     size_t          *pstImageMaxSize
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePGetFirstDB,
       EAPI_STATUS_INVALID_PARAMETER,
@@ -428,10 +428,10 @@ EeePGetFirstDB(
   if(pstImageMaxSize!=NULL) *pstImageMaxSize=
         (size_t)(256<<(((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_SIZE_MASK));
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 EeePMapBuffer(
     EeePHandel_t     BHandel,
     EeePBufferMap_t *pBufMap
@@ -439,7 +439,7 @@ EeePMapBuffer(
 {
   DBlockIdHdr_t    *pCurBlock       ;
   size_t         CurOffset, MaxDeviceLen;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
 
 
 
@@ -514,10 +514,10 @@ EeePMapBuffer(
   }
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 EeePListBlocks(
     EeePHandel_t BHandel,
     unsigned int uiFlags
@@ -527,7 +527,7 @@ EeePListBlocks(
   EeePCmn_t     *pEeePCmnHdr; 
   size_t         CurOffset, BlockLen, MaxDeviceLen=0;
   DBlockIdHdr_t    *pCurBlock       ;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   uiFlags=uiFlags;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePListBlocks,
@@ -609,16 +609,16 @@ EeePListBlocks(
   }
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 EeePSetCRC(
     EeePHandel_t BHandel
     )
 {
   EeePBufferMap_t BufferMap;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   void *pContext;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -644,15 +644,15 @@ EeePSetCRC(
 
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 EeePCheckCRC(
     EeePHandel_t BHandel
     )
 {
   EeePBufferMap_t BufferMap;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   void *pContext;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -678,10 +678,10 @@ EeePCheckCRC(
   DO(CRC_CCITT.verify(&pContext, BufferMap.pEeePCRCBlock->CrC16));
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 EeePAddBlock(
     EeePHandel_t   BHandel ,
     const void    *pcvBlock , 
@@ -690,7 +690,7 @@ EeePAddBlock(
     )
 {
   EeePBufferMap_t BufferMap;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   size_t RequestBlockSize;
   DBlockIdHdr_t    *pTmpBlock   ;
   DBlockIdHdr_t    *pvTmpBlock; 
@@ -761,10 +761,10 @@ EeePAddBlock(
   if(pvIBlock!=NULL) *pvIBlock=pvTmpBlock;
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 EeePFindBlock(
     __IN  EeePHandel_t   BHandel,
     __IN  uint8_t        BlockId,
@@ -773,7 +773,7 @@ EeePFindBlock(
     )
 {
   DBlockIdHdr_t    *pCurBlock;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   size_t         CurOffset, MaxDeviceLen;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -813,9 +813,9 @@ EeePFindBlock(
       "Block Not Found"
     );
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 EeePFindVendorBlock(
     __IN  EeePHandel_t   BHandel,
     __IN  uint16_t       VendorId,
@@ -826,7 +826,7 @@ EeePFindVendorBlock(
 {
   DBlockIdHdr_t   *pCurBlock;
   size_t         CurOffset, MaxDeviceLen;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePFindVendorBlock,
@@ -869,9 +869,9 @@ EeePFindVendorBlock(
       "Block Not Found"
     );
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 EeePFindSmbiosBlock(
     __IN  EeePHandel_t   BHandel,
     __IN  SMBIOS_BlockId_t Type,
@@ -881,7 +881,7 @@ EeePFindSmbiosBlock(
 {
   DBlockIdHdr_t   *pCurBlock;
   size_t           CurOffset, MaxDeviceLen;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePFindSmbiosBlock,
@@ -917,17 +917,17 @@ EeePFindSmbiosBlock(
       "Block Not Found"
     );
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t
+EApiStatus_t
 EeePWriteBufferToFile(
     __IN  EeePHandel_t   BHandel,
     __IN  char          *pszFilename
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePWriteBufferToFile,
       EAPI_STATUS_INVALID_PARAMETER,
@@ -949,23 +949,23 @@ EeePWriteBufferToFile(
       "Invalid EeeP Buffer"
     );
 
-  EApiStatusCode=WriteBinaryFile(
+  StatusCode=WriteBinaryFile(
           pszFilename, 
           BHandel, 
           256<<(((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_SIZE_MASK)
       );
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t
+EApiStatus_t
 EeePReadBufferFromFile(
     __OUT EeePHandel_t  *pBHandel,
     __IN  char          *pszFilename
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   size_t stFileSize;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePReadBufferFromFile,
@@ -1002,11 +1002,11 @@ EeePReadBufferFromFile(
   }
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 unsigned WriteSizes[]={ 1,8,16,32,64,128,256,512 };
-EApiStatusCode_t
+EApiStatus_t
 EeePSetI2CDeviceDesc(
     __OUT I2CDeviceDesc_t *pDDesc,
     __IN  EeePHandel_t     BHandel,
@@ -1014,7 +1014,7 @@ EeePSetI2CDeviceDesc(
     __IN  uint16_t         u16DeviceAddr
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       EeePWriteBufferToEEP,
       EAPI_STATUS_INVALID_PARAMETER,
@@ -1037,19 +1037,19 @@ EeePSetI2CDeviceDesc(
   pDDesc->DevSize   =256<<(((EeePCmn_t*)BHandel)->DeviceDesc&EEEP_DEVICE_SIZE_MASK);
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 EeePWriteBufferToEEP(
     __IN  EeePHandel_t   BHandel,
     __IN  unsigned       DeviceBus ,
     __IN  uint16_t       u16DeviceAddr 
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   I2CDeviceDesc_t DDesc;
   DO(EeePSetI2CDeviceDesc(&DDesc, BHandel, 5, u16DeviceAddr));
-  EApiStatusCode=EApiAHI2CWriteEeprom(
+  StatusCode=EApiAHI2CWriteEeprom(
           DeviceBus, 
           &DDesc, 
           0,
@@ -1057,18 +1057,18 @@ EeePWriteBufferToEEP(
           DDesc.DevSize
       );
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t
+EApiStatus_t
 EeePReadBufferFromEEP(
     __IN  EeePHandel_t  *pBHandel,
     __IN  unsigned          DeviceBus ,
     __IN  uint16_t       u16DeviceAddr 
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   I2CDeviceDesc_t DDesc;
   EeePCmn_t     EeePCmnHdr; 
   size_t        stEEPSize;
@@ -1102,7 +1102,7 @@ EeePReadBufferFromEEP(
         EAPI_STATUS_ALLOC_ERROR,
         *pBHandel
       );
-  EApiStatusCode=EApiAHI2CReadEeprom(
+  StatusCode=EApiAHI2CReadEeprom(
           DeviceBus, 
           &DDesc, 
           0,
@@ -1111,11 +1111,11 @@ EeePReadBufferFromEEP(
           stEEPSize
       );
 EAPI_APP_ASSERT_EXIT
-  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+  if(!EAPI_TEST_SUCCESS(StatusCode)){
     if(pBHandel!=NULL&&*pBHandel!=NULL)free(*pBHandel);
     *pBHandel=NULL;
   }
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
@@ -1129,8 +1129,8 @@ EAPI_APP_ASSERT_EXIT
         TEXT("#########################\n"),\
         TEXT(#x)\
       );\
-    EApiStatusCode=x;\
-    if(!EAPI_STATUS_TEST_OK(EApiStatusCode)) \
+    StatusCode=x;\
+    if(!EAPI_TEST_SUCCESS(StatusCode)) \
       goto  ErrorExit;\
   }while(0)
 
@@ -1143,7 +1143,7 @@ main(void)
 {
   EeePHandel_t BHandel;
   void *pvInsertedBlock;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned int i;
   uint8_t DummyBlock[]={
     0xF0,0x00,0x04,0x00,0x01,0x02,0x03,0x04,
@@ -1225,7 +1225,7 @@ main(void)
 
 
 ErrorExit:
-  exit(EApiStatusCode);
+  exit(StatusCode);
 
 }
 

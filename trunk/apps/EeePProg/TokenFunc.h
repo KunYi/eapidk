@@ -58,7 +58,7 @@ typedef struct TokenNumDesc_s{
 
 
 
-EApiStatusCode_t
+EApiStatus_t
 GetTokenFlags(
     __OUT   char               *szStrBuf   ,
     __INOUT signed int         *psiStrBufLen,
@@ -69,21 +69,21 @@ GetTokenFlags(
     __IN  size_t                stValue
     ) ;
 
-EApiStatusCode_t
+EApiStatus_t
 GetTokenValue(
     __IN  const TokenListDesc_t*pcTokenDesc,
     __IN  const char   *szValue  ,
     __OUT unsigned long*pulValue
   );
 
-EApiStatusCode_t
+EApiStatus_t
 GetValueToken(
     __OUT char                 *pszBuffer,
     __IN  size_t                stBufLen  ,
     __IN  const TokenListDesc_t*pcTokenDesc,
     __IN  size_t                stValue
     );
-EApiStatusCode_t
+EApiStatus_t
 GetTokenValueStrip(
     __IN  const TokenListDesc_t*pcTokenDesc,
     __IN  char   *szValue  ,

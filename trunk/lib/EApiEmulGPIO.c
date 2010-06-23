@@ -286,7 +286,7 @@ typedef struct GPIOIDMappingsTbl_s{
 }GPIOIDMappingsTbl_t;
 const GPIOIDMappingsTbl_t GPIOIDMapping[]={
 #if (EAPI_PLATFORM==EAPI_PLATFORM_COM0)
-  {EAPI_COM0_ID_GPIO_BITMASK, GpioMappingID0, 0x000000F0, 0x0000000F},
+  {EAPI_COM0_ID_GPIO_BANK   , GpioMappingID0, 0x000000F0, 0x0000000F},
   {EAPI_COM0_ID_GPIO_GPO0   , GpioMappingID1, 0x00000000, 0x00000001},
   {EAPI_COM0_ID_GPIO_GPO1   , GpioMappingID2, 0x00000000, 0x00000001},
   {EAPI_COM0_ID_GPIO_GPO2   , GpioMappingID3, 0x00000000, 0x00000001},
@@ -302,14 +302,14 @@ const GPIOIDMappingsTbl_t GPIOIDMapping[]={
 #endif
 };
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiGPIOGetLevelEmul( 
     __IN  EApiId_t  Id      , 
     __IN  uint32_t  BitMask , 
     __OUT uint32_t *pLevel
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i,i2;
   uint32_t APIBitMask=1;
 
@@ -352,17 +352,17 @@ EApiGPIOGetLevelEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiGPIOSetLevelEmul( 
   __IN EApiId_t Id      , 
   __IN uint32_t BitMask , 
   __IN uint32_t Level
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i,i2;
   uint32_t APIBitMask=1;
   for(i=0;i<ARRAY_SIZE(GPIOIDMapping);i++)
@@ -427,17 +427,17 @@ EApiGPIOSetLevelEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiGPIOGetDirectionEmul( 
   __IN  EApiId_t  Id        ,
   __IN  uint32_t  BitMask   ,
   __OUT uint32_t *pDirection
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i,i2;
   uint32_t APIBitMask=1;
 
@@ -479,17 +479,17 @@ EApiGPIOGetDirectionEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiGPIOSetDirectionEmul( 
     __IN EApiId_t Id        , 
     __IN uint32_t BitMask   , 
     __IN uint32_t Direction
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i,i2;
   uint32_t APIBitMask=1;
   for(i=0;i<ARRAY_SIZE(GPIOIDMapping);i++)
@@ -557,17 +557,17 @@ EApiGPIOSetDirectionEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiGPIOGetDirectionCapsEmul( 
   __IN      EApiId_t  Id      , 
   __OUTOPT  uint32_t *pInputs , 
   __OUTOPT  uint32_t *pOutputs
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i;
 
   for(i=0;i<ARRAY_SIZE(GPIOIDMapping);i++)
@@ -586,7 +586,7 @@ EApiGPIOGetDirectionCapsEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 

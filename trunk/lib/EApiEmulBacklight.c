@@ -56,13 +56,13 @@ static BackLightDevice_t BacklightLookup[]={
   {EAPI_ID_BACKLIGHT_2  , EAPI_BACKLIGHT_SET_OFF , EAPI_BACKLIGHT_SET_BRIGHTEST },
 };
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiVgaGetBacklightEnableEmul( 
     __IN  EApiId_t Id       , 
     __OUT uint32_t *pEnable
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i;
 
   for(i=0;i<ARRAY_SIZE(BacklightLookup);i++)
@@ -83,16 +83,16 @@ EApiVgaGetBacklightEnableEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiVgaSetBacklightEnableEmul( 
     __IN  EApiId_t Id       , 
     __OUT uint32_t Enable
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i;
 
   for(i=0;i<ARRAY_SIZE(BacklightLookup);i++)
@@ -113,15 +113,15 @@ EApiVgaSetBacklightEnableEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t 
+EApiStatus_t 
 EApiVgaGetBacklightBrightnessEmul( 
     __IN  EApiId_t Id           , 
     __OUT uint32_t *pBrightness
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i;
 
   for(i=0;i<ARRAY_SIZE(BacklightLookup);i++)
@@ -142,16 +142,16 @@ EApiVgaGetBacklightBrightnessEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiVgaSetBacklightBrightnessEmul( 
     __IN  EApiId_t Id           , 
     __OUT uint32_t Brightness
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i;
 
   for(i=0;i<ARRAY_SIZE(BacklightLookup);i++)
@@ -172,7 +172,7 @@ EApiVgaSetBacklightBrightnessEmul(
     );
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 

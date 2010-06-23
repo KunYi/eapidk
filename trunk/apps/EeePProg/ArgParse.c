@@ -35,7 +35,7 @@
  */
   #include <EeePApp.h>
 
-EApiStatusCode_t 
+EApiStatus_t 
 StringArg(
     struct ArgDesc_s  *pArgs, 
     void * cszCurArg          ,  
@@ -48,22 +48,22 @@ StringArg(
   return EAPI_STATUS_SUCCESS;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 NumberArg(
     struct ArgDesc_s  *pArgs, 
     void* pvalue   ,  
     const char *cszArg 
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   
   DO(ParseAsciiEqu_VA(cszArg, pvalue, (signed int)pArgs->stValueSize));
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 StringBlock(
     const char *cszStr        ,
     size_t      stMaxBlockLen ,
@@ -107,7 +107,7 @@ StringBlock(
   return EAPI_STATUS_MORE_DATA;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 PrintStringBlock(
     FILE       *OutStream     ,
     const char *cszStr        ,
@@ -129,7 +129,7 @@ PrintStringBlock(
   };
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t
+EApiStatus_t
 PrintStringBlock2(
     FILE       *OutStream     ,
     const char *cszStr        ,
@@ -161,7 +161,7 @@ const char cszFooter[]=
   "+=============================================================================+\n"
   ;
 
-EApiStatusCode_t
+EApiStatus_t
 PrintUsage(
     FILE      *OutStream    , 
     CmdDesc_t *pCmdDesc     ,
@@ -226,7 +226,7 @@ PrintUsage(
   return EAPI_STATUS_SUCCESS;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 ParseArgsBuffer(
     const char *szCmdLine, 
     char      **pszArgv, 
@@ -292,14 +292,14 @@ ParseArgsBuffer(
   return EAPI_STATUS_SUCCESS;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 CreateArgvArgcBuffer(
     const char *szCmdLine, 
     char      ***pszArgv, 
     signed int *psiArgc 
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatus_t StatusCode;
   signed int siCharCnt;
   DO(ParseArgsBuffer(szCmdLine, NULL, NULL, psiArgc, &siCharCnt));
   *pszArgv=(char**)malloc(((*psiArgc)*sizeof(char*))+(siCharCnt*sizeof(char)));
@@ -309,7 +309,7 @@ CreateArgvArgcBuffer(
       *pszArgv
     );
   (*psiArgc) --;
-  EApiStatusCode=ParseArgsBuffer(
+  StatusCode=ParseArgsBuffer(
           szCmdLine, 
           *pszArgv, 
           (char *)((*pszArgv)+(*psiArgc)), 
@@ -317,34 +317,34 @@ CreateArgvArgcBuffer(
           &siCharCnt
         );
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 ParseArgsFile(
     const char*szFilename,
     CmdDesc_t *pCmdDesc,
     size_t    stArgDescCnt
     )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatus_t StatusCode;
   signed int siArgc;
   char**pszArgv=NULL;
   void *pvFileBuffer;
   char *szFileBuffer;
   size_t stFileSize;
   char ErrBuffer[200];
-  EApiStatusCode=ReadTextFile(szFilename, &pvFileBuffer, &stFileSize);
+  StatusCode=ReadTextFile(szFilename, &pvFileBuffer, &stFileSize);
   szFileBuffer=pvFileBuffer;
 
-  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+  if(!EAPI_TEST_SUCCESS(StatusCode)){
     EApiSprintfA(
         ErrBuffer, ARRAY_SIZE(ErrBuffer),
         "Error Reading %s", szFilename
         );
     EAPI_APP_RETURN_ERROR(
         ParseArgs,
-        EApiStatusCode,
+        StatusCode,
         ErrBuffer
       );
   }
@@ -357,11 +357,11 @@ ParseArgsFile(
 EAPI_APP_ASSERT_EXIT
   if(pszArgv  !=NULL) free(pszArgv  );
   pszArgv=NULL;
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t
+EApiStatus_t
 ParseSubArgs(
       signed int *psiArgc    ,
       const char***ppszArgv  ,
@@ -369,7 +369,7 @@ ParseSubArgs(
       ArgDesc_t *pArgDesc  
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   while(stArgCount -- ){
     if(!(*psiArgc)--){
       printf("ERROR: Missing Required Argument (%s)\n", pArgDesc->cszHelp);
@@ -380,11 +380,11 @@ ParseSubArgs(
     ++pArgDesc;
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t
+EApiStatus_t
 ParseArgs(
     signed int siArgc,
     const char**pszArgv,
@@ -392,7 +392,7 @@ ParseArgs(
     size_t    stArgDescCnt
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   const char **pszCurArg=pszArgv;
   CmdDesc_t *pCurArgDesc;
   size_t stI;
@@ -475,9 +475,9 @@ ParseArgs(
   }
 
   if(uiSyntaxError)
-  EApiStatusCode=EAPI_STATUS_INVALID_PARAMETER;
+  StatusCode=EAPI_STATUS_INVALID_PARAMETER;
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 #if TEST_EEPARG
 
@@ -551,9 +551,9 @@ char *DummyArgs1[]={
       TEXT("#####\n"),\
       TEXT(#x)        \
     );                \
-  EApiStatusCode=x;   \
-  if(!EAPI_STATUS_TEST_OK(EApiStatusCode)) \
-    return EApiStatusCode
+  StatusCode=x;   \
+  if(!EAPI_TEST_SUCCESS(StatusCode)) \
+    return StatusCode
 
 /*
  * Create Block Content
@@ -565,7 +565,7 @@ main(
     const char *pszArgv[]
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   signed int  siArgcTest;
   char     **pszArgvTest;
 
@@ -588,7 +588,7 @@ main(
 /*   for(siCharCnt=siArgcTest;-- siCharCnt ; ){ printf("ARG[%02i]=%s\n", siCharCnt, pszArgvTest[siCharCnt]); } */
   free(pszArgvTest);
 
-  exit(EApiStatusCode);
+  exit(StatusCode);
 }
 
 #endif

@@ -244,13 +244,13 @@ ArgDesc_t  GEN_LIST_DBLOCKS_EEP[]={
   },
 };
 
-EApiStatusCode_t
+EApiStatus_t
 CreateTxtFilePtr(
     const char *Destination,
     FILE **     FilePtr
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   if(!strcmp(Destination, "stdout")){
      *FilePtr=stdout;
   }else if(!strcmp(Destination, "&1")){
@@ -268,9 +268,9 @@ CreateTxtFilePtr(
       );
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 FreeFilePtr(
     FILE **     FilePtr
     )
@@ -288,12 +288,12 @@ FreeFilePtr(
           x=NULL;\
       }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_CreateCOM0R20_MEEPCfg(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   FILE *lclStream=NULL;
 
   DO(CreateTxtFilePtr(*(char**)pArgData, &lclStream));
@@ -301,14 +301,14 @@ CMD_CreateCOM0R20_MEEPCfg(
 
 EAPI_APP_ASSERT_EXIT
   FreeFilePtr(&lclStream);
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_CreateCOM0R20_CBCfg(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   FILE *lclStream=NULL;
 
   DO(CreateTxtFilePtr(*(char**)pArgData, &lclStream));
@@ -316,14 +316,14 @@ CMD_CreateCOM0R20_CBCfg(
 
 EAPI_APP_ASSERT_EXIT
   FreeFilePtr(&lclStream);
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_CreateCOM0R20_EeePExtCfg(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   FILE *lclStream=NULL;
 
   DO(CreateTxtFilePtr(*(char**)pArgData, &lclStream));
@@ -331,15 +331,15 @@ CMD_CreateCOM0R20_EeePExtCfg(
 
 EAPI_APP_ASSERT_EXIT
   FreeFilePtr(&lclStream);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_CreateCOM0R20CB_EEP(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeeP_CreateCOM0R20_CBImage(
@@ -350,15 +350,15 @@ CMD_CreateCOM0R20CB_EEP(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_CreateCOM0R20M_EEP(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeeP_CreateCOM0R20_MEEPImage(
@@ -369,15 +369,15 @@ CMD_CreateCOM0R20M_EEP(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_CreateEeePExt_EEP(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeeP_CreateEeePExtEEPImage(
@@ -392,16 +392,16 @@ CMD_CreateEeePExt_EEP(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_ProgramCOM0R20CB_EEP(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeePReadBufferFromFile(
@@ -419,15 +419,15 @@ CMD_ProgramCOM0R20CB_EEP(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_ProgramCOM0R20M_EEP(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeePReadBufferFromFile(
@@ -445,16 +445,16 @@ CMD_ProgramCOM0R20M_EEP(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_ProgramEeePExt_EEP(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeePReadBufferFromFile(
@@ -476,15 +476,15 @@ CMD_ProgramEeePExt_EEP(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_StoreEeePExt_EEP(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
   DO(EeePReadBufferFromEEP(
           &BHandel, 
@@ -495,10 +495,10 @@ CMD_StoreEeePExt_EEP(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_StoreCOM0R20_CB_EEP(
     void *pArgData
     )
@@ -508,7 +508,7 @@ CMD_StoreCOM0R20_CB_EEP(
   return CMD_StoreEeePExt_EEP(&WriteEep);
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_StoreCOM0R20_M_EEP(
     void *pArgData
     )
@@ -518,12 +518,12 @@ CMD_StoreCOM0R20_M_EEP(
   return CMD_StoreEeePExt_EEP(&WriteEep);
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_ListDBlocksEeePExt_EEP(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
   DO(EeePReadBufferFromEEP(
           &BHandel, 
@@ -534,11 +534,11 @@ CMD_ListDBlocksEeePExt_EEP(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_ListDBlocksCOM0R20_CB_EEP(
     void *pArgData
     )
@@ -547,7 +547,7 @@ CMD_ListDBlocksCOM0R20_CB_EEP(
   pArgData=pArgData;
   return CMD_ListDBlocksEeePExt_EEP(&DevDesc);
 }
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_ListDBlocksCOM0R20_M_EEP(
     void *pArgData
     )
@@ -557,12 +557,12 @@ CMD_ListDBlocksCOM0R20_M_EEP(
   return CMD_ListDBlocksEeePExt_EEP(&DevDesc);
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_CreateExtEepEEP_IMG(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeeP_CreateEeePExtEEPImage(
@@ -573,14 +573,14 @@ CMD_CreateExtEepEEP_IMG(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_CreateCOM0R20M_IMG(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeeP_CreateCOM0R20_MEEPImage(
@@ -591,14 +591,14 @@ CMD_CreateCOM0R20M_IMG(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_CreateCOM0R20CB_IMG(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeeP_CreateCOM0R20_CBImage(
@@ -609,15 +609,15 @@ CMD_CreateCOM0R20CB_IMG(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 CMD_ListDBlocks_IMG(
     void *pArgData
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EeePHandel_t BHandel=NULL;
 
   DO(EeePReadBufferFromFile(
@@ -628,7 +628,7 @@ CMD_ListDBlocks_IMG(
 
 EAPI_APP_ASSERT_EXIT
   EeePFreeBuffer(&BHandel);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
@@ -872,9 +872,9 @@ CmdDesc_t ArgsDesc[]={
 
 
 #define DO_MAIN(x) \
-  EApiStatusCode=x;\
-  if(!EAPI_STATUS_TEST_OK(EApiStatusCode)){ \
-    EAPI_FORMATED_MES('E', main, EApiStatusCode, #x);\
+  StatusCode=x;\
+  if(!EAPI_TEST_SUCCESS(StatusCode)){ \
+    EAPI_FORMATED_MES('E', main, StatusCode, #x);\
     goto ExitPoint;\
   }
 
@@ -888,21 +888,21 @@ main(
     const char **argv
   )
 {
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatus_t StatusCode;
 
   DO_MAIN(EApiLibInitialize());
 
-  EApiStatusCode=ParseArgs(argc - 1, argv + 1, ArgsDesc, ARRAY_SIZE(ArgsDesc));
-  switch(EApiStatusCode){
+  StatusCode=ParseArgs(argc - 1, argv + 1, ArgsDesc, ARRAY_SIZE(ArgsDesc));
+  switch(StatusCode){
     case EAPI_STATUS_INVALID_PARAMETER:
       printf("%s", syntaxErrMes);
-      exit(EApiStatusCode);
+      exit(StatusCode);
       break;
     case EAPI_STATUS_SUCCESS:
       break;
     default:
-      EAPI_FORMATED_MES('E', main, EApiStatusCode, "ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc))");
-      exit(EApiStatusCode);
+      EAPI_FORMATED_MES('E', main, StatusCode, "ParseArgs(argc, argv, ArgsDesc, ARRAY_SIZE(ArgsDesc))");
+      exit(StatusCode);
       break;
   }
 
@@ -921,5 +921,5 @@ main(
 ErrorExit:
 EAPI_APP_ASSERT_EXIT
   DO_MAIN(EApiLibUnInitialize());
-  exit(EApiStatusCode);
+  exit(StatusCode);
 }

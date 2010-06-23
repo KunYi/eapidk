@@ -5,7 +5,7 @@
  *+=========================================================================
  *I  $HeadURL$
  *+=========================================================================
- *I   Copyright: Copyright (c) 2009, PICMG
+ *I   Copyright: Copyright (c) 2009-2010, PICMG
  *I      Author: John Kearney,                  John.Kearney@kontron.com
  *I
  *I     License: All rights reserved. This program and the accompanying 
@@ -138,7 +138,7 @@
  *
  */
 /* IDs */
-#define EAPI_COM0_ID_GPIO_BITMASK EAPI_ID_GPIO_BITMASK00
+#define EAPI_COM0_ID_GPIO_BANK    EAPI_ID_GPIO_BANK00
 #define EAPI_COM0_ID_GPIO_GPI0    EAPI_GPIO_GPIO_ID(0)
 #define EAPI_COM0_ID_GPIO_GPI1    EAPI_GPIO_GPIO_ID(1)
 #define EAPI_COM0_ID_GPIO_GPI2    EAPI_GPIO_GPIO_ID(2)

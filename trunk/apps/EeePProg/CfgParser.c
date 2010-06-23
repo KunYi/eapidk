@@ -41,14 +41,14 @@
 
 
 
-EApiStatusCode_t
+EApiStatus_t
 PrintCfgFile(
     __IN    CfgBlockDesc_t *pCfgBDesc         ,
     __IN    size_t         stCfgBDescElements ,
     __OUT   FILE *         OutStream
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   size_t i;
   unsigned int i2;
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -98,16 +98,16 @@ PrintCfgFile(
     pCfgBDesc++;
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 CleanBlock(
     __IN    CfgElementDesc_t *pCurElement         ,
     __IN    size_t           stElementCount
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       CleanBlock,
       EAPI_STATUS_INVALID_PARAMETER,
@@ -133,16 +133,16 @@ CleanBlock(
       pCurElement++;
     }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 CleanStruct(
     __IN    CfgBlockDesc_t *pCfgBDesc         ,
     __IN    size_t         stCfgBDescElements
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       CleanStruct,
       EAPI_STATUS_INVALID_PARAMETER,
@@ -159,16 +159,16 @@ CleanStruct(
     pCfgBDesc++;
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 GetElementDesc(
     struct CfgBlockDesc_s *pDesc,
     CfgElementDesc_t     **ppElementsDesc,
     const char            *cszElementName
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_NOT_FOUND;
+  EApiStatus_t StatusCode=EAPI_STATUS_NOT_FOUND;
   CfgElementDesc_t     *pElementsDesc;
   int   i;
 
@@ -197,17 +197,17 @@ GetElementDesc(
   {
     if(!strcmp(cszElementName, pElementsDesc->pcszElementName)){
       *ppElementsDesc=pElementsDesc;
-      EApiStatusCode=EAPI_STATUS_SUCCESS;
+      StatusCode=EAPI_STATUS_SUCCESS;
       break;
     }
   }
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 #define MAX_LINE_LEN 2048
-EApiStatusCode_t
+EApiStatus_t
 ParseCfgFile(
     __IN    const char *pcszCfgFileName       ,
     __INOUT CfgBlockDesc_t *pCfgBDesc         ,
@@ -216,7 +216,7 @@ ParseCfgFile(
 {
   FILE *pCfgFile;
   char LineBuffer[MAX_LINE_LEN];
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   char *szName;
   char *szValue;
   size_t i;
@@ -278,8 +278,8 @@ ParseCfgFile(
           )
         {
           if(pCurElement->cuiRequired>pCurElement->Instances.stUsedCnt){
-						EApiStatusCode=EAPI_STATUS_ERROR;
-						siFormattedMessage_SC('W', __FILE__, "ParseCfgFile", __LINE__, EApiStatusCode,
+						StatusCode=EAPI_STATUS_ERROR;
+						siFormattedMessage_SC('W', __FILE__, "ParseCfgFile", __LINE__, StatusCode,
                 "Missing Required Element '%s' in Block (%lu)'%s'", 
                 pCurElement->pcszElementName, 
                 ulBlockStartLine,
@@ -335,16 +335,16 @@ ParseCfgFile(
 		  siFormattedMessage_M2('L', __FILE__, "ParseCfgFile", __LINE__, pCurBlockDesc->pszBlockName,
           "(%04lu)%-20s = %s", ulLineNum, szName, szValue);
 #endif
-      EApiStatusCode=GetElementDesc(pCurBlockDesc, &pCurElement, szName);
+      StatusCode=GetElementDesc(pCurBlockDesc, &pCurElement, szName);
 
-      switch(EApiStatusCode){
+      switch(StatusCode){
         case EAPI_STATUS_SUCCESS:
           EAPI_APP_RETURN_ERROR_IF_S(
               ParseCfgFile,
               (pCurElement->Instances.stUsedCnt+1>pCurElement->Instances.stTotalCnt),
               EAPI_STATUS_ERROR
             );
-          EApiStatusCode=pCurElement->pHandlers->Handler(
+          StatusCode=pCurElement->pHandlers->Handler(
                 pCurElement, 
                 EAPI_CREATE_PTR(
                     pCurElement->Instances.pIndx,
@@ -353,9 +353,9 @@ ParseCfgFile(
                   ),
                 szValue
               );
-          if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+          if(!EAPI_TEST_SUCCESS(StatusCode)){
             siFormattedMessage_SC(
-                'E', __FILE__, "ParseCfgFile", __LINE__, EApiStatusCode,
+                'E', __FILE__, "ParseCfgFile", __LINE__, StatusCode,
                 "ERROR Parsing Line %li, %s\n", ulLineNum, szValue
             );
             goto ErrorExit;
@@ -365,7 +365,7 @@ ParseCfgFile(
           break;
         case EAPI_STATUS_NOT_FOUND:
           siFormattedMessage_SC(
-                'E', __FILE__, "ParseCfgFile", __LINE__, EApiStatusCode,
+                'E', __FILE__, "ParseCfgFile", __LINE__, StatusCode,
                 "Unknown Block Element on line %li, '%s'\n", ulLineNum, szName
           );
           break;
@@ -378,8 +378,8 @@ ParseCfgFile(
   pCurBlockDesc=pCfgBDesc;
   for(i=stCfgBDescElements;i;i--){
     if(pCurBlockDesc->cuiRequired>pCurBlockDesc->uiFound){
-      EApiStatusCode=EAPI_STATUS_ERROR;
-		  siFormattedMessage_SC('W', __FILE__, "ParseCfgFile", __LINE__, EApiStatusCode,
+      StatusCode=EAPI_STATUS_ERROR;
+		  siFormattedMessage_SC('W', __FILE__, "ParseCfgFile", __LINE__, StatusCode,
           "Missing Required Block '%s'\n", 
           pCurBlockDesc->pszBlockName
         );
@@ -394,7 +394,7 @@ ParseCfgFile(
 ErrorExit:
 EAPI_APP_ASSERT_EXIT 
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 

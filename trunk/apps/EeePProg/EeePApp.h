@@ -45,23 +45,29 @@ extern "C" {
 #include <Str2Value.h>
 #include <EeePCfg.h>
 #include <EeePArg.h>
-#define TRACE_BACK 1
+  
+#ifndef TRACE_BACK
+#	define TRACE_BACK 1
+#endif
+#ifndef __FUNCTION__
+#	define __FUNCTION__ ""
+#endif
 
 #if TRACE_BACK
 #  define DO(x) \
   do{ \
-    EApiStatusCode=x;\
-    if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){ \
-        siFormattedMessage_SC('E', __FILE__, "TB " ## __FUNCTION__, __LINE__, \
-        EApiStatusCode, "%s\n", #x );\
+    StatusCode=x;\
+    if(!EAPI_TEST_SUCCESS(StatusCode)){ \
+        siFormattedMessage_SC('E', __FILE__, "TB "  __FUNCTION__, __LINE__, \
+        StatusCode, "%s\n", #x );\
       EAPI_APP_EXIT;\
     }\
   }while(0)
 #else
 #  define DO(x) \
   do{ \
-    EApiStatusCode=x;\
-    if(EAPI_STATUS_TEST_NOK(EApiStatusCode)) \
+    StatusCode=x;\
+    if(!EAPI_TEST_SUCCESS(StatusCode)) \
       EAPI_APP_EXIT;\
   }while(0)
 #endif

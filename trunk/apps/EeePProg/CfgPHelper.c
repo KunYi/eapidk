@@ -52,7 +52,7 @@ Handlers_t  GUID_Element_funcs    ={ GUID_Element    , GenClear_Element , GUID_H
  *
  *
  */
-EApiStatusCode_t                                    
+EApiStatus_t                                    
 No_Default_Txt(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream ,
@@ -66,14 +66,14 @@ No_Default_Txt(
 }
 
 
-EApiStatusCode_t                                    
+EApiStatus_t                                    
 TokenNum_List_Default(
     __IN  struct  CfgElementDesc_s *pElementDesc,
     __IN  FILE * stream ,
     __IN  unsigned int uiCount
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   struct  CfgElementDesc_s LclElementDesc=*pElementDesc;
 
   if(((TokenNumDesc_t*)pElementDesc->pExtraInfo)->pTokens){
@@ -84,9 +84,9 @@ TokenNum_List_Default(
     DO(Range_Default_Txt(&LclElementDesc, stream, uiCount));
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t                                    
+EApiStatus_t                                    
 Token_List_Default(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream ,
@@ -101,7 +101,7 @@ Token_List_Default(
 }
 
 
-EApiStatusCode_t                                    
+EApiStatus_t                                    
 Range_Default_Txt(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream ,
@@ -118,7 +118,7 @@ Range_Default_Txt(
   return EAPI_STATUS_SUCCESS;
 }
 
-EApiStatusCode_t                                    
+EApiStatus_t                                    
 GUID_Default(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream ,
@@ -141,7 +141,7 @@ const char *DeletePreserve[]={
   "Deleted",
   "Preserved"
 };
-EApiStatusCode_t                                    
+EApiStatus_t                                    
 String_Help(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream,
@@ -161,7 +161,7 @@ String_Help(
   }
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t
+EApiStatus_t
 Range_List_Help(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream,
@@ -215,14 +215,14 @@ Range_List_Help(
   }
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t                                    
+EApiStatus_t                                    
 TokenNum_List_Help(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream,
     const char *Indent
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   struct  CfgElementDesc_s LclElementDesc=*pElementDesc;
 
   LclElementDesc.pExtraInfo=((TokenNumDesc_t*)pElementDesc->pExtraInfo)->pTokens;
@@ -231,9 +231,9 @@ TokenNum_List_Help(
   LclElementDesc.pExtraInfo=((TokenNumDesc_t*)pElementDesc->pExtraInfo)->pRange;
   DO(Range_List_Help(&LclElementDesc, stream, Indent));
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 Token_List_Help(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream,
@@ -251,7 +251,7 @@ Token_List_Help(
   }
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t
+EApiStatus_t
 GUID_Help(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream,
@@ -264,7 +264,7 @@ GUID_Help(
   fprintf(stream, "%s %s\n", Indent, "  Means Setable       FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t
+EApiStatus_t
 SpecRev_Help(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream,
@@ -275,7 +275,7 @@ SpecRev_Help(
   fprintf(stream, "%s %s\n", Indent, "2.0");
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t
+EApiStatus_t
 PNPID_Help(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream,
@@ -286,7 +286,7 @@ PNPID_Help(
   fprintf(stream, "%s %s\n", Indent, "3 Letter PNPID e.g. PMG,KEM");
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t
+EApiStatus_t
 I2C_EEPROM_Help(
     struct  CfgElementDesc_s *pElementDesc,
     FILE * stream,
@@ -304,13 +304,13 @@ I2C_EEPROM_Help(
  *
  *
  */
-EApiStatusCode_t
+EApiStatus_t
 Dealloc_Element(
     __IN    struct  CfgElementDesc_s *pElementDesc, 
     __INOUT void   *pCurElement
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
                 Dealloc_Element,
                 EAPI_STATUS_INVALID_PARAMETER,
@@ -334,13 +334,13 @@ EAPI_APP_ASSERT_EXIT
   return EAPI_STATUS_SUCCESS;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 GenClear_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     __OUT void    *pvCurElement                 
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   uint8_t *pu8CurElement=pvCurElement;
   size_t stByteOffset=pElementDesc->stBitOffset/8;
   size_t stBitOffset =pElementDesc->stBitOffset%8;
@@ -372,14 +372,14 @@ EAPI_APP_ASSERT_EXIT
  *
  *
  */
-EApiStatusCode_t
+EApiStatus_t
 String_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void  *pCurElement, 
     char   *szValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   StringDesc_t *pStringDesc=pElementDesc->pExtraInfo; 
   size_t stStrLength;
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
@@ -420,14 +420,14 @@ String_Element(
 EAPI_APP_ASSERT_EXIT
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t
+EApiStatus_t
 GUID_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void    *pCurElement, 
     char   *szValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned int i;
   char    *szEnd;
   char     Short[3];
@@ -483,26 +483,26 @@ GUID_Element(
 #endif
  
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 Number_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void *pCurElement,
     char   *szValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   signed long long sllValue;
   
   DO(ParseAsciiEqu(szValue, &sllValue));
   if(pElementDesc->pExtraInfo!=NULL){
-    EApiStatusCode=RangeCheckAny(
+    StatusCode=RangeCheckAny(
         ((NumberRangeDesc_t*)pElementDesc->pExtraInfo), 
         (unsigned long)sllValue
       );
   }
-  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+  if(!EAPI_TEST_SUCCESS(StatusCode)){
     printf("\tNumber_Element = Outside Range, %s\n", szValue);
   }else{
 /*     printf("\tNumber_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
@@ -517,17 +517,17 @@ Number_Element(
 
   
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 Size_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void *pCurElement,
     char   *szValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   signed long long sllValue;
   signed long long sllScalar=1;
   char *szCurArg=_strdup(skipWhiteSpaces(szValue));
@@ -556,13 +556,13 @@ Size_Element(
 
 /*   printf(" TEST %s %llX\n", szCurArg, sllValue*sllScalar); */
   if(pElementDesc->pExtraInfo!=NULL){
-    EApiStatusCode=RangeCheckAny(
+    StatusCode=RangeCheckAny(
         ((NumberRangeDesc_t*)pElementDesc->pExtraInfo), 
         *(unsigned long*)pCurElement
       );
   }
 
-  if(!EAPI_STATUS_TEST_OK(EApiStatusCode)){
+  if(!EAPI_TEST_SUCCESS(StatusCode)){
     printf("\tNumber_Element = Outside Range, %s\n", szValue);
 /*   }else{ */
 /*     printf("\tNumber_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
@@ -579,17 +579,17 @@ Size_Element(
   
 EAPI_APP_ASSERT_EXIT
   if(szCurArg) free(szCurArg);
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 I2C_EEPROM_Addr(
     struct  CfgElementDesc_s *pElementDesc, 
     void *pCurElement,
     char   *szValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned long ulDeviceAddress=ulConvertStr2NumEx(szValue, NULL);
 
   EAPI_APP_ASSERT_PARAMATER_CHECK_S(
@@ -614,33 +614,33 @@ I2C_EEPROM_Addr(
           ));
   }else{
   	printf("\tI2C_EEPROM_Addr = Invalid Address 0x%02lX, %s\n", ulDeviceAddress, szValue);
-  	EApiStatusCode=EAPI_STATUS_ERROR;
+  	StatusCode=EAPI_STATUS_ERROR;
   }
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 Token_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void *pCurElement,
     char   *szValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned long    ulValue;
 
 
   szValue=skipWhiteSpaces(szValue);
   stripWhiteSpaces(szValue);
-  EApiStatusCode=GetTokenValue(
+  StatusCode=GetTokenValue(
       ((TokenListDesc_t*)pElementDesc->pExtraInfo), 
       szValue, 
       &ulValue
     );
 
-  if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+  if(!EAPI_TEST_SUCCESS(StatusCode)){
     printf("\tToken_Element = Unknown Token, %s\n", szValue);
   }else{
 /*     printf("\tToken_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
@@ -653,27 +653,27 @@ Token_Element(
           ));
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 TokenNum_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void *pCurElement,
     char   *szValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned long ulValue;
 
   szValue=skipWhiteSpaces(szValue);
   stripWhiteSpaces(szValue);
 
-  EApiStatusCode=GetTokenValue(
+  StatusCode=GetTokenValue(
       ((TokenNumDesc_t*)pElementDesc->pExtraInfo)->pTokens, 
       szValue, 
       &ulValue
     );
-  if(EAPI_STATUS_TEST_OK(EApiStatusCode)){
+  if(EAPI_TEST_SUCCESS(StatusCode)){
     DO(AssignValue_VA(
         ulValue, 
         pCurElement, 
@@ -688,17 +688,17 @@ TokenNum_Element(
 
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 SpecRev_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void     *pCurElement,
     char   *szValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned int uiValue;
   char *szEnd;
   pElementDesc=pElementDesc;
@@ -718,16 +718,16 @@ SpecRev_Element(
             (signed int)pElementDesc->Instances.stElementSize
           ));
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 PNPID_Element(
     struct  CfgElementDesc_s *pElementDesc, 
     void          *pCurElement,
     char          *szValue
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned int i;
   unsigned int uiCurChar;
   unsigned int uiPNPID=0;
@@ -769,7 +769,7 @@ PNPID_Element(
           ));
 /*   printf("\tPNPID_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 

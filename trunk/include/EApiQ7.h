@@ -5,7 +5,7 @@
  *+=========================================================================
  *I  $HeadURL$
  *+=========================================================================
- *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
+ *I   Copyright: Copyright (c) 2009-2010, PICMG
  *I      Author: John Kearney,                  John.Kearney@kontron.com
  *I
  *I     License: All rights reserved. This program and the accompanying 
