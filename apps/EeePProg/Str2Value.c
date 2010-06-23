@@ -43,13 +43,13 @@ ReturnEnvVar(
     size_t requiredSize;
     getenv_s( &requiredSize, NULL, 0, VarName);
     if(requiredSize==0)
-      return NULL;
+      goto ErrorExit;
 
     libvar = (char*) malloc(requiredSize * sizeof(char));
     if (!libvar)
     {
         printf("Failed to allocate memory!\n");
-        return NULL;
+        goto ErrorExit;
     }
 
     // Get the value of the LIB environment variable.
@@ -203,14 +203,14 @@ enum OperationTypes_e{
   Op_LeftShift              ,
   Op_RightShift
 };
-EApiStatusCode_t
+EApiStatus_t
 DoOperation(
     __IN  unsigned int     siOperation,
     __OUT signed long long *psllValue ,
     __IN  signed long long sllValue
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   switch(siOperation){
     case Op_NoOperation:
       break;
@@ -286,17 +286,17 @@ DoOperation(
       break;
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 typedef struct BlockParser_s{
     const char       *szDesc;
-    EApiStatusCode_t    (*pHandler)(struct BlockParser_s*, char* ,         signed long long*);
-    EApiStatusCode_t    (*pParser )(void*, char**, char**, signed int      *);
+    EApiStatus_t    (*pHandler)(struct BlockParser_s*, char* ,         signed long long*);
+    EApiStatus_t    (*pParser )(void*, char**, char**, signed int      *);
     void             *pContext;
     const char       *szMsg2;
 }BlockParser_t;
 
-EApiStatusCode_t
+EApiStatus_t
 ParserWrapper(
     __IN  BlockParser_t    *pContext,
     __IN  char             *szString,
@@ -306,18 +306,18 @@ ParserWrapper(
   )
 {
   char SaveChar=0;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   if(szStringEnd!=NULL){
     SaveChar=*szStringEnd;
     *szStringEnd='\0';
   }
-  EApiStatusCode=pContext->pHandler(pContext+1, szString, psllValue);
+  StatusCode=pContext->pHandler(pContext+1, szString, psllValue);
   if(szStringEnd!=NULL){
     *szStringEnd=SaveChar;
   }
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 ParseOpcodeTokensAscii(
     __IN  void       *pContext ,
     __IN  char      **pszString,
@@ -327,21 +327,21 @@ ParseOpcodeTokensAscii(
 {
   const StrDescElement_t*pElement ;
   char *szPos=*pszString;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   szPos=szFindStr(szPos, pContext, &pElement);
   *pszOpcode=szPos;
   if(szPos==NULL){
     *pszString=NULL;
     *psiOperationType=Op_NoOperation;
-    return EApiStatusCode;
+    return StatusCode;
   }
   
   *psiOperationType=pElement->cuiValue;
   *pszString=szPos+strlen(pElement->pcszSymbol);
-  return  EApiStatusCode;
+  return  StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 ParseAsciiEqu_13(
     __IN  struct BlockParser_s *pContext,
     __IN  char             *szString,
@@ -351,7 +351,7 @@ ParseAsciiEqu_13(
 {
     char *pszEnd;
     signed long long CurValue;
-    EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+    EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
     szString=skipWhiteSpaces(szString);
 
 
@@ -402,13 +402,13 @@ ParseAsciiEqu_13(
         break;
     }
 EAPI_APP_ASSERT_EXIT
-    return EApiStatusCode;
+    return StatusCode;
 }
 
 
 
 
-EApiStatusCode_t
+EApiStatus_t
 ParseAsciiEqu_cmn(
     __IN  BlockParser_t    *pContext,
     __IN  char             *szString,
@@ -418,7 +418,7 @@ ParseAsciiEqu_cmn(
   char *szOpt,*szPos3,*szPos1,*szPos2=szString;
   signed OperationType=Op_NoOperation, LOperationType;
   signed long long CurValue;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
 
   szOpt=NULL;
 
@@ -445,10 +445,10 @@ ParseAsciiEqu_cmn(
       DO(DoOperation(LOperationType, psllValue, CurValue));
     }while(szOpt!=NULL);
   }else{
-    EApiStatusCode=pContext->pHandler(pContext+1, szString, psllValue);
+    StatusCode=pContext->pHandler(pContext+1, szString, psllValue);
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 const StrDescElement_t cMultDiv[]={
@@ -470,7 +470,7 @@ const StrDescElement_t cBitShift[]={
 };
 STR_DESC(cBitShift_desc, cBitShift);
 
-EApiStatusCode_t
+EApiStatus_t
 ParseAscii_8(
     __IN  void       *pContext ,
     __IN  char      **pszString,
@@ -478,7 +478,7 @@ ParseAscii_8(
     __OUT signed int *psiOperationType
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   char *szGTLT=*pszString;
   char GTLT[]      = "<>";
   pContext=pContext;
@@ -494,7 +494,7 @@ ParseAscii_8(
   if(szGTLT==NULL){
     *pszString=NULL;
     *psiOperationType=Op_NoOperation;
-    return EApiStatusCode;
+    return StatusCode;
   }
   switch(*szGTLT++) {
     case '<':
@@ -516,7 +516,7 @@ ParseAscii_8(
   }
 
   *pszString=szGTLT;
-  return EApiStatusCode ;
+  return StatusCode ;
 }
 
 const StrDescElement_t cCompare[]={
@@ -552,7 +552,7 @@ STR_DESC(cLogicalOr_desc, cLogicalOr);
 /*
  * cond?vara:varb
  */
-EApiStatusCode_t
+EApiStatus_t
 ParseAsciiEqu_2(
     __IN  BlockParser_t    *pContext,
     __IN  char             *szString,
@@ -562,7 +562,7 @@ ParseAsciiEqu_2(
   char *szCondition;
   char *szSelBracket;
   signed long long Condition=0;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   szCondition=strchr(szString, '?');
   if(szCondition!=NULL){
 #ifdef TEST_EQUPARSER
@@ -585,10 +585,10 @@ ParseAsciiEqu_2(
       DO(ParserWrapper(pContext - 1, szSelBracket+1, NULL, psllValue));
     }
   } else{
-    EApiStatusCode=pContext->pHandler(pContext+1, szString, psllValue);
+    StatusCode=pContext->pHandler(pContext+1, szString, psllValue);
   }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 BlockParser_t cAS[]={
@@ -608,7 +608,7 @@ BlockParser_t cAS[]={
 /*
  * ()
  */
-EApiStatusCode_t
+EApiStatus_t
 ParseAsciiEqu_1(
     __IN  char             *szString,
     __OUT signed long long *psllValue
@@ -618,7 +618,7 @@ ParseAsciiEqu_1(
   char *szEndBracket;
   size_t stSubLen;
   signed long long CurValue;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   *psllValue=0;
   while((szStartBracket=strrchr(szString, '('))!=NULL){
 #ifdef TEST_EQUPARSER
@@ -643,22 +643,22 @@ ParseAsciiEqu_1(
         );
     }
   }
-  if(EAPI_STATUS_TEST_OK(EApiStatusCode))
-    EApiStatusCode=ParseAsciiEqu_cmn(cAS, szString, psllValue);
+  if(EAPI_TEST_SUCCESS(StatusCode))
+    StatusCode=ParseAsciiEqu_cmn(cAS, szString, psllValue);
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
 const char cszEnvStartMarker[]="$(";
 const char cszEnvEndMarker[]=")" ;
-EApiStatusCode_t
+EApiStatus_t
 ExpandEnviromentVariables(
     __IN  const char   *cszString,
     __OUT char        **pszExpStr
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   char *szVarPosS,*szVarPosE, *szLclBuf=NULL, *szLclBuf2=NULL, *szVarValue=NULL;
   size_t StrLen,ValLen;
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -747,16 +747,16 @@ ExitSuccess:
     free(szLclBuf2);
 
 
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 ParseAsciiEqu(
     __IN  const char       *cszString,
     __OUT signed long long *psllValue
   )
 {
   char *szEquation=NULL;
-  EApiStatusCode_t EApiStatusCode;
+  EApiStatus_t StatusCode;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ParseAsciiEqu, 
       EAPI_STATUS_INVALID_PARAMETER, 
@@ -785,16 +785,16 @@ ParseAsciiEqu(
   DO(ParseAsciiEqu_1(szEquation, psllValue));
 EAPI_APP_ASSERT_EXIT
   if(szEquation!=NULL) free(szEquation);
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 AssignValue_VA(
     __IN  const signed long long csllValue,
     __OUT void             *pvalue,
     __IN  signed int        siElementSize
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ParseAsciiEqu_VA, 
@@ -867,10 +867,10 @@ AssignValue_VA(
   }
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 AssignValue_VAB(
     __IN  const signed long long csllValue,
     __OUT void             *pValue,
@@ -879,7 +879,7 @@ AssignValue_VAB(
     __IN  signed int        siElementSize
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned long *pulValue=EAPI_CREATE_PTR(pValue, siBitOffset/8, unsigned long*);
   siBitOffset%=8;
 
@@ -912,17 +912,17 @@ AssignValue_VAB(
   }
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 RecoverValue_VA(
     __OUT signed long long *psllValue,
     __IN  void             *pvalue,
     __IN  signed int        siElementSize
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ParseAsciiEqu_VA, 
@@ -958,10 +958,10 @@ RecoverValue_VA(
   }
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 RecoverValue_VAB(
     __OUT signed long long *psllValue,
     __IN  void             *pValue,
@@ -970,7 +970,7 @@ RecoverValue_VAB(
     __IN  signed int        siElementSize
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned long *pulValue=EAPI_CREATE_PTR(pValue, siBitOffset/8, unsigned long*);
   siBitOffset%=8;
 
@@ -1002,11 +1002,11 @@ RecoverValue_VAB(
   }
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 
-EApiStatusCode_t
+EApiStatus_t
 ParseAsciiEqu_VA(
     __IN  const char       *cszString,
     __OUT void             *pvalue,
@@ -1014,7 +1014,7 @@ ParseAsciiEqu_VA(
   )
 {
   signed long long sllValue;
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
 
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ParseAsciiEqu_VA, 
@@ -1031,7 +1031,7 @@ ParseAsciiEqu_VA(
   DO(AssignValue_VA(sllValue, pvalue, siElementSize));
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 #ifdef TEST_EQUPARSER
@@ -1123,7 +1123,7 @@ int __cdecl main(
     void
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   TestCase_t *pCurTestCase;
   int CasesLeft, TestCount=0, PassCount=0;
   signed long long sllLclValue;
@@ -1165,8 +1165,8 @@ int __cdecl main(
       )
   {
     TestCount++;
-    EApiStatusCode=ParseAsciiEqu(pCurTestCase->cszEquation, &sllLclValue);
-    if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){
+    StatusCode=ParseAsciiEqu(pCurTestCase->cszEquation, &sllLclValue);
+    if(!EAPI_TEST_SUCCESS(StatusCode)){
       break;
     }
     printf(
@@ -1217,8 +1217,8 @@ int __cdecl main(
       )
   {
     TestCount++;
-    EApiStatusCode=ParseAsciiEqu(pCurTestCase->cszEquation, &sllLclValue);
-/*     if(EAPI_STATUS_TEST_NOK(EApiStatusCode)){ */
+    StatusCode=ParseAsciiEqu(pCurTestCase->cszEquation, &sllLclValue);
+/*     if(!EAPI_TEST_SUCCESS(StatusCode)){ */
 /*       break; */
 /*     } */
     printf(
@@ -1243,7 +1243,7 @@ int __cdecl main(
       PassCount
     );
 EAPI_APP_ASSERT_EXIT
-  exit(EApiStatusCode);
+  exit(StatusCode);
 }
 #endif
 

@@ -59,7 +59,7 @@ EeePAlignLength(
     size_t Length
     );
 
-EApiStatusCode_t
+EApiStatus_t
 SetBlockLength(
     EeePHandel_t BHandel,
     size_t       stBlockLength
@@ -75,7 +75,7 @@ GetNextBlock(
     DBlockIdHdr_t *pCurBlock
     );
 
-EApiStatusCode_t
+EApiStatus_t
 SetDynBlockHeader(
     void          *pCurBlock,
     uint8_t        u8BlockId,
@@ -83,7 +83,7 @@ SetDynBlockHeader(
     );
 
 #define EEEP_RBL_REDUCE_TOP_DOWN  (1<<0)
-EApiStatusCode_t
+EApiStatus_t
 ReduceBlockLength(
     __IN     DBlockIdHdr_t**pvCurBlock,
     __IN     size_t         stReduceBy, 
@@ -91,14 +91,14 @@ ReduceBlockLength(
     __IN     unsigned int   uiFlags
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePGetFirstDB(
     EeePHandel_t     BHandel,
     DBlockIdHdr_t ** pFirstDB, 
     size_t          *pstImageMaxSize
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePCreateNewBuffer(
     EeePHandel_t *pBHandel,
     size_t   stBufferSize ,
@@ -106,7 +106,7 @@ EeePCreateNewBuffer(
     uint32_t u32Flags
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePFreeBuffer(
     EeePHandel_t *pBHandel
     );
@@ -118,14 +118,14 @@ typedef struct EeePBufferMap_s{
 }EeePBufferMap_t;
 
 
-EApiStatusCode_t
+EApiStatus_t
 EeePMapBuffer(
     EeePHandel_t     BHandel,
     EeePBufferMap_t *pBufMap
     );
 
 #define EEEP_ADDBLK_IN_CRC (1<<0)
-EApiStatusCode_t
+EApiStatus_t
 EeePAddBlock(
     EeePHandel_t   BHandel ,
     const void    *pcvBlock , 
@@ -133,17 +133,17 @@ EeePAddBlock(
     const unsigned cuiFlags    
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePSetCRC(
     EeePHandel_t BHandel
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePCheckCRC(
     EeePHandel_t BHandel
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePFindBlock(
     __IN  EeePHandel_t   BHandel,
     __IN  uint8_t        BlockId,
@@ -151,7 +151,7 @@ EeePFindBlock(
     __OUT void         **pvFBlock
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePFindVendorBlock(
     __IN  EeePHandel_t   BHandel,
     __IN  uint16_t       VendorId,
@@ -160,33 +160,33 @@ EeePFindVendorBlock(
     __OUT void         **pvFBlock
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePWriteBufferToFile(
     __IN  EeePHandel_t   BHandel,
     __IN  char          *pszFilename
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePWriteBufferToEEP(
     __IN  EeePHandel_t   BHandel,
     __IN  unsigned       u16DeviceBus ,
     __IN  uint16_t       u16DeviceAddr 
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePReadBufferFromFile(
     __OUT EeePHandel_t  *pBHandel,
     __IN  char          *pszFilename
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePReadBufferFromEEP(
     __IN  EeePHandel_t  *pBHandel,
     __IN  unsigned       u16DeviceBus ,
     __IN  uint16_t       u16DeviceAddr 
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePSetI2CDeviceDesc(
     __OUT I2CDeviceDesc_t *pDDesc,
     __IN  EeePHandel_t     BHandel,
@@ -194,12 +194,12 @@ EeePSetI2CDeviceDesc(
     __IN  uint16_t         u16DeviceAddr
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeePListBlocks(
     EeePHandel_t BHandel,
     unsigned int uiFlags
   );
-EApiStatusCode_t 
+EApiStatus_t 
 GetDBlckIdString(
     __OUT TCHAR *        pszString,
     __IN  size_t         stArrayLen,

@@ -75,10 +75,10 @@ typedef struct CfgElementDesc_s{
   size_t stBitOffset   ;
   size_t stBitLength   ;
   struct Handlers_s{
-  EApiStatusCode_t (*Handler)(struct CfgElementDesc_s *pElementDesc, void *pvElement, char *Value);
-  EApiStatusCode_t (*Clean  )(struct CfgElementDesc_s *pElementDesc, void *pvElement);
-  EApiStatusCode_t (*Help   )(struct CfgElementDesc_s *pElementDesc, FILE * stream, const char *Indent );
-  EApiStatusCode_t (*Default)(struct CfgElementDesc_s *pElementDesc, FILE * stream, unsigned int uiCount );
+  EApiStatus_t (*Handler)(struct CfgElementDesc_s *pElementDesc, void *pvElement, char *Value);
+  EApiStatus_t (*Clean  )(struct CfgElementDesc_s *pElementDesc, void *pvElement);
+  EApiStatus_t (*Help   )(struct CfgElementDesc_s *pElementDesc, FILE * stream, const char *Indent );
+  EApiStatus_t (*Default)(struct CfgElementDesc_s *pElementDesc, FILE * stream, unsigned int uiCount );
   } *pHandlers;
   void            *pExtraInfo;
 }CfgElementDesc_t;
@@ -94,27 +94,27 @@ typedef struct StringDesc_s{
 }StringDesc_t;
 
 typedef 
-EApiStatusCode_t 
+EApiStatus_t 
 ElementHandler_t(
     __IN  struct CfgElementDesc_s *pElementDesc, 
     __OUT void *pvElement, 
     __IN  char *Value
   );
 typedef 
-EApiStatusCode_t 
+EApiStatus_t 
 ElementCleaner_t(
     __IN  struct CfgElementDesc_s *pElementDesc, 
     __INOUT void  *pvElement
   );
 typedef 
-EApiStatusCode_t 
+EApiStatus_t 
 ElementHelpTxt_t(
     __IN  struct CfgElementDesc_s *pElementDesc, 
     __OUT FILE * stream, 
     __IN  const char *Indent 
   );
 typedef 
-EApiStatusCode_t 
+EApiStatus_t 
 ElementDefaultTxt_t(
     __IN  struct CfgElementDesc_s *pElementDesc, 
     __OUT FILE * stream,
@@ -147,12 +147,12 @@ typedef struct CfgBlockDesc_s{
 #define BLOCK_FOUND (unsigned)-1
   IndxDesc_t            Elements;
   void *                pDataContainer;
-  EApiStatusCode_t    (*Handler)(struct CfgBlockDesc_s *pDesc, void *pvExecContext);
+  EApiStatus_t    (*Handler)(struct CfgBlockDesc_s *pDesc, void *pvExecContext);
 }CfgBlockDesc_t;
 #define BLOCK_DESC(Name, Array, DataContainer, Handler, Required) {Name, Required, 0, INDEX_STATIC_FULL(Array, INDX_ELEMENTS_DUP_ALLOWED, NULL, NULL), DataContainer, Handler},
 
 typedef 
-EApiStatusCode_t 
+EApiStatus_t 
 BlockHandler_t(
     __IN  struct CfgBlockDesc_s *pDesc, 
     __IN  void *pvExecContext
@@ -191,27 +191,27 @@ ElementDefaultTxt_t GUID_Default;
 extern StringDesc_t PreserveTrailingSpaces;
 extern StringDesc_t DeleteTrailingSpaces;
 
-EApiStatusCode_t
+EApiStatus_t
 PrintCfgFile(
     __IN    CfgBlockDesc_t *pCfgBDesc         ,
     __IN    size_t         stCfgBDescElements ,
     __OUT   FILE *         OutStream            
     );
 
-EApiStatusCode_t
+EApiStatus_t
 CleanStruct(
     __IN    CfgBlockDesc_t *pCfgBDesc         ,
     __IN    size_t         stCfgBDescElements
     );
 
-EApiStatusCode_t
+EApiStatus_t
 ParseCfgFile(
     __IN    const char *pcszCfgFileName       ,
     __INOUT CfgBlockDesc_t *pCfgBDesc         ,
     __IN    size_t         stCfgBDescElements
     );
 
-EApiStatusCode_t
+EApiStatus_t
 GetElementDesc(
     struct CfgBlockDesc_s *pDesc,
     CfgElementDesc_t     **ppElementsDesc,

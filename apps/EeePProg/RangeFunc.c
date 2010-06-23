@@ -29,7 +29,7 @@
 
 #include <EeePApp.h>
 
-EApiStatusCode_t
+EApiStatus_t
 RangeCheckAll(
     NumberRangeDesc_t *pRangeDesc,
     unsigned long ulValue
@@ -69,7 +69,7 @@ RangeCheckAll(
 
 }
 
-EApiStatusCode_t
+EApiStatus_t
 RangeCheckAny(
     __IN  NumberRangeDesc_t *pRangeDesc,
     __IN unsigned long ulValue
@@ -111,10 +111,10 @@ RangeCheckAny(
 
 #if TEST_RANGE_FUNC
 
-EApiStatusCode_t
+EApiStatus_t
 main(void)
 {
-/*   EApiStatusCode_t EApiStatusCode; */
+/*   EApiStatus_t StatusCode; */
 
   exit(EAPI_STATUS_SUCCESS);
 }

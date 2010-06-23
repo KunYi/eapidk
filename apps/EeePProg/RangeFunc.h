@@ -54,13 +54,13 @@ NumberRangeDesc_t RLName={ \
   ARRAY_SIZE(RangeList), RangeList \
 }
 
-EApiStatusCode_t
+EApiStatus_t
 RangeCheckAll(
     NumberRangeDesc_t *pRangeDesc,
     unsigned long      ulValue
   );
 
-EApiStatusCode_t
+EApiStatus_t
 RangeCheckAny(
     NumberRangeDesc_t *pRangeDesc,
     unsigned long      ulValue

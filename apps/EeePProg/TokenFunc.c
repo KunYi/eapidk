@@ -30,7 +30,7 @@
 #include <EeePApp.h>
 
 
-EApiStatusCode_t
+EApiStatus_t
 GetTokenFlags(
     __OUT   char               *szStrBuf   ,
     __INOUT signed int         *psiStrBufLen,
@@ -75,7 +75,7 @@ GetTokenFlags(
   *psiStrBufLen=siStrLen;
   return EAPI_STATUS_SUCCESS;
 }
-EApiStatusCode_t
+EApiStatus_t
 GetValueToken(
     __OUT char                 *pszBuffer,
     __IN  size_t                stBufLen  ,
@@ -95,7 +95,7 @@ GetValueToken(
   return EAPI_STATUS_ERROR;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 GetTokenValue(
     __IN  const TokenListDesc_t*pcTokenDesc,
     __IN  const char   *szValue  ,
@@ -115,7 +115,7 @@ GetTokenValue(
 
 }
 
-EApiStatusCode_t
+EApiStatus_t
 GetTokenValueStrip(
     __IN  const TokenListDesc_t*pcTokenDesc,
     __IN  char   *szValue  ,
@@ -128,10 +128,10 @@ GetTokenValueStrip(
 }
 #if TEST_TOKEN_FUNC
 
-EApiStatusCode_t
+EApiStatus_t
 main(void)
 {
-/*   EApiStatusCode_t EApiStatusCode; */
+/*   EApiStatus_t StatusCode; */
 
   exit(EAPI_STATUS_SUCCESS);
 }

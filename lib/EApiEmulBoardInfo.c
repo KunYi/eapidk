@@ -68,14 +68,14 @@ const StringLookupTbl_t StringLookup[]={
 #endif
 };
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiBoardGetStringAEmul( 
     __IN    EApiId_t  Id      , 
     __OUT       char *pBuffer , 
     __INOUT uint32_t *pBufLen
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   uint32_t i;
   uint32_t BufLenSav;
 
@@ -95,7 +95,7 @@ EApiBoardGetStringAEmul(
         *pBufLen=(uint32_t)strlen(StringLookup[i].StringPtr)+1;
         if(BufLenSav<*pBufLen)
         {
-          EApiStatusCode=EAPI_STATUS_MORE_DATA;
+          StatusCode=EAPI_STATUS_MORE_DATA;
         }
         else
         {
@@ -108,7 +108,7 @@ EApiBoardGetStringAEmul(
         }
         EAPI_LIB_RETURN_ERROR_IF(
 		EApiBoardGetStringAEmul, 
-		(EApiStatusCode==EAPI_STATUS_MORE_DATA), 
+		(StatusCode==EAPI_STATUS_MORE_DATA), 
 		EAPI_STATUS_MORE_DATA  , 
 		"pBuffer Overrun Prevented"
 		);
@@ -125,7 +125,7 @@ EApiBoardGetStringAEmul(
 	);
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 /*
@@ -175,13 +175,13 @@ const ValueLookupTbl_t ValueLookup[]={
   {EAPI_ID_HWMON_FAN_SYSTEM             ,  2500  },
 };
 
-EApiStatusCode_t
+EApiStatus_t
 EApiBoardGetValueEmul( 
     __IN  EApiId_t Id     , 
     __OUT uint32_t *pValue
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   unsigned i;
 
   for(i=0;i<ARRAY_SIZE(ValueLookup);i++)
@@ -199,6 +199,6 @@ EApiBoardGetValueEmul(
 		);
 EAPI_LIB_ASSERT_EXIT
 
-  return EApiStatusCode;
+  return StatusCode;
 }
 

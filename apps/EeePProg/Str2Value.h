@@ -45,33 +45,33 @@ ulConvertStr2NumEx(
     __OUT char **       pszEnd
     );
 
-EApiStatusCode_t
+EApiStatus_t
 ExpandEnviromentVariables(
     __IN  const char   *cszString,
     __OUT char        **pszExpStr
   );
 
-EApiStatusCode_t
+EApiStatus_t
 ParseAsciiEqu(
     __IN  const char       *cszString,
     __OUT signed long long *psllValue
   );
 
-EApiStatusCode_t
+EApiStatus_t
 ParseAsciiEqu_VA(
     __IN  const char       *cszString,
     __OUT void             *pvalue,
     __IN  signed int        siElementSize
   );
 
-EApiStatusCode_t
+EApiStatus_t
 AssignValue_VA(
     __IN  const signed long long csllValue,
     __OUT void             *pvalue,
     __IN  signed int        siElementSize
   );
 
-EApiStatusCode_t
+EApiStatus_t
 AssignValue_VAB(
     __IN  const signed long long csllValue,
     __OUT void             *pvalue,
@@ -80,13 +80,13 @@ AssignValue_VAB(
     __IN  signed int        siElementSize
   );
 
-EApiStatusCode_t
+EApiStatus_t
 RecoverValue_VA(
     __OUT signed long long *psllValue,
     __IN  void             *pvalue,
     __IN  signed int        siElementSize
   );
-EApiStatusCode_t
+EApiStatus_t
 RecoverValue_VAB(
     __OUT signed long long *psllValue,
     __IN  void             *pValue,

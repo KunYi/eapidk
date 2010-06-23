@@ -58,10 +58,10 @@ u8ChecksumBlock (
   );
 
 typedef 
-  EApiStatusCode_t 
+  EApiStatus_t 
   HashFuncinit_t(void**pContext);
 typedef 
-  EApiStatusCode_t 
+  EApiStatus_t 
   HashFuncbytes_t(
     __INOUT    void *pContext , /* CRC Context       */
     __IN const void *pcvBuffer, /* Pointer to Buffer */
@@ -69,14 +69,14 @@ typedef
   );
 
 typedef 
-  EApiStatusCode_t 
+  EApiStatus_t 
   HashFuncfini_t(
     __IN      void **pContext,  /* CRC Context       */
     __OUT     void  *pvDigest   /* Pointer to Buffer */
   );
 
 typedef 
-  EApiStatusCode_t 
+  EApiStatus_t 
   HashFuncverify_t(
     __IN      void **pContext,  /* CRC Context       */
     __OUT     void  *pvDigest   /* Pointer to Buffer */
@@ -97,7 +97,7 @@ HashFuncbytes_t   u16CRC_CCITT_bytes  ;
 HashFuncfini_t    u16CRC_CCITT_fini   ;
 HashFuncverify_t  u16CRC_CCITT_verify ;
 
-EApiStatusCode_t
+EApiStatus_t
 u16CRC_CCITT (
     __IN const void *pcvBuffer, /* Pointer to Buffer */
     __IN size_t      stCount  , /* Num bytes to CRC */
@@ -143,7 +143,7 @@ siBin2Ascii_s(
   );
 
 
-EApiStatusCode_t
+EApiStatus_t
 PrintHexAsciiTableEx(
 	__IN    const void *   pcvBuffer	,
 	__IN    const size_t   stBufSize	,
@@ -160,28 +160,28 @@ PrintHexAsciiTable(
 	__IN    const TCHAR *const pcszDescription
 	);
 
-EApiStatusCode_t 
+EApiStatus_t 
 WriteBinaryFile(
     __IN const char *cszFilename, 
     __IN const void *pcvBuffer   , 
     __IN size_t      stWriteBCnt
   );
 
-EApiStatusCode_t
+EApiStatus_t
 ReadBinaryFile(
     __IN  const char *cszFilename, 
     __OUT void      **pvBuffer, 
     __OUT size_t     *pstReadBCnt
   );
 
-EApiStatusCode_t 
+EApiStatus_t 
 WriteTextFile(
     __IN const char *cszFilename, 
     __IN const void *pcvBuffer   , 
     __IN size_t      stWriteBCnt
   );
 
-EApiStatusCode_t
+EApiStatus_t
 ReadTextFile(
     __IN  const char *cszFilename, 
     __OUT void      **pvBuffer, 

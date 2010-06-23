@@ -51,13 +51,13 @@ void __cdecl DebugMsg(__IN const char *const fmt, ...)
 }
 
 
-EApiStatusCode_t OpenEepromFiles(void);
-EApiStatusCode_t CloseEepromFiles(void);
-EApiStatusCode_t OpenI2CEepromFiles(void);
-EApiStatusCode_t CloseI2CEepromFiles(void);
+EApiStatus_t OpenEepromFiles(void);
+EApiStatus_t CloseEepromFiles(void);
+EApiStatus_t OpenI2CEepromFiles(void);
+EApiStatus_t CloseI2CEepromFiles(void);
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiInitLib(){
   if(OutputStream==NULL){
 #if EAPI_DBG_USE_OUTPUT_FILE
@@ -81,7 +81,7 @@ EApiInitLib(){
 
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 EApiUninitLib(){
     DebugMsg("#\n"
               "# Embedded API EApi\n"

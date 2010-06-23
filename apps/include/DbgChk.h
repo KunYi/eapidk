@@ -64,7 +64,7 @@ siFormattedMessage_SC(
     const char *  cszFileName ,   
     const char *  cszFuncName ,   
     unsigned int  uiLineNum   ,
-    EApiStatusCode_t  StatusCode  ,   
+    EApiStatus_t  StatusCode  ,   
     const char *  cszFormat   ,   
     ...
     )

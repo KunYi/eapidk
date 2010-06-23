@@ -33,35 +33,35 @@
 extern "C" {
 #endif
 
-EApiStatusCode_t
+EApiStatus_t
 EeeP_CreateCOM0R20_CBImage(
     __OUT  EeePHandel_t   * pBHandel      ,
     __IN   const char     * cszCfgFileName
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeeP_CreateCOM0R20_MEEPImage(
     __OUT  EeePHandel_t   * pBHandel      ,
     __IN   const char     * cszCfgFileName
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeeP_CreateEeePExtEEPImage(
     __OUT  EeePHandel_t   * pBHandel      ,
     __IN   const char     * cszCfgFileName
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeeP_CreateCOM0R20_CBCfg(
     __OUT  FILE           * OutStream
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeeP_CreateCOM0R20_MEEPCfg(
     __OUT  FILE           * OutStream
     );
 
-EApiStatusCode_t
+EApiStatus_t
 EeeP_CreateEeePExtEEPCfg(
     __OUT  FILE           * OutStream
     );

@@ -277,7 +277,7 @@ REM ########################################################################
   ECHO #
   ECHO #
   ECHO #
-  CALL :DeleteFiles %1 *.obj *.exe *.lib *.res *.asm
+  CALL :DeleteFiles %1 *.obj *.exe *.lib *.res *.asm *.inc
   GOTO :EOF
 
 :DeleteFiles

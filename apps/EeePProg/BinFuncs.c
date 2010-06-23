@@ -64,12 +64,12 @@ typedef struct CRC_State_s{
   size_t     Cnt;
 }CRC_State_t;
 
-EApiStatusCode_t
+EApiStatus_t
 u16CRC_CCITT_init (
     void**pContext
     )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   CRC_State_t * pCRC;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       u16CRC_CCITT_init,
@@ -86,7 +86,7 @@ u16CRC_CCITT_init (
   pCRC->Cnt=0;
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 /*
@@ -98,14 +98,14 @@ EAPI_APP_ASSERT_EXIT
  *
  *
  */
-EApiStatusCode_t
+EApiStatus_t
 u16CRC_CCITT_bytes (
     __IN       void *pContext , /* CRC Context       */
     __IN const void *pcvBuffer, /* Pointer to Buffer */
     __IN size_t      stCount    /* Num bytes to CRC */
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   const uint8_t *pcu8Buffer     =pcvBuffer; 
   CRC_State_t   *pCRC           =pContext ;
   unsigned       CRC            =pCRC->CRC;
@@ -134,15 +134,15 @@ u16CRC_CCITT_bytes (
   pCRC->CRC=CRC;
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 u16CRC_CCITT_fini  (
     __IN      void **pContext,  /* CRC Context       */
     __OUT     void  *pvDigest   /* Pointer to Buffer */
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   CRC_State_t * pCRC=*pContext;
   unsigned      CRC=pCRC->CRC;
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -156,15 +156,15 @@ u16CRC_CCITT_fini  (
 
   EeeP_Set16BitValue_BE(pvDigest, EEEP_LO_UINT16(CRC));
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
-EApiStatusCode_t
+EApiStatus_t
 u16CRC_CCITT_verify  (
     __IN       void**pContext,  /* CRC Context       */
     __OUT      void *pvDigest   /* Pointer to Buffer */
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   uint8_t Digest[2];
 
   DO(u16CRC_CCITT_fini(pContext, Digest));
@@ -177,23 +177,23 @@ u16CRC_CCITT_verify  (
       );
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 u16CRC_CCITT (
     __IN const void    *pcvBuffer, /* Pointer to Buffer */
     __IN       size_t   stCount  , /* Num bytes to CRC  */
     __OUT      void    *pvDigest   /* Pointer to Buffer */
   )
 { 
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   void * pContext;
   DO(u16CRC_CCITT_init(&pContext));
   DO(u16CRC_CCITT_bytes(pContext, pcvBuffer, stCount));
   DO(u16CRC_CCITT_fini(&pContext, pvDigest));
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 HashFunc_t CRC_CCITT={
     u16CRC_CCITT_init   ,
@@ -254,7 +254,7 @@ siBin2Ascii(
     return StringPos;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 PrintHexAsciiTableEx(
 	const void *   pcvBuffer	,
 	const size_t   stBufSize	,
@@ -263,7 +263,7 @@ PrintHexAsciiTableEx(
 	const unsigned cuiFlags
 	)
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
     size_t        stOffset;
     size_t        stOffsetBase;
     const uint8_t *pcu8Mem;
@@ -362,7 +362,7 @@ PrintHexAsciiTableEx(
       EAPI_printf(TEXT("\n"));
     }
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
 void 
@@ -386,7 +386,7 @@ PrintHexAsciiTable(
 
 
 
-EApiStatusCode_t 
+EApiStatus_t 
 LclWriteFile(
     __IN const char *cszFilename, 
     __IN const void *pcvBuffer  , 
@@ -394,7 +394,7 @@ LclWriteFile(
     __IN const char *cszWriteType
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   FILE *LclFilePtr;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       LclWriteFile,
@@ -414,8 +414,8 @@ LclWriteFile(
 
   LclFilePtr=fopen(cszFilename, cszWriteType);
   if(LclFilePtr==NULL){
-    EApiStatusCode=EAPI_STATUS_WRITE_ERROR;
-    siFormattedMessage_SC('L', __FILE__, "LclWriteFile", __LINE__, EApiStatusCode,
+    StatusCode=EAPI_STATUS_WRITE_ERROR;
+    siFormattedMessage_SC('L', __FILE__, "LclWriteFile", __LINE__, StatusCode,
         "Opening File %s(%s)\n", cszFilename, cszWriteType);
     EAPI_APP_EXIT;
   }
@@ -426,10 +426,10 @@ LclWriteFile(
     );
   fclose(LclFilePtr);
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t
+EApiStatus_t
 LclReadFile(
     __IN  const char *cszFilename, 
     __OUT void      **pvBuffer, 
@@ -437,7 +437,7 @@ LclReadFile(
     __IN  const char *cszReadType 
   )
 {
-  EApiStatusCode_t EApiStatusCode=EAPI_STATUS_SUCCESS;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   FILE *LclFilePtr;
   size_t stFileLen;
   EAPI_APP_ASSERT_PARAMATER_NULL(
@@ -458,8 +458,8 @@ LclReadFile(
   *pstReadBCnt=0;
   LclFilePtr=fopen(cszFilename, cszReadType);
   if(LclFilePtr==NULL){
-    EApiStatusCode=EAPI_STATUS_READ_ERROR;
-    siFormattedMessage_SC('L', __FILE__, "LclReadFile", __LINE__, EApiStatusCode,
+    StatusCode=EAPI_STATUS_READ_ERROR;
+    siFormattedMessage_SC('L', __FILE__, "LclReadFile", __LINE__, StatusCode,
         "Opening File %s(%s)\n", cszFilename, cszReadType);
     EAPI_APP_EXIT;
   }
@@ -492,10 +492,10 @@ LclReadFile(
   fclose(LclFilePtr);
 
 EAPI_APP_ASSERT_EXIT
-  return EApiStatusCode;
+  return StatusCode;
 }
 
-EApiStatusCode_t 
+EApiStatus_t 
 WriteBinaryFile(
     __IN const char *cszFilename, 
     __IN const void *pcvBuffer   , 
@@ -505,7 +505,7 @@ WriteBinaryFile(
   return LclWriteFile(cszFilename, pcvBuffer, stWriteBCnt, "wb");
 }
 
-EApiStatusCode_t
+EApiStatus_t
 ReadBinaryFile(
     __IN  const char *cszFilename, 
     __OUT void      **pvBuffer, 
@@ -514,7 +514,7 @@ ReadBinaryFile(
 {
   return LclReadFile(cszFilename, pvBuffer, pstReadBCnt, "rb");
 }
-EApiStatusCode_t 
+EApiStatus_t 
 WriteTextFile(
     __IN const char *cszFilename, 
     __IN const void *pcvBuffer   , 
@@ -524,7 +524,7 @@ WriteTextFile(
   return LclWriteFile(cszFilename, pcvBuffer, stWriteBCnt, "w");
 }
 
-EApiStatusCode_t
+EApiStatus_t
 ReadTextFile(
     __IN  const char *cszFilename, 
     __OUT void      **pvBuffer, 
