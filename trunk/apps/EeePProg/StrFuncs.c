@@ -74,6 +74,71 @@ szFindStr(
   }
   return szPos1;
 }
+const char szWordDelimns[]="()\\/!\"$%&=?`´*+~ \t<>;:,.'#^°-\0";
+
+char * 
+szFindCharMap(
+    __IN     const char             *szStr,
+    __IN     char                     CharMap[256/8]  
+    )
+{
+
+  while(*szStr&&!((CharMap[(*szStr)/8]&(1<<((*szStr)%8))))){
+    ++szStr;
+  }
+  while(*szStr&&((CharMap[(*szStr)/8]&(1<<((*szStr)%8))))){
+    ++szStr;
+  }
+  return *szStr?(char*)szStr:NULL;
+}
+char * 
+szStrCmp(
+    __IN     const char             *szStr,
+    __IN     const char             *szMatch
+    )
+{
+  while(*szStr&&*szMatch&&*szStr==*szMatch){
+    ++szStr;
+    ++szMatch;
+  }
+  if(*szMatch){
+    szStr =NULL;
+  }
+  return (char*)szStr;
+}
+char * 
+szFindWord(
+    __IN     const char             *szStr,
+    __IN     const MacroList_t      *pDesc,
+    __OUTOPT const MacroItem_t     **pElement
+    )
+{
+  const char * szPos1=NULL, *szPos2;
+  size_t stNumStrs;
+  const MacroItem_t *pcCurElement;
+  char CharMap[256/8]={0};
+  szPos1=szWordDelimns;
+  CharMap[0]=0x01;
+  while(*szPos1){
+    CharMap[(*szPos1)/8]|=(1<<((*szPos1)%8));
+    ++szPos1;
+  }
+
+  szPos1=szStr;
+  do{
+    stNumStrs   =pDesc->stMacroCnt;
+    pcCurElement=pDesc->pMacros   ;
+    while(stNumStrs --){
+      szPos2=szStrCmp(szPos1, pcCurElement->cszMacroName);
+      if(szPos2!=NULL&&(CharMap[(*szPos2)/8]&(1<<((*szPos2)%8)))){
+        *pElement=pcCurElement;
+        return (char*)szPos1;
+      }
+      pcCurElement++;
+    }
+  } while((szPos1=szFindCharMap(szPos1+1, CharMap))!=NULL);
+  return NULL;
+}
 
 
 char *
@@ -93,6 +158,94 @@ strrstr(
     uiMatchFound++;
   };
   return uiMatchFound?(char *)cszString -1:NULL;
+}
+
+
+#define ALLOC_STEP_SIZE 20
+EApiStatus_t
+InitStrDesc(
+    __INOUT DStrDesc_t *pStrDesc      ,
+    __IN  const char   *cszInitStr
+  )
+{
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ReplaceSubStr,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pStrDesc
+    );
+
+  pStrDesc->stStrLen=cszInitStr?strlen(cszInitStr)+1:1;
+
+  pStrDesc->stAllocLen=(pStrDesc->stStrLen+ALLOC_STEP_SIZE - 1)/ALLOC_STEP_SIZE*ALLOC_STEP_SIZE;
+  pStrDesc->szStr=malloc(pStrDesc->stAllocLen);
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ReplaceSubStr,
+      EAPI_STATUS_ALLOC_ERROR,
+      pStrDesc->szStr
+    );
+  if(cszInitStr){
+    memcpy(pStrDesc->szStr, cszInitStr, pStrDesc->stStrLen);
+  }else{
+    pStrDesc->szStr='\0';
+  }
+EAPI_APP_ASSERT_EXIT
+  return StatusCode;
+}
+EApiStatus_t
+FreeStrDesc(
+    __INOUT DStrDesc_t *pStrDesc
+  )
+{
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ReplaceSubStr,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pStrDesc
+    );
+
+  if(pStrDesc->szStr)
+    free(pStrDesc->szStr);
+  memset(pStrDesc, 0x00, sizeof(pStrDesc));
+EAPI_APP_ASSERT_EXIT
+  return StatusCode;
+}
+EApiStatus_t
+ReplaceSubStr(
+    __INOUT DStrDesc_t *pStrDesc      ,
+    __IN    size_t      stStartPos    ,
+    __IN    size_t      stEndPos      ,
+    __IN  const char   *cszReplaceStr
+  )
+{
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
+  size_t stRStrLen;
+  intptr_t ipNewstrlen;
+  intptr_t ipNewSize;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ReplaceSubStr,
+      EAPI_STATUS_INVALID_PARAMETER,
+      pStrDesc
+    );
+  stRStrLen=cszReplaceStr?strlen(cszReplaceStr):0;
+  ipNewstrlen=pStrDesc->stStrLen+(stStartPos - stEndPos +stRStrLen);
+  ipNewSize=(ipNewstrlen+ALLOC_STEP_SIZE - 1)/ALLOC_STEP_SIZE*ALLOC_STEP_SIZE;
+  if(ipNewSize>(intptr_t)pStrDesc->stAllocLen){
+    pStrDesc->stAllocLen=ipNewSize;
+    pStrDesc->szStr=realloc(pStrDesc->szStr, ipNewSize);
+    EAPI_APP_ASSERT_PARAMATER_NULL(
+        ReplaceSubStr,
+        EAPI_STATUS_ALLOC_ERROR,
+        pStrDesc->szStr
+      );
+  }
+  if(stStartPos+stRStrLen!=stEndPos){
+    memmove(pStrDesc->szStr+stStartPos+stRStrLen, pStrDesc->szStr+stEndPos, pStrDesc->stStrLen - stEndPos);
+  }
+  memmove(pStrDesc->szStr+stStartPos, cszReplaceStr, stRStrLen);
+  pStrDesc->stStrLen=ipNewstrlen;
+EAPI_APP_ASSERT_EXIT
+  return StatusCode;
 }
 
 /* char *_strdup( */

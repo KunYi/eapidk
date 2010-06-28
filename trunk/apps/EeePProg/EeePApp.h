@@ -43,6 +43,7 @@ extern "C" {
 #include <EeePDB.h>
 #include <StrFuncs.h>
 #include <Str2Value.h>
+#include <StrPrint.h>
 #include <EeePCfg.h>
 #include <EeePArg.h>
   

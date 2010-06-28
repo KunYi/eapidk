@@ -76,7 +76,47 @@ strrstr(
     __IN const char *cszSearchString
     );
 
+typedef struct MacroItem_s{
+  const char *cszMacroName;
+  const char *cszMacroValue;
+}MacroItem_t;
 
+typedef struct MacroList_s{
+  MacroItem_t *pMacros;
+  size_t       stMacroCnt;
+}MacroList_t;
+
+char * 
+szFindWord(
+    __IN     const char             *szStr,
+    __IN     const MacroList_t      *pDesc,
+    __OUTOPT const MacroItem_t     **pElement
+    );
+
+typedef struct DStrDesc_s{
+  char  *szStr;
+  size_t stStrLen;
+  size_t stAllocLen;
+}DStrDesc_t;
+
+EApiStatus_t
+ReplaceSubStr(
+    __INOUT DStrDesc_t *pStrDesc      ,
+    __IN    size_t      stStartPos    ,
+    __IN    size_t      stEndPos      ,
+    __IN  const char   *cszReplaceStr
+  );
+
+EApiStatus_t
+FreeStrDesc(
+    __INOUT DStrDesc_t *pStrDesc
+  );
+
+EApiStatus_t
+InitStrDesc(
+    __INOUT DStrDesc_t *pStrDesc      ,
+    __IN  const char   *cszInitStr
+  );
 
 #ifdef __cplusplus
 }

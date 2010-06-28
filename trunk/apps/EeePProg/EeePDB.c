@@ -481,7 +481,7 @@ EeePMapBuffer(
     PrintHexAsciiTable(pCurBlock, GetBlockLength(pCurBlock), BHandel, NULL);
 #endif
     EAPI_APP_RETURN_ERROR_IF_S(
-      EeePListBlocks    ,
+      EeePMapBuffer    ,
       (CurOffset>MaxDeviceLen),
       EAPI_STATUS_ERROR
       );
@@ -796,7 +796,7 @@ EeePFindBlock(
   for(;pCurBlock!=NULL;pCurBlock=GetNextBlock(pCurBlock)){
     CurOffset=EAPI_GET_PTR_OFFSET(pCurBlock, BHandel);
     EAPI_APP_RETURN_ERROR_IF_S(
-      EeePListBlocks    ,
+      EeePFindBlock    ,
       (CurOffset>MaxDeviceLen),
       EAPI_STATUS_ERROR
       );
@@ -848,7 +848,7 @@ EeePFindVendorBlock(
   for(;pCurBlock!=NULL;pCurBlock=GetNextBlock(pCurBlock)){
     CurOffset=EAPI_GET_PTR_OFFSET(pCurBlock, BHandel);
     EAPI_APP_RETURN_ERROR_IF_S(
-      EeePListBlocks    ,
+      EeePFindVendorBlock    ,
       (CurOffset>MaxDeviceLen),
       EAPI_STATUS_ERROR
       );
@@ -898,7 +898,7 @@ EeePFindSmbiosBlock(
   for(;pCurBlock!=NULL;pCurBlock=GetNextBlock(pCurBlock)){
     CurOffset=EAPI_GET_PTR_OFFSET(pCurBlock, BHandel);
     EAPI_APP_RETURN_ERROR_IF_S(
-      EeePListBlocks    ,
+      EeePFindSmbiosBlock    ,
       (CurOffset>MaxDeviceLen),
       EAPI_STATUS_ERROR
       );

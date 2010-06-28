@@ -29,6 +29,15 @@
 
 #include <EeePApp.h>
 
+/*
+ *
+ *
+ *
+ *  Ckecksum
+ *
+ *
+ *
+ */
 uint32_t 
 u32ChecksumBlock(
 	const void *pcvBuffer, 
@@ -384,8 +393,15 @@ PrintHexAsciiTable(
 
 
 
-
-
+/*
+ *
+ *
+ *
+ *  File Access Routines
+ *
+ *
+ *
+ */
 EApiStatus_t 
 LclWriteFile(
     __IN const char *cszFilename, 
@@ -534,6 +550,15 @@ ReadTextFile(
   return LclReadFile(cszFilename, pvBuffer, pstReadBCnt, "r");
 }
 
+/*
+ *
+ *
+ *
+ *  Machine Independant Endian Access
+ *
+ *
+ *
+ */
 /*
  * CPU Independent Multi Byte 
  * Big Endian Memory Access

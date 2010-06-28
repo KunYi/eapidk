@@ -109,30 +109,35 @@ PCFG_TOKEN_LIST_DESC(SmbiosBoardTypesTL, SmbiosBoardTypesTokens);
 
 EApiStatus_t
 SMBIOS_CE_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   unsigned int i;
+  int len=0;
   pElementDesc=pElementDesc;
-  fprintf(stream, "%s %s\n", Indent, "SMBios Contained Element Description");
-  fprintf(stream, "%s %s\n", Indent, "  Format:");
-  fprintf(stream, "%s %s\n", Indent, "    Element Type, Minimum Count, Maximum Count");
-  fprintf(stream, "%s %s\n", Indent, "  Examples:");
-  fprintf(stream, "%s %s\n", Indent, "    SYSTEM_POWER_SUPPLY,  1, 1");
-  fprintf(stream, "%s %s\n", Indent, "    ServerBlade        ,  1, 5");
-  fprintf(stream, "%s %s\n", Indent, "  Element Type Tokens:"  );
+  len+=EApiSprintfA(szHelpBuf+len , stHBufLen-len , 
+      "SMBios Contained Element Description\n"
+      "  Format:\n"
+      "    Element Type, Minimum Count, Maximum Count\n"
+      "  Examples:\n"
+      "    SYSTEM_POWER_SUPPLY,  1, 1\n"
+      "    ServerBlade        ,  1, 5\n"
+      "  Element Type Tokens:\n"  );
   for(i=0;i<ARRAY_SIZE(SmbiosBoardTypesTokens);i++){
-    fprintf(stream, "%s     %s\n", Indent, SmbiosBoardTypesTokens[i].pszTokenList);
+    len+=EApiSprintfA(szHelpBuf+len , stHBufLen-len ,
+                "     %s\n", SmbiosBoardTypesTokens[i].pszTokenList);
   }
   for(i=0;i<ARRAY_SIZE(SmbiosStructureTypesTokens);i++){
-    fprintf(stream, "%s     %s\n", Indent, SmbiosStructureTypesTokens[i].pszTokenList);
+    len+=EApiSprintfA(szHelpBuf+len , stHBufLen-len ,
+                "     %s\n", SmbiosStructureTypesTokens[i].pszTokenList);
   }
-  fprintf(stream, "%s %s\n", Indent, "  Minimum Count:");
-  fprintf(stream, "%s %s\n", Indent, "    0 - 255     ");
-  fprintf(stream, "%s %s\n", Indent, "  Maximum Count:");
-  fprintf(stream, "%s %s\n", Indent, "    0 - 255     ");
+  len+=EApiSprintfA(szHelpBuf+len , stHBufLen-len ,
+              "  Minimum Count:\n"
+              "    0 - 255     \n"
+              "  Maximum Count:\n"
+              "    0 - 255     \n");
   return EAPI_STATUS_SUCCESS;
 }
 
@@ -153,14 +158,14 @@ SMBIOS_CE_Element(
   pszMinCount=strchr(pszCEType, ',');
   if(pszMinCount==NULL ){
     StatusCode=EAPI_STATUS_ERROR;
-    goto ErrorExit;
+    EAPI_APP_EXIT;
   }
   *pszMinCount++='\0';
   
   pszMaxCount=strchr(pszMinCount, ',');
   if(pszMaxCount==NULL ){
     StatusCode=EAPI_STATUS_ERROR;
-    goto ErrorExit;
+    EAPI_APP_EXIT;
   }
   *pszMaxCount++='\0';
 
@@ -180,7 +185,7 @@ SMBIOS_CE_Element(
 
   if(!EAPI_TEST_SUCCESS(StatusCode)){
     printf("SMBIOS_CE_Element = Unknown Token, %s\n", pszValue);
-    goto ErrorExit;
+    EAPI_APP_EXIT;
   }
 
   uiMinCount=ulConvertStr2NumEx(pszMinCount, NULL                  );
@@ -188,12 +193,12 @@ SMBIOS_CE_Element(
   if(uiMinCount>UINT8_MAX){
     printf("SMBIOS_CE_Element = Invalid MinCount, %s\n", pszMinCount);
     StatusCode=EAPI_STATUS_ERROR;
-    goto ErrorExit;
+    EAPI_APP_EXIT;
   }
   if(uiMaxCount>UINT8_MAX){
     printf("SMBIOS_CE_Element = Invalid MaxCount, %s\n", pszMaxCount);
     StatusCode=EAPI_STATUS_ERROR;
-    goto ErrorExit;
+    EAPI_APP_EXIT;
   }
 
 
@@ -207,7 +212,7 @@ SMBIOS_CE_Element(
 /*       NULL, */
 /*       HEXTBL_8BIT_ELEMENT|3 */
 /*     ); */
-ErrorExit:
+EAPI_APP_ASSERT_EXIT
   return StatusCode;
 }
 
@@ -233,28 +238,30 @@ PCFG_TOKEN_LIST_DESC(PCIeGenerationTL, PCIeGeneration);
 
 EApiStatus_t
 COM0PCIe_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   unsigned int i;
+  int len=0;
   pElementDesc=pElementDesc;
-  fprintf(stream, "%s %s\n", Indent, "COM0 PCIe Port Description"                     );
-  fprintf(stream, "%s %s\n", Indent, "  Format:"                                      );
-  fprintf(stream, "%s %s\n", Indent, "    Starting Lane, Link Width, PCIe Generation" );
-  fprintf(stream, "%s %s\n", Indent, "  Examples:"                                    );
-  fprintf(stream, "%s %s\n", Indent, "     0,   x1, Gen1"                             );
-  fprintf(stream, "%s %s\n", Indent, "    16,  x16, Gen2"                             );
-  fprintf(stream, "%s %s\n", Indent, "  Starting Lanes:"                              );
-  fprintf(stream, "%s %s\n", Indent, "    0 - 31      "                               );
-  fprintf(stream, "%s %s\n", Indent, "  Link Widths Tokens:"                          );
+  len+=EApiSprintfA(szHelpBuf+len , stHBufLen-len , 
+  "COM0 PCIe Port Description\n"                     
+  "  Format:\n"                                      
+  "    Starting Lane, Link Width, PCIe Generation\n" 
+  "  Examples:\n"                                    
+  "     0,   x1, Gen1\n"                             
+  "    16,  x16, Gen2\n"                             
+  "  Starting Lanes:\n"                              
+  "    0 - 31      \n"                               
+  "  Link Widths Tokens:\n"                          );
   for(i=0;i<ARRAY_SIZE(PCIeLaneWidths);i++){
-    fprintf(stream, "%s     %s\n", Indent, PCIeLaneWidths[i].pszTokenList);
+    EApiSprintfA(szHelpBuf+len , stHBufLen-len , "     %s\n", PCIeLaneWidths[i].pszTokenList);
   }
-  fprintf(stream, "%s %s\n", Indent, "  Generations Tokens:"  );
+  len+=EApiSprintfA(szHelpBuf+len, stHBufLen-len, "  Generations Tokens:\n"  );
   for(i=0;i<ARRAY_SIZE(PCIeGeneration);i++){
-    fprintf(stream, "%s     %s\n", Indent, PCIeGeneration[i].pszTokenList);
+    len+=EApiSprintfA(szHelpBuf+len , stHBufLen-len , "     %s\n", PCIeGeneration[i].pszTokenList);
   }
   return EAPI_STATUS_SUCCESS;
 }
@@ -1033,7 +1040,7 @@ HandleCOM0R20CBHeaderBlock(
   COM0R20_CB_HDR_t *pCOM0R20_CB_cgf=pDesc->pDataContainer;
   CfgElementDesc_t   *pElementsDesc;
 
-  DO(GetElementDesc(pDesc, &pElementsDesc, "PCIePorts"));
+  DO(GetElementDesc((CfgNodeGen_t*)pDesc, (CfgNodeGen_t**)&pElementsDesc, "PCIePorts", CfgElementNode));
   memset(pHeader->GenId, 0x00, sizeof(*pHeader) - sizeof(EeePCmn_t));
 
   pHeader->EeePHdr.DeviceDesc =pCOM0R20_CB_cgf->au8DeviceDesc[0];
@@ -1271,7 +1278,7 @@ HandleCOM0R20ExpCardCfgBlock(
   size_t stBlockLength;
   uint8_t *pSwitchDevFuncAddr;
   uint8_t *pu8SwitchDevFuncAddr;
-  DO(GetElementDesc(pDesc, &pElementsDesc, "SwitchPFA"));
+  DO(GetElementDesc((CfgNodeGen_t*)pDesc, (CfgNodeGen_t**)&pElementsDesc, "SwitchPFA", CfgElementNode));
   stElementCnt =pElementsDesc->Instances.stUsedCnt;
   stBlockLength=EeePAlignLength(
             sizeof(*pHeader)- 
@@ -1342,7 +1349,7 @@ HandleSmbiosChassisBlock(
   char *pszStrBuffer;
   CfgElementDesc_t   *pElementsDesc;
 
-  DO(GetElementDesc(pDesc, &pElementsDesc, "CElements"));
+  DO(GetElementDesc((CfgNodeGen_t*)pDesc, (CfgNodeGen_t**)&pElementsDesc, "CElements", CfgElementNode));
 
   COUNT_STRLEN(pSmbiosChassis_cgf->aszManuf[0]     );
   COUNT_STRLEN(pSmbiosChassis_cgf->aszVersion[0]   );
@@ -1819,7 +1826,7 @@ EeeP_CreateEEPROMImage(
    * 
    */
   for(i=stCfgBlockCnt, pDesc=pCfgBlockDesc; i; i--, pDesc++){
-    if(pDesc->uiFound&&(pDesc->Handler!=NULL))
+    if(pDesc->stFound&&(pDesc->Handler!=NULL))
       DO(pDesc->Handler(pDesc, *pBHandel));
   }
   DO(EeePSetCRC(*pBHandel));

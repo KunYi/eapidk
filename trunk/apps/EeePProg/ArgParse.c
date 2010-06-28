@@ -47,6 +47,28 @@ StringArg(
 /*   printf("StringArg: %s\n", *(char**)cszCurArg); */
   return EAPI_STATUS_SUCCESS;
 }
+static MacroItem_t SizeMacros[]={
+  {"BYTES", ""          },
+  {"KB"   , "*(1024 BYTES)"},
+  {"MB"   , "*(1024 KB)"},
+  {"GB"   , "*(1024 MB)"},
+};
+static MacroList_t SizeMacroDesc={SizeMacros, ARRAY_SIZE(SizeMacros)};
+
+EApiStatus_t 
+SizeArg(
+    struct ArgDesc_s  *pArgs, 
+    void* pvalue   ,  
+    const char *cszArg 
+    )
+{
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
+
+  DO(ParseAsciiEquEx_VA(cszArg, &SizeMacroDesc, pvalue, (signed int)pArgs->stValueSize));
+
+EAPI_APP_ASSERT_EXIT
+  return StatusCode;
+}
 
 EApiStatus_t 
 NumberArg(
@@ -63,95 +85,6 @@ EAPI_APP_ASSERT_EXIT
   return StatusCode;
 }
 
-EApiStatus_t
-StringBlock(
-    const char *cszStr        ,
-    size_t      stMaxBlockLen ,
-    size_t     *pstLastPos
-    )
-{
-  const char *cszLastPos=cszStr;
-  *pstLastPos=0;
-/*   printf("D%04u %s\n", __LINE__, cszLastPos); */
-
-  if(*cszLastPos=='\n')
-    cszLastPos++;
-  while(stMaxBlockLen --){
-/*   printf("%c", *cszLastPos); */
-    switch(*cszLastPos++){
-      case '\t':
-        if(stMaxBlockLen>=7)
-          stMaxBlockLen -=7;
-        else
-          stMaxBlockLen=0;
-      case ' ':
-        *pstLastPos=cszLastPos - cszStr - 1;
-        break;
-      case '\0':
-        *pstLastPos=cszLastPos - cszStr - 1;
-        return EAPI_STATUS_SUCCESS;
-      case '\n':
-        *pstLastPos=cszLastPos - cszStr - 1;
-        return EAPI_STATUS_MORE_DATA;
-      default:
-        break;
-    }
-  }
-/*   printf("D%04u %s\n", __LINE__, cszLastPos); */
-  if(!*cszLastPos){
-    *pstLastPos=cszLastPos - cszStr;
-    return EAPI_STATUS_SUCCESS;
-  } else if(!*pstLastPos) {
-    *pstLastPos=cszLastPos - cszStr;
-  }
-  return EAPI_STATUS_MORE_DATA;
-}
-
-EApiStatus_t
-PrintStringBlock(
-    FILE       *OutStream     ,
-    const char *cszStr        ,
-    size_t      stMaxBlockLen ,
-    const char *cszLine1      ,
-    const char *cszOLines
-    )
-{
-  size_t stCurStrPos;
-  StringBlock(cszStr, stMaxBlockLen, &stCurStrPos);
-  fprintf(OutStream, cszLine1, stMaxBlockLen, stCurStrPos, cszStr );
-  while(stCurStrPos){
-    cszStr+=stCurStrPos;
-    if(*cszStr!='\0')
-      cszStr++;
-    StringBlock(cszStr, stMaxBlockLen, &stCurStrPos);
-    if(stCurStrPos)
-      fprintf( OutStream, cszOLines, stMaxBlockLen, stCurStrPos, cszStr );
-  };
-  return EAPI_STATUS_SUCCESS;
-}
-EApiStatus_t
-PrintStringBlock2(
-    FILE       *OutStream     ,
-    const char *cszStr        ,
-    size_t      stMaxBlockLen ,
-    const char *cszPreamble
-    )
-{
-  size_t stCurStrPos;
-  StringBlock(cszStr, stMaxBlockLen, &stCurStrPos);
-  fprintf(OutStream, "%s%-*.*s\n", cszPreamble, (int)stMaxBlockLen, (int)stCurStrPos, cszStr );
-  while(stCurStrPos){
-    cszStr+=stCurStrPos;
-    if(*cszStr!='\0')
-      cszStr++;
-    if(*cszStr=='\n')
-      cszStr++;
-    StringBlock(cszStr, stMaxBlockLen, &stCurStrPos);
-    if(stCurStrPos)
-      fprintf( OutStream, "%s%-*.*s\n", cszPreamble, (int)stMaxBlockLen, (int)stCurStrPos, cszStr );
-  };
-  return EAPI_STATUS_SUCCESS;
-}
 const char cszHeader[]= 
   "+=============================================================================+\n"
   "| Usage                                                                       |\n"
@@ -170,6 +103,10 @@ PrintUsage(
 {
   ArgDesc_t *pArgDesc;
   size_t     stArgCount;
+  int LineWidth=80;
+  int LArgLen=25;
+  int ArgOHead=STRLEN("| -c --") + LArgLen + STRLEN(" ");
+  int HelpLen=LineWidth - ArgOHead - STRLEN(" |\n");
   fprintf(OutStream, cszHeader);
   while(stArgDescCnt --){
     /*
@@ -183,41 +120,34 @@ PrintUsage(
      *
      */
     if(pCmdDesc->cszLong!=NULL)
-      fprintf(OutStream, " --%-25s ", pCmdDesc->cszLong );
+      fprintf(OutStream, "--%-*s ", LArgLen, pCmdDesc->cszLong );
     else
-      fprintf(OutStream, "   %-25s ", "");
+      fprintf(OutStream, "  %-*s ", LArgLen, "");
     /*
      *
      */
     PrintStringBlock(
         OutStream         ,
         pCmdDesc->cszHelp , 
-        43                , 
-        "%-*.*s |\n"     , 
-        "|                                 %-*.*s |\n"
+        HelpLen, "|", -ArgOHead, " |\n"
       );
 
     
     pArgDesc=pCmdDesc->pArgs;
     for(stArgCount=0; stArgCount< pCmdDesc->stArgs; stArgCount++){
       fprintf( OutStream, 
-							 "|                                  Arg%lu ", 
+							 "|%*s%s%lu ", ArgOHead, "", "Arg", 
 							 (unsigned long)stArgCount
 						);
       PrintStringBlock(
           OutStream         ,
           pArgDesc->cszHelp ,
-          37                ,
-          "%-*.*s |\n"      ,
-          "|                                       %-*.*s |\n"
+          HelpLen   - (signed)STRLEN(" Arg0 "), "|", -(signed)(ArgOHead+(signed)STRLEN(" Arg0 ")), " |\n"
         );
       pArgDesc++;
     };
     if(pCmdDesc->pArgs){
-      fprintf(
-          OutStream, 
-          "|                                                                             |\n" 
-        );
+      fprintf( OutStream, "|%*s|\n", (signed)(LineWidth - STRLEN("||\n")), "" );
     };
 
     pCmdDesc++;

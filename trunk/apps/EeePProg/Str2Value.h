@@ -47,13 +47,18 @@ ulConvertStr2NumEx(
 
 EApiStatus_t
 ExpandEnviromentVariables(
-    __IN  const char   *cszString,
-    __OUT char        **pszExpStr
+    __INOUT  DStrDesc_t   *pStrDesc
   );
 
 EApiStatus_t
 ParseAsciiEqu(
     __IN  const char       *cszString,
+    __OUT signed long long *psllValue
+  );
+EApiStatus_t
+ParseAsciiEquEx(
+    __IN  const char       *cszString,
+    __IN  MacroList_t      *pMacros  ,
     __OUT signed long long *psllValue
   );
 
@@ -86,12 +91,20 @@ RecoverValue_VA(
     __IN  void             *pvalue,
     __IN  signed int        siElementSize
   );
+  
 EApiStatus_t
 RecoverValue_VAB(
     __OUT signed long long *psllValue,
     __IN  void             *pValue,
     __IN  signed int        siBitOffset ,
     __IN  signed int        siBitLen    ,
+    __IN  signed int        siElementSize
+  );
+EApiStatus_t
+ParseAsciiEquEx_VA(
+    __IN  const char       *cszString     ,
+    __IN  MacroList_t      *pMacros       ,
+    __OUT void             *pvalue        ,
     __IN  signed int        siElementSize
   );
 
