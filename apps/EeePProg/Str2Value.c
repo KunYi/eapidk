@@ -610,7 +610,7 @@ BlockParser_t cAS[]={
  */
 EApiStatus_t
 ParseAsciiEqu_1(
-    __IN  char             *szString,
+    __INOUT DStrDesc_t *pStrDesc   ,
     __OUT signed long long *psllValue
   )
 {
@@ -618,9 +618,10 @@ ParseAsciiEqu_1(
   char *szEndBracket;
   size_t stSubLen;
   signed long long CurValue;
+  char szValue[sizeof(unsigned long long)*2];
   EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   *psllValue=0;
-  while((szStartBracket=strrchr(szString, '('))!=NULL){
+  while((szStartBracket=strrchr(pStrDesc->szStr, '('))!=NULL){
 #ifdef TEST_EQUPARSER
   siFormattedMessage_M2('D', __FILE__, "ParseAsciiEqu_1", __LINE__, "()",
               "%s\n", szString );
@@ -631,8 +632,8 @@ ParseAsciiEqu_1(
       *szEndBracket='\0';
       DO(ParseAsciiEqu_cmn(cAS, szStartBracket+1, &CurValue));
       stSubLen=szEndBracket - szStartBracket;
-      EApiSprintfA( szStartBracket, stSubLen+1, "%*lld", ((signed int)stSubLen), CurValue);
-      *szEndBracket=' ';
+      EApiSprintfA( szValue, ARRAY_SIZE(szValue), "%lld", CurValue);
+      DO(ReplaceSubStr(pStrDesc, szStartBracket - pStrDesc->szStr, szEndBracket+1 - pStrDesc->szStr,  szValue));
     }
     else
     {
@@ -644,7 +645,7 @@ ParseAsciiEqu_1(
     }
   }
   if(EAPI_TEST_SUCCESS(StatusCode))
-    StatusCode=ParseAsciiEqu_cmn(cAS, szString, psllValue);
+    StatusCode=ParseAsciiEqu_cmn(cAS, pStrDesc->szStr, psllValue);
 EAPI_APP_ASSERT_EXIT
   return StatusCode;
 }
@@ -654,36 +655,28 @@ const char cszEnvStartMarker[]="$(";
 const char cszEnvEndMarker[]=")" ;
 EApiStatus_t
 ExpandEnviromentVariables(
-    __IN  const char   *cszString,
-    __OUT char        **pszExpStr
+    __INOUT  DStrDesc_t   *pStrDesc
   )
 {
   EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
-  char *szVarPosS,*szVarPosE, *szLclBuf=NULL, *szLclBuf2=NULL, *szVarValue=NULL;
-  size_t StrLen,ValLen;
+  char *szVarPosS,*szVarPosE, *szVarValue=NULL;
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ExpandEnviromentVariables, 
       EAPI_STATUS_INVALID_PARAMETER, 
-      cszString
+      pStrDesc
     );
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ExpandEnviromentVariables, 
       EAPI_STATUS_INVALID_PARAMETER, 
-      pszExpStr
+      pStrDesc->szStr
     );
-  *pszExpStr=NULL;
-  StrLen=strlen(cszString)+1;
-  szLclBuf=malloc(StrLen);
-  EAPI_APP_ASSERT_PARAMATER_NULL(
-      ExpandEnviromentVariables, 
-      EAPI_STATUS_ALLOC_ERROR, 
-      szLclBuf
-    );
-  strcpy(szLclBuf, cszString);
-  while((szVarPosS=strrstr(szLclBuf, cszEnvStartMarker))!=NULL){
+  while((szVarPosS=strrstr(pStrDesc->szStr, cszEnvStartMarker))!=NULL){
+    /*
+     * So we found the last occurance of our start marker.
+     */
 #ifdef TEST_EQUPARSER
-  siFormattedMessage_M2('D', __FILE__, "ExpandEnviromentVariables", __LINE__, "",
-              "%s\n", szLclBuf );
+    siFormattedMessage_M2('D', __FILE__, "ExpandEnviromentVariables", __LINE__, "",
+              "%s\n", pStrDesc->szStr );
 #endif
     szVarPosE=strstr(szVarPosS, cszEnvEndMarker);
     if(szVarPosE==NULL){
@@ -696,35 +689,72 @@ ExpandEnviromentVariables(
           ""
           );
     }
-    *szVarPosS='\0';
     *szVarPosE='\0';
     szVarValue=ReturnEnvVar(szVarPosS+strlen(cszEnvStartMarker));
-    if(szVarValue!=NULL) {
-      ValLen=strlen(szVarValue);
-    }else{
-      ValLen=0;
+    DO(ReplaceSubStr(pStrDesc, szVarPosS - pStrDesc->szStr, szVarPosE - pStrDesc->szStr,  szVarValue));
+    if(szVarValue){
+      free(szVarValue);
+      szVarValue=NULL;
     }
+#ifdef TEST_EQUPARSER
+/*    siFormattedMessage_M2('D', __FILE__, "ExpandEnviromentVariables", __LINE__, "", */
+/*               "[%i][%i][%i]%s, %s, %s\n", stStrLen, ValLen, stStrLen+ValLen - (szVarPosE - szVarPosS + 1), pStrDesc->szStr, szVarPosS, szVarPosS+strlen(cszEnvStartMarker) ); */
+#endif
+  }
+
+
 #ifdef TEST_EQUPARSER
 /*   siFormattedMessage_M2('D', __FILE__, "ExpandEnviromentVariables", __LINE__, "", */
 /*               "[%i][%i][%i]%s, %s, %s\n", StrLen, ValLen, StrLen+ValLen - (szVarPosE - szVarPosS + 1), szLclBuf, szVarPosS, szVarPosS+strlen(cszEnvStartMarker) ); */
 #endif
-    StrLen+= ValLen - (szVarPosE - szVarPosS + 1) ;
-    szLclBuf2=malloc(StrLen);
-    EAPI_APP_ASSERT_PARAMATER_NULL(
-        ExpandEnviromentVariables, 
-        EAPI_STATUS_ALLOC_ERROR, 
-        szLclBuf2
-      );
-    strcpy(szLclBuf2, szLclBuf);
-    if(szVarValue!=NULL) {
-      strcat(szLclBuf2, szVarValue);
-      free(szVarValue);
-      szVarValue=NULL;
-    }
-    strcat(szLclBuf2, szVarPosE+strlen(cszEnvEndMarker));
-    free(szLclBuf);
-    szLclBuf=szLclBuf2;
-    szLclBuf2=NULL;
+  EAPI_APP_EXIT;
+
+EAPI_APP_ASSERT_EXIT
+  if(szVarValue!=NULL)
+    free(szVarValue);
+
+
+  return StatusCode;
+}
+
+
+
+EApiStatus_t
+ExpandMacros(
+    __IN  DStrDesc_t   *pStrDesc,
+    __IN  MacroList_t  *pMacros
+  )
+{
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
+  char *szVarPosS;
+  size_t stMacroLen;
+  const MacroItem_t *pCurMacro;
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ExpandMacros, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      pStrDesc
+    );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ExpandMacros, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      pStrDesc->szStr
+    );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ExpandMacros, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      pMacros
+    );
+  while((szVarPosS=szFindWord(pStrDesc->szStr, pMacros, &pCurMacro))!=NULL){
+    /*
+    * So we found the first occurance of our MACRO.
+    */
+#ifdef TEST_EQUPARSER
+    siFormattedMessage_M2('D', __FILE__, "ExpandMacros", __LINE__, "",
+              "%s\n", pStrDesc->szStr );
+#endif
+    stMacroLen=strlen(pCurMacro->cszMacroName);
+
+    DO(ReplaceSubStr(pStrDesc, szVarPosS - pStrDesc->szStr, szVarPosS - pStrDesc->szStr + stMacroLen,  pCurMacro->cszMacroValue));
   }
 
 
@@ -732,31 +762,31 @@ ExpandEnviromentVariables(
 /*   siFormattedMessage_M2('D', __FILE__, "ExpandEnviromentVariables", __LINE__, "", */
 /*               "%s\n", szLclBuf ); */
 #endif
-  goto ExitSuccess;
+  EAPI_APP_EXIT;
 
 EAPI_APP_ASSERT_EXIT
-  if(szLclBuf!=NULL){
-    free(szLclBuf);
-    szLclBuf=NULL;
-  }
-ExitSuccess:
-  *pszExpStr=szLclBuf;
-  if(szVarValue!=NULL)
-    free(szVarValue);
-  if(szLclBuf2!=NULL)
-    free(szLclBuf2);
 
 
   return StatusCode;
 }
+
+
+
+
+
+
+
+
+
 EApiStatus_t
-ParseAsciiEqu(
+ParseAsciiEquEx(
     __IN  const char       *cszString,
+    __IN  MacroList_t      *pMacros  ,
     __OUT signed long long *psllValue
   )
 {
-  char *szEquation=NULL;
   EApiStatus_t StatusCode;
+  DStrDesc_t lclStrDesc={NULL, 0, 0};
   EAPI_APP_ASSERT_PARAMATER_NULL(
       ParseAsciiEqu, 
       EAPI_STATUS_INVALID_PARAMETER, 
@@ -767,25 +797,30 @@ ParseAsciiEqu(
       EAPI_STATUS_INVALID_PARAMETER, 
       psllValue
     );
-#if 1
-  DO(ExpandEnviromentVariables(cszString, &szEquation));
-#else
-  szEquation=EAPI_strdup(cszString);
-#endif
-  EAPI_APP_ASSERT_PARAMATER_NULL(
-      ParseAsciiEqu, 
-      EAPI_STATUS_ALLOC_ERROR, 
-      szEquation
-    );
   *psllValue=0;
-#ifdef TEST_EQUPARSER
-/*   siFormattedMessage_M2('D', __FILE__, "ParseAsciiEqu", __LINE__, "", */
-/*               "%s\n", szEquation ); */
+  DO(InitStrDesc(&lclStrDesc, cszString));
+#if 1
+  DO(ExpandEnviromentVariables(&lclStrDesc));
+  if(pMacros){
+    DO(ExpandMacros(&lclStrDesc, pMacros));
+  }
 #endif
-  DO(ParseAsciiEqu_1(szEquation, psllValue));
+#ifdef TEST_EQUPARSER
+  siFormattedMessage_M2('D', __FILE__, "ParseAsciiEquEx", __LINE__, "",
+              "%s\n", lclStrDesc.szStr );
+#endif
+  DO(ParseAsciiEqu_1(&lclStrDesc, psllValue));
 EAPI_APP_ASSERT_EXIT
-  if(szEquation!=NULL) free(szEquation);
+  FreeStrDesc(&lclStrDesc);
   return StatusCode;
+}
+EApiStatus_t
+ParseAsciiEqu(
+    __IN  const char       *cszString,
+    __OUT signed long long *psllValue
+  )
+{
+  return ParseAsciiEquEx(cszString, NULL, psllValue);
 }
 EApiStatus_t
 AssignValue_VA(
@@ -1027,7 +1062,35 @@ ParseAsciiEqu_VA(
       pvalue
     );
   memset(pvalue, 0x00, siElementSize);
-  DO(ParseAsciiEqu(cszString, &sllValue));
+  DO(ParseAsciiEquEx(cszString, NULL, &sllValue));
+  DO(AssignValue_VA(sllValue, pvalue, siElementSize));
+
+EAPI_APP_ASSERT_EXIT
+  return StatusCode;
+}
+EApiStatus_t
+ParseAsciiEquEx_VA(
+    __IN  const char       *cszString     ,
+    __IN  MacroList_t      *pMacros       ,
+    __OUT void             *pvalue        ,
+    __IN  signed int        siElementSize
+  )
+{
+  signed long long sllValue;
+  EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
+
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ParseAsciiEquEx_VA, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      cszString
+    );
+  EAPI_APP_ASSERT_PARAMATER_NULL(
+      ParseAsciiEquEx_VA, 
+      EAPI_STATUS_INVALID_PARAMETER, 
+      pvalue
+    );
+  memset(pvalue, 0x00, siElementSize);
+  DO(ParseAsciiEquEx(cszString, pMacros, &sllValue));
   DO(AssignValue_VA(sllValue, pvalue, siElementSize));
 
 EAPI_APP_ASSERT_EXIT
@@ -1042,9 +1105,13 @@ typedef struct TestCase_s{
   const char      *cszEquation ;
   signed long long sllValue    ;
 }TestCase_t;
-#define __TEST_CASE(Store, Equ) {Store, sizeof(Store), sizeof(Store[0]), #Equ, Equ},
+#if 0
+#define __TEST_CASE(Store, Equ) {Store, sizeof(Store), sizeof(Store[0]), #Equ, (signed long long)Equ},
 #define _TEST_CASE(Store, Equ) __TEST_CASE(Store, Equ)
 #define TEST_CASE(Store, Equ) _TEST_CASE(Store, Equ)
+#else
+#define TEST_CASE(Store, Equ) {Store, sizeof(Store), sizeof(Store[0]), #Equ, (signed long long)Equ},
+#endif
 uint8_t  Val_u8[1];
 uint16_t Val_u16[1];
 uint32_t Val_u32[1];
@@ -1101,6 +1168,26 @@ TestCase_t TestCasesEnv[]={
   {Val_u8, sizeof(Val_u8), sizeof(Val_u8[0]), "$(NUMBER_OF_PROCESSORS)>=1", 1},
   {Val_u8, sizeof(Val_u8), sizeof(Val_u8[0]), "0x$(PROCESSOR_REVISION)", 0xd08},
   {Val_u8, sizeof(Val_u8), sizeof(Val_u8[0]), "$(PROCESSOR_REVISION)", 0},
+};
+static MacroItem_t SizeMacros[]={
+  {"BYTES", ""          },
+  {"KB"   , "*(1024 BYTES)"},
+  {"MB"   , "*(1024 KB)"},
+  {"GB"   , "*(1024 MB)"},
+};
+static MacroList_t SizeMacroDesc={SizeMacros, ARRAY_SIZE(SizeMacros)};
+#define BYTES
+#define KB *(1024 BYTES)
+#define MB *(1024 KB)
+#define GB *(1024 MB)
+#define GB *(1024 MB)
+TestCase_t TestCasesMACRO[]={
+  TEST_CASE(Val_u64, 1 + 1 KB)
+  TEST_CASE(Val_u64, 1 + 1 + 3 + 4 - 3 MB)
+  TEST_CASE(Val_u64, 0x00123 MB)
+  TEST_CASE(Val_u64, 1*8 GB)
+  TEST_CASE(Val_u64, 1 - 1 GB)
+  TEST_CASE(Val_u64, 2*2+1 BYTES)
 };
 const char *pszTestStatus[]={
   "FAIL",
@@ -1191,6 +1278,36 @@ int __cdecl main(
     DO(ParseAsciiEqu_VA(
             pCurTestCase->cszEquation, 
             pCurTestCase->pValueStore,
+            pCurTestCase->pElementSize
+        ));
+    DO(RecoverValue_VA(
+            &sllLclValue, 
+            pCurTestCase->pValueStore,
+            pCurTestCase->pElementSize
+        ));
+    printf(
+        "[%04s](%i)%30s | %8lli(0x%08llX), %8lli(0x%08llX)\n", 
+        pszTestStatus[sllLclValue==pCurTestCase->sllValue], 
+        pCurTestCase->pElementSize, 
+        pCurTestCase->cszEquation, 
+        sllLclValue, sllLclValue, 
+        pCurTestCase->sllValue, pCurTestCase->sllValue
+      );
+    if(sllLclValue==pCurTestCase->sllValue){
+      PassCount++;
+    }
+  }
+  for(CasesLeft=ARRAY_SIZE(TestCasesMACRO),
+      pCurTestCase=TestCasesMACRO;
+      CasesLeft --;
+      pCurTestCase ++
+      )
+  {
+    TestCount++;
+    DO(ParseAsciiEquEx_VA(
+            pCurTestCase->cszEquation , 
+            &SizeMacroDesc            ,
+            pCurTestCase->pValueStore ,
             pCurTestCase->pElementSize
         ));
     DO(RecoverValue_VA(

@@ -39,6 +39,7 @@
 
 Handlers_t  String_Element_funcs  ={ String_Element  , Dealloc_Element  , String_Help       , No_Default_Txt       };
 Handlers_t  Number_Element_funcs  ={ Number_Element  , GenClear_Element , Range_List_Help   , Range_Default_Txt    };
+Handlers_t  Size_Element_funcs    ={ Size_Element    , GenClear_Element , Range_List_Help   , Range_Default_Txt    };
 Handlers_t  TokenNum_Element_funcs={ TokenNum_Element, GenClear_Element , TokenNum_List_Help, TokenNum_List_Default};
 Handlers_t  Token_Element_funcs   ={ Token_Element   , GenClear_Element , Token_List_Help   , Token_List_Default   };
 Handlers_t  SpecRev_Element_funcs ={ SpecRev_Element , GenClear_Element , SpecRev_Help      , No_Default_Txt       };
@@ -143,55 +144,62 @@ const char *DeletePreserve[]={
 };
 EApiStatus_t                                    
 String_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   StringDesc_t *pStringDesc=pElementDesc->pExtraInfo; 
-  fprintf(stream, "%s %s\n", Indent, "Generic String");
+  int len=0;
+  len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+		  "%s\n", "Generic String");
   if(pStringDesc!=NULL){
     if(pStringDesc->uiMaxLength){
-      fprintf(stream, "%s   Max Length %u\n", Indent, pStringDesc->uiMaxLength);
+	len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+			"   Max Length %u\n", pStringDesc->uiMaxLength);
     }
     if(pStringDesc->uiMinLength){
-      fprintf(stream, "%s   Min Length %u\n", Indent, pStringDesc->uiMinLength);
+	len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+		"   Min Length %u\n", pStringDesc->uiMinLength);
     }
-    fprintf(stream, "%s   Trailing spaces %s\n", Indent, DeletePreserve[pStringDesc->uiPreserveTrailingSpaces]);
+    len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+		"   Trailing spaces %s\n", DeletePreserve[pStringDesc->uiPreserveTrailingSpaces]);
   }
   return EAPI_STATUS_SUCCESS;
 }
 EApiStatus_t
 Range_List_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   NumberRange_t *pNumRange;
   size_t stRangeCnt;
-  fprintf(stream, "%s %s\n", Indent, "Generic Number");
+  int len=0;
+  len=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+	"%s\n", "Generic Number");
   if(pElementDesc->pExtraInfo==NULL) return EAPI_STATUS_SUCCESS;
   pNumRange=((NumberRangeDesc_t*)pElementDesc->pExtraInfo)->pNumberRange; 
   stRangeCnt=((NumberRangeDesc_t*)pElementDesc->pExtraInfo)->stRangeCount; 
   if(stRangeCnt>1)
-    fprintf(stream, "%s %s\n", Indent, "Meeting one of the following conditions");
+    len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+	"%s\n", "Meeting one of the following conditions");
   else
-    fprintf(stream, "%s %s\n", Indent, "Meeting the following condition");
+    len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+	"%s\n", "Meeting the following condition");
   while(stRangeCnt--){
     switch(pNumRange->uiType){
       case RANGE_INCLUSIVE:
         if(pNumRange->uiLowerLimit==pNumRange->uiUpperLimit)
-          fprintf(stream, 
-              "%s \t Number == %8u(0x%04X)\n",
-              Indent, 
+	  len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+              "\t Number == %8u(0x%04X)\n",
               pNumRange->uiLowerLimit, 
               pNumRange->uiLowerLimit 
             );
         else
-          fprintf(stream, 
-              "%s \t %8u(0x%04X) <= Number <= %8u(0x%04X)\n", 
-              Indent, 
+	  len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+              "\t %8u(0x%04X) <= Number <= %8u(0x%04X)\n", 
               pNumRange->uiLowerLimit, 
               pNumRange->uiLowerLimit, 
               pNumRange->uiUpperLimit, 
@@ -199,9 +207,8 @@ Range_List_Help(
             );
         break;
       case RANGE_EXCLUSIVE:
-        fprintf(stream, 
-              "%s \t Number < %8u(0x%04X) || %8u(0x%04X) < Number\n",
-              Indent, 
+	len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, 
+              "\t Number < %8u(0x%04X) || %8u(0x%04X) < Number\n",
               pNumRange->uiLowerLimit, 
               pNumRange->uiLowerLimit, 
               pNumRange->uiUpperLimit, 
@@ -217,84 +224,92 @@ Range_List_Help(
 }
 EApiStatus_t                                    
 TokenNum_List_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   struct  CfgElementDesc_s LclElementDesc=*pElementDesc;
+  int len;
 
   LclElementDesc.pExtraInfo=((TokenNumDesc_t*)pElementDesc->pExtraInfo)->pTokens;
-  DO(Token_List_Help(&LclElementDesc, stream, Indent));
-  fprintf(stream, "%s Or a \n", Indent);
+  DO(Token_List_Help(&LclElementDesc, szHelpBuf, stHBufLen));
+  len=(signed)strlen(szHelpBuf);
+  len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len, "Or a \n");
   LclElementDesc.pExtraInfo=((TokenNumDesc_t*)pElementDesc->pExtraInfo)->pRange;
-  DO(Range_List_Help(&LclElementDesc, stream, Indent));
+  DO(Range_List_Help(&LclElementDesc, szHelpBuf + len, stHBufLen - len));
 EAPI_APP_ASSERT_EXIT
   return StatusCode;
 }
 EApiStatus_t
 Token_List_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   TokenDesc_t *pTokens;
   size_t stTokenCount;
-  fprintf(stream, "%s %s\n", Indent, "Supported Options");
+  int len;
+  len=EApiSprintfA(szHelpBuf, stHBufLen, 
+	"%s\n", "Supported Options");
   pTokens=((TokenListDesc_t*)pElementDesc->pExtraInfo)->pTokenList; 
   stTokenCount=((TokenListDesc_t*)pElementDesc->pExtraInfo)->uiTokenCount; 
   while(stTokenCount--){
-    fprintf(stream, "%s \t %s\n", Indent, pTokens->pszTokenList);
+	len+=EApiSprintfA(szHelpBuf + len, stHBufLen - len,
+		"\t %s\n", pTokens->pszTokenList);
     pTokens++;
   }
   return EAPI_STATUS_SUCCESS;
 }
 EApiStatus_t
 GUID_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   pElementDesc=pElementDesc;
-  fprintf(stream, "%s %s\n", Indent, "GUID in the Format F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
-  fprintf(stream, "%s %s\n", Indent, "  Means Not Supported 00000000-0000-0000-0000-000000000000");
-  fprintf(stream, "%s %s\n", Indent, "  Means Setable       FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
+  EApiSprintfA(szHelpBuf , stHBufLen , 
+		"GUID in the Format F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4\n"
+		"  Means Not Supported 00000000-0000-0000-0000-000000000000\n"
+		"  Means Setable       FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF\n"
+		  );
   return EAPI_STATUS_SUCCESS;
 }
 EApiStatus_t
 SpecRev_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   pElementDesc=pElementDesc;
-  fprintf(stream, "%s %s\n", Indent, "2.0");
+  EApiSprintfA(szHelpBuf , stHBufLen , "2.0\n");
   return EAPI_STATUS_SUCCESS;
 }
 EApiStatus_t
 PNPID_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   pElementDesc=pElementDesc;
-  fprintf(stream, "%s %s\n", Indent, "3 Letter PNPID e.g. PMG,KEM");
+  EApiSprintfA(szHelpBuf , stHBufLen , "3 Letter PNPID e.g. PMG,KEM");
   return EAPI_STATUS_SUCCESS;
 }
 EApiStatus_t
 I2C_EEPROM_Help(
-    struct  CfgElementDesc_s *pElementDesc,
-    FILE * stream,
-    const char *Indent
+    __IN  struct CfgElementDesc_s *pElementDesc, 
+    __OUT char *szHelpBuf, 
+    __IN  size_t stHBufLen 
   )
 { 
   pElementDesc=pElementDesc;
-  fprintf(stream, "%s %s\n", Indent, "Encodded I2C EEPROM Device Selector Address 0xA0,0xA2,0xA4,0xA6,0xA8,0xAA,0xAC,0xAE");
+  EApiSprintfA(szHelpBuf , stHBufLen , 
+		  "Encodded I2C EEPROM Device Selector Address 0xA0,0xA2,0xA4,0xA6,0xA8,0xAA,0xAC,0xAE\n");
   return EAPI_STATUS_SUCCESS;
 }
 
@@ -519,6 +534,13 @@ Number_Element(
 EAPI_APP_ASSERT_EXIT
   return StatusCode;
 }
+static MacroItem_t SizeMacros[]={
+  {"BYTES", ""          },
+  {"KB"   , "*(1024 BYTES)"},
+  {"MB"   , "*(1024 KB)"},
+  {"GB"   , "*(1024 MB)"},
+};
+static MacroList_t SizeMacroDesc={SizeMacros, ARRAY_SIZE(SizeMacros)};
 
 EApiStatus_t
 Size_Element(
@@ -529,45 +551,20 @@ Size_Element(
 { 
   EApiStatus_t StatusCode=EAPI_STATUS_SUCCESS;
   signed long long sllValue;
-  signed long long sllScalar=1;
-  char *szCurArg=_strdup(skipWhiteSpaces(szValue));
-  char *szScalar;
-
-  memset(pCurElement, 0x00, (signed int)pElementDesc->Instances.stElementSize);
-
-  szScalar=strstr(szCurArg, "GB");
-  if(szScalar){
-    sllScalar=1024*1024*1024;
-    *szScalar='\0';
-  }
-  szScalar=strstr(szCurArg, "MB");
-  if(szScalar){
-    sllScalar=1024*1024;
-    *szScalar='\0';
-  }
-  szScalar=strstr(szCurArg, "KB");
-  if(szScalar){
-    sllScalar=1024;
-    *szScalar='\0';
-  }
-
-  DO(ParseAsciiEqu(szCurArg, &sllValue));
-
-
-/*   printf(" TEST %s %llX\n", szCurArg, sllValue*sllScalar); */
+  
+  DO(ParseAsciiEquEx(szValue, &SizeMacroDesc, &sllValue));
   if(pElementDesc->pExtraInfo!=NULL){
     StatusCode=RangeCheckAny(
         ((NumberRangeDesc_t*)pElementDesc->pExtraInfo), 
-        *(unsigned long*)pCurElement
+        (unsigned long)sllValue
       );
   }
 
   if(!EAPI_TEST_SUCCESS(StatusCode)){
     printf("\tNumber_Element = Outside Range, %s\n", szValue);
-/*   }else{ */
-/*     printf("\tNumber_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
   }else{
-    DO(AssignValue_VAB(
+/*     printf("\tNumber_Element = 0x%04lX, %s\n", *(unsigned long*)pCurElement, szValue); */
+  	DO(AssignValue_VAB(
             sllValue, 
             pCurElement, 
             (signed int)pElementDesc->stBitOffset  ,
@@ -578,7 +575,6 @@ Size_Element(
 
   
 EAPI_APP_ASSERT_EXIT
-  if(szCurArg) free(szCurArg);
   return StatusCode;
 }
 

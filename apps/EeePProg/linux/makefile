@@ -126,7 +126,8 @@ OBJECTS=$(ExeName).o \
 	CfgPHelper.o \
 	EeePCfg.o \
 	EeePDB.o \
-	StrFuncs.o TokenFunc.o RangeFunc.o DbgChk.o Str2Value.o
+	StrFuncs.o TokenFunc.o RangeFunc.o DbgChk.o Str2Value.o StrPrint.o
+      
       
 
 DefaultTgt: buildall

@@ -86,7 +86,7 @@ IF /I "%~1"=="BUILD_LIB" GOTO Exit
   GOTO :EOF
 
 :BUILD_APP2
-  CALL :BUILD_APP_S EeePProg "EeePProg.c BinFuncs.c EeePDB.c EeePCfg.c StrFuncs.c Str2Value.c CfgParser.c CfgPHelper.c ArgParse.c TokenFunc.c RangeFunc.c"
+  CALL :BUILD_APP_S EeePProg "EeePProg.c BinFuncs.c EeePDB.c EeePCfg.c StrFuncs.c StrPrint.c Str2Value.c CfgParser.c CfgPHelper.c ArgParse.c TokenFunc.c RangeFunc.c"
   GOTO :EOF
 
 :PACK_BUILD
