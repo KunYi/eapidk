@@ -219,7 +219,7 @@ if "%OSR_TARGET%" == "" goto :USAGE
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: In the build directory check for this script and call it if it exists.
 :: This allows to override any global system variable setting, if desired.
-if not "%3" == "" call :GetCustomEnvironment "%~f3"
+if not "%~3" == "" call :GetCustomEnvironment "%~f3"
 if not "%OSR_ERRCODE%" == "0" goto :USAGE
 :: Additional error handling for better usability
 :: These subroutines will also attempt to locate the requested DDK!!!
@@ -616,9 +616,9 @@ pushd .
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 %OSR_ECHO% %OSR_BUILDNAME%
 set OSR_ARGS= + argument(s):
-if not "%3" == "" set OSR_ARGS=%OSR_ARGS% %3
-if not "%4" == "" set OSR_ARGS=%OSR_ARGS% %4
-if not "%5" == "" set OSR_ARGS=%OSR_ARGS% %5
+if not "%~3" == "" set OSR_ARGS=%OSR_ARGS% %3
+if not "%~4" == "" set OSR_ARGS=%OSR_ARGS% %4
+if not "%~5" == "" set OSR_ARGS=%OSR_ARGS% %5
 if /i "%OSR_ARGS%" == " + argument(s):" set OSR_ARGS=
 %OSR_ECHO% Directory: %buildDirectory%%OSR_ARGS%
 %OSR_ECHO% %BASEDIRVAR%: %BASEDIR%
@@ -629,10 +629,10 @@ set bscFlags=
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ContinueParsing
-if "%3" == "" goto :DONE
-if "%3" == "/a" goto :RebuildallFound
-if /i "%3" == "-WDF" goto :WDFFound
-if /i "%3" == "-PREFAST" goto :PrefastFound
+if "%~3" == "" goto :DONE
+if "%~3" == "/a" goto :RebuildallFound
+if /i "%~3" == "-WDF" goto :WDFFound
+if /i "%~3" == "-PREFAST" goto :PrefastFound
 set bscFlags=/n
 set bFlags=%bFlags% %3
 :: Remove next arg
@@ -799,12 +799,12 @@ goto :EOF
 :SetMode
 set BuildMode=
 if /i "%OSR_TARGET%" == "WLH2K" goto :SetModeWLH2K
-for %%f in (free fre) do if /i "%%f" == "%1" set BuildMode=free
-for %%f in (checked chk) do if /i "%%f" == "%1" set BuildMode=checked
+for %%f in (free fre) do if /i "%%f" == "%~1" set BuildMode=free
+for %%f in (checked chk) do if /i "%%f" == "%~1" set BuildMode=checked
 goto :SetModeCommonEnd
 :SetModeWLH2K
-for %%f in (free fre) do if /i "%%f" == "%1" set BuildMode=f
-for %%f in (checked chk) do if /i "%%f" == "%1" set BuildMode=c
+for %%f in (free fre) do if /i "%%f" == "%~1" set BuildMode=f
+for %%f in (checked chk) do if /i "%%f" == "%~1" set BuildMode=c
 :SetModeCommonEnd
 %OSR_TRACE% Mode set to ^"%BuildMode%^"
 if "%BuildMode%" == "" set OSR_ERRCODE=5

@@ -458,11 +458,13 @@ ParseCfgFile_sub(
 
       switch(StatusCode){
         case EAPI_STATUS_SUCCESS:
-          EAPI_APP_RETURN_ERROR_IF_S(
-              ParseCfgFile,
-              (pCurElement->Element.Instances.stUsedCnt+1>pCurElement->Element.Instances.stTotalCnt),
-              EAPI_STATUS_ERROR
+          if(pCurElement->Element.Instances.stUsedCnt+1>pCurElement->Element.Instances.stTotalCnt){
+            siFormattedMessage_SC(
+                'E', __FILE__, "ParseCfgFile_sub", __LINE__, StatusCode,
+                "ERROR Too Many Instances of %s at line %li\n", szValue, pCtxt->ulLineNum
             );
+            EAPI_APP_EXIT;
+          }
           StatusCode=pCurElement->Element.pHandlers->Handler(
                 (CfgElementDesc_t*)pCurElement, 
                 EAPI_CREATE_PTR(
