@@ -7,15 +7,15 @@
 #I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
 #I      Author: John Kearney,                  John.Kearney@kontron.com
 #I
-#I     License: All rights reserved. This program and the accompanying 
-#I              materials are licensed and made available under the 
-#I              terms and conditions of the BSD License which 
-#I              accompanies this distribution. The full text of the 
-#I              license may be found at 
+#I     License: All rights reserved. This program and the accompanying
+#I              materials are licensed and made available under the
+#I              terms and conditions of the BSD License which
+#I              accompanies this distribution. The full text of the
+#I              license may be found at
 #I              http://opensource.org/licenses/bsd-license.php
-#I              
+#I
 #I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
-#I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+#I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF
 #I              ANY KIND, EITHER EXPRESS OR IMPLIED.
 #I
 #I Description: Auto Created for makefile
@@ -79,8 +79,10 @@ StaticLibFName:=$(LibName).a
 #DBGOPT:=-g3
 #DBGOPT:=-gstabs
 #DBGOPT:=-gstabs+
-DBGOPT:=-g
-RELOPT:=-O3
+
+DBGOPT:=-g  -pedantic-errors -std=c11 -Wall -Werror -Wextra -Wconversion -Wformat-security -Wshadow -Wstrict-overflow=5 -Wstrict-aliasing=3 -Wstrict-prototypes -fstack-protector-strong
+RELOPT:=-O3 -pedantic-errors -std=c11 -Wall -Werror -Wextra -Wconversion -Wformat-security -Wshadow -Wstrict-overflow=5 -Wstrict-aliasing=3 -Wstrict-prototypes -fstack-protector-strong
+
 INCLUDS=-I../../include/linux -I../ -I../include -I../../include
 CFLAGS:=$(CFLAGS) -Wall -W -Werror -pedantic $(INCLUDS)
 ifneq ($(OS), Windows_NT)
@@ -108,7 +110,7 @@ endef
 
 define SHARED_BUILD_RULE
 $(CC) $(CFLAGS) $(1) -v -shared -L. -o $(@) -Wl,-soname,$(SoName),-Map,$(basename $<).map  $^
-objcopy --only-keep-debug  "$(@)" "$(@).debug" 
+objcopy --only-keep-debug  "$(@)" "$(@).debug"
 strip --strip-debug --strip-unneeded "$(@)"
 objcopy --add-gnu-debuglink="$(@).debug" "$(@)"
 endef
@@ -163,7 +165,7 @@ quick:$(BinFolder) \
 	@echo Shared Lib Filename : $(SoFName)
 	@echo Interpreter ....... : $(INTERPRETER)
 
-  
+
 
 $(BinFolder):
 	$(FLD_BUILD_RULE)
@@ -177,19 +179,19 @@ $(DBinFolder):
 $(DBuildDir):
 	$(FLD_BUILD_RULE)
 
-$(DBuildDir)/$(LibFName): $(addprefix $(DBuildDir)/,$(OBJECTS)) 
+$(DBuildDir)/$(LibFName): $(addprefix $(DBuildDir)/,$(OBJECTS))
 	$(call LIB_BUILD_RULE,$(DBGOPT))
 
 $(BuildDir)/$(LibFName): $(addprefix $(BuildDir)/,$(OBJECTS))
 	$(call LIB_BUILD_RULE,$(RELOPT))
 
-$(DBinFolder)/$(StaticLibFName): $(addprefix $(DBuildDir)/,$(LibFName)) 
+$(DBinFolder)/$(StaticLibFName): $(addprefix $(DBuildDir)/,$(LibFName))
 	$(call STATIC_BUILD_RULE,$(DBGOPT))
 
 $(BinFolder)/$(StaticLibFName): $(addprefix $(BuildDir)/,$(LibFName))
 	$(call STATIC_BUILD_RULE,$(RELOPT))
 
-$(DBinFolder)/$(SoFName): $(addprefix $(DBuildDir)/,$(LibFName) $(InterpFName)) 
+$(DBinFolder)/$(SoFName): $(addprefix $(DBuildDir)/,$(LibFName) $(InterpFName))
 	$(call SHARED_BUILD_RULE,$(DBGOPT))
 
 $(BinFolder)/$(SoFName): $(addprefix $(BuildDir)/,$(LibFName) $(InterpFName))

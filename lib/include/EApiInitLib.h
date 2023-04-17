@@ -8,15 +8,15 @@
  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
  *I      Author: John Kearney,                  John.Kearney@kontron.com
  *I
- *I     License: All rights reserved. This program and the accompanying 
- *I              materials are licensed and made available under the 
- *I              terms and conditions of the BSD License which 
- *I              accompanies this distribution. The full text of the 
- *I              license may be found at 
+ *I     License: All rights reserved. This program and the accompanying
+ *I              materials are licensed and made available under the
+ *I              terms and conditions of the BSD License which
+ *I              accompanies this distribution. The full text of the
+ *I              license may be found at
  *I              http://opensource.org/licenses/bsd-license.php
- *I              
+ *I
  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
- *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+ *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF
  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
  *I
  *I Description: Auto Created for EApiInitLib.h
@@ -35,7 +35,7 @@
  */
 /* EAPI(Embedded Application Interface) */
 
-#ifndef _EAPIINITLIB_H_        
+#ifndef _EAPIINITLIB_H_
 #define _EAPIINITLIB_H_
 
 #ifdef __cplusplus
@@ -45,16 +45,19 @@ extern "C" {
 #ifndef EAPI_DBG_USE_OUTPUT_FILE
 #  define EAPI_DBG_USE_OUTPUT_FILE 1
 #endif
-void 
-__cdecl 
-DebugMsg( 
-    __IN const char *const fmt, 
+
+void
+__cdecl
+DebugMsg(
+    __IN const char *const fmt,
     ...
     );
-uint32_t 
-EApiInitLib();
-uint32_t 
-EApiUninitLib();
+
+uint32_t
+EApiInitLib(void);
+
+uint32_t
+EApiUninitLib(void);
 
 
 #ifndef EAPI_LIB_MSG_OUT
@@ -69,7 +72,7 @@ EApiUninitLib();
 #  if 0
 #    define EAPI_LIB_ERR_OUT(...) DebugMsg("O " ## __VA_ARGS__)
 #  else
-#    define EAPI_LIB_ERR_OUT(x)   DebugMsg x 
+#    define EAPI_LIB_ERR_OUT(x)   DebugMsg x
 #  endif
 #endif
 

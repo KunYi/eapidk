@@ -8,15 +8,15 @@
  *I   Copyright: Copyright (c) 2002-2009, Kontron Embedded Modules GmbH
  *I      Author: John Kearney,                  John.Kearney@kontron.com
  *I
- *I     License: All rights reserved. This program and the accompanying 
- *I              materials are licensed and made available under the 
- *I              terms and conditions of the BSD License which 
- *I              accompanies this distribution. The full text of the 
- *I              license may be found at 
+ *I     License: All rights reserved. This program and the accompanying
+ *I              materials are licensed and made available under the
+ *I              terms and conditions of the BSD License which
+ *I              accompanies this distribution. The full text of the
+ *I              license may be found at
  *I              http://opensource.org/licenses/bsd-license.php
- *I              
+ *I
  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
- *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+ *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF
  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
  *I
  *I Description: Auto Created for EApiEmulGPIO.c
@@ -42,7 +42,7 @@
 #define END_OF_LIST_MARK ((uint32_t)-1)
 /*
  *
- *  
+ *
  *
  *      PSEUDO Hardware Emulation
  *
@@ -82,7 +82,7 @@ typedef void     WritePortFunction (uint32_t, uint32_t);
 #define GET_U8(BitOffset,Value)  ((uint8_t )(((Value)>>(BitOffset))&0xFF))
 #define GET_U16(BitOffset,Value) ((uint16_t)(((Value)>>(BitOffset))&0xFFFF))
 #define GET_U32(BitOffset,Value) ((uint32_t )(((Value)>>(BitOffset))&0xFFFFFFFF))
-#define BIT(x) ((uint32_t)(1<<(x)))
+#define BIT(x) (1 << (x))
 
 static uint32_t EmulatedIoBlock[]={
 #define EAPI_EMUL_GPIO_DIRECTION_REG 0
@@ -129,7 +129,7 @@ uint32_t EApiReadIO32Delay(uint32_t ByteOffset)
 }
 /*
  *
- *  
+ *
  *
  *  G P I O
  *
@@ -150,7 +150,7 @@ typedef struct PortDescriptor_s{
 typedef struct GPIOMappingsTbl_s{
   uint32_t PortMask; /* Bitmask For Port (Arbitrary Values Used Here) */
   PortDescriptor_t *Port;
-}GPIOMappingsTbl_t;
+} GPIOMappingsTbl_t;
 PortDescriptor_t Port1Desc={
   0x00, 0,
 #if USE_DIRECTION_EMUL
@@ -205,7 +205,7 @@ const GPIOMappingsTbl_t GpioMappingID0[]={
 #if (GPO2_PORT_BIT>31)
   {BIT(GPO2_PORT_BIT - 32) , &Port2Desc},
 #else
-  {BIT(GPO2_PORT_BIT) , &Port1Desc},
+  { ((uint32_t)1 << GPO2_PORT_BIT) , &Port1Desc},
 #endif
 #if (GPO3_PORT_BIT>31)
   {BIT(GPO3_PORT_BIT - 32) , &Port2Desc},
@@ -214,6 +214,7 @@ const GPIOMappingsTbl_t GpioMappingID0[]={
 #endif
   {END_OF_LIST_MARK, NULL}
 };
+
 const GPIOMappingsTbl_t GpioMappingID1[]={
 #if (GPI0_PORT_BIT>31)
   {BIT(GPI0_PORT_BIT - 32) , &Port2Desc},
@@ -262,11 +263,12 @@ const GPIOMappingsTbl_t GpioMappingID6[]={
 #endif
   {END_OF_LIST_MARK, NULL}
 };
+
 const GPIOMappingsTbl_t GpioMappingID7[]={
 #if (GPO2_PORT_BIT>31)
   {BIT(GPO2_PORT_BIT - 32) , &Port2Desc},
 #else
-  {BIT(GPO2_PORT_BIT) , &Port1Desc},
+  { ((uint32_t)1 << GPO2_PORT_BIT) , &Port1Desc},
 #endif
   {END_OF_LIST_MARK, NULL}
 };
@@ -278,6 +280,7 @@ const GPIOMappingsTbl_t GpioMappingID8[]={
 #endif
   {END_OF_LIST_MARK, NULL}
 };
+
 typedef struct GPIOIDMappingsTbl_s{
   const EApiId_t Id          ; /* EAPI Temperature Id */
   const GPIOMappingsTbl_t *const MapTbl   ; /* Gpio Mapping Table API Interface Bitmask -> Port Bitmask */
@@ -302,10 +305,10 @@ const GPIOIDMappingsTbl_t GPIOIDMapping[]={
 #endif
 };
 
-EApiStatus_t 
-EApiGPIOGetLevelEmul( 
-    __IN  EApiId_t  Id      , 
-    __IN  uint32_t  BitMask , 
+EApiStatus_t
+EApiGPIOGetLevelEmul(
+    __IN  EApiId_t  Id      ,
+    __IN  uint32_t  BitMask ,
     __OUT uint32_t *pLevel
     )
 {
@@ -318,9 +321,9 @@ EApiGPIOGetLevelEmul(
       if(GPIOIDMapping[i].Id==Id)
       {
         EAPI_LIB_RETURN_ERROR_IF(
-          EApiGPIOGetLevelEmul, 
-          (BitMask&~(GPIOIDMapping[i].OutputMask|GPIOIDMapping[i].InputMask)) , 
-          EAPI_STATUS_INVALID_BITMASK, 
+          EApiGPIOGetLevelEmul,
+          (BitMask&~(GPIOIDMapping[i].OutputMask|GPIOIDMapping[i].InputMask)) ,
+          EAPI_STATUS_INVALID_BITMASK,
           "Bit-mask Selects Invalid Bits"
           );
         for(i2=0;GPIOIDMapping[i].MapTbl[i2].PortMask!=END_OF_LIST_MARK;i2++){
@@ -346,8 +349,8 @@ EApiGPIOGetLevelEmul(
       }
   }
   EAPI_LIB_RETURN_ERROR(
-    EApiGPIOGetLevel, 
-    EAPI_STATUS_UNSUPPORTED  , 
+    EApiGPIOGetLevel,
+    EAPI_STATUS_UNSUPPORTED  ,
     "Unrecognised GPIO ID"
     );
 EAPI_LIB_ASSERT_EXIT
@@ -355,10 +358,10 @@ EAPI_LIB_ASSERT_EXIT
   return StatusCode;
 }
 
-EApiStatus_t 
-EApiGPIOSetLevelEmul( 
-  __IN EApiId_t Id      , 
-  __IN uint32_t BitMask , 
+EApiStatus_t
+EApiGPIOSetLevelEmul(
+  __IN EApiId_t Id      ,
+  __IN uint32_t BitMask ,
   __IN uint32_t Level
   )
 {
@@ -370,9 +373,9 @@ EApiGPIOSetLevelEmul(
       if(GPIOIDMapping[i].Id==Id)
       {
         EAPI_LIB_RETURN_ERROR_IF(
-          EApiGPIOSetLevelEmul, 
-          (BitMask&~(GPIOIDMapping[i].OutputMask|GPIOIDMapping[i].InputMask)) , 
-          EAPI_STATUS_INVALID_BITMASK, 
+          EApiGPIOSetLevelEmul,
+          (BitMask&~(GPIOIDMapping[i].OutputMask|GPIOIDMapping[i].InputMask)) ,
+          EAPI_STATUS_INVALID_BITMASK,
           "Bit-mask Selects Invalid Bits"
           );
         for(i2=0;GPIOIDMapping[i].MapTbl[i2].PortMask!=END_OF_LIST_MARK;i2++){
@@ -395,9 +398,9 @@ EApiGPIOSetLevelEmul(
             }
 #if USE_DIRECTION_EMUL
             EAPI_LIB_RETURN_ERROR_IF(
-              EApiGPIOSetLevel, 
-              (GPIOIDMapping[i].MapTbl[i2].Port->Value2&GPIOIDMapping[i].MapTbl[i2].PortMask) , 
-              EAPI_STATUS_INVALID_PARAMETER, 
+              EApiGPIOSetLevel,
+              (GPIOIDMapping[i].MapTbl[i2].Port->Value2&GPIOIDMapping[i].MapTbl[i2].PortMask) ,
+              EAPI_STATUS_INVALID_PARAMETER,
               "Cant Set Level on Pin that is set to input"
               );
 #endif
@@ -411,7 +414,7 @@ EApiGPIOSetLevelEmul(
         for(i2=0;GPIOIDMapping[i].MapTbl[i2].PortMask!=END_OF_LIST_MARK;i2++){
           if(GPIOIDMapping[i].MapTbl[i2].Port->Dirty==1){
             GPIOIDMapping[i].MapTbl[i2].Port->Write(
-              GPIOIDMapping[i].MapTbl[i2].Port->LevelArg1, 
+              GPIOIDMapping[i].MapTbl[i2].Port->LevelArg1,
               GPIOIDMapping[i].MapTbl[i2].Port->Value
               );
             GPIOIDMapping[i].MapTbl[i2].Port->Dirty=0;
@@ -421,8 +424,8 @@ EApiGPIOSetLevelEmul(
       }
   }
   EAPI_LIB_RETURN_ERROR(
-    EApiGPIOSetLevel, 
-    EAPI_STATUS_UNSUPPORTED, 
+    EApiGPIOSetLevel,
+    EAPI_STATUS_UNSUPPORTED,
     "Unrecognised GPIO ID"
     );
 EAPI_LIB_ASSERT_EXIT
@@ -430,8 +433,8 @@ EAPI_LIB_ASSERT_EXIT
   return StatusCode;
 }
 
-EApiStatus_t 
-EApiGPIOGetDirectionEmul( 
+EApiStatus_t
+EApiGPIOGetDirectionEmul(
   __IN  EApiId_t  Id        ,
   __IN  uint32_t  BitMask   ,
   __OUT uint32_t *pDirection
@@ -446,9 +449,9 @@ EApiGPIOGetDirectionEmul(
       if(GPIOIDMapping[i].Id==Id)
       {
         EAPI_LIB_RETURN_ERROR_IF(
-          EApiGPIOGetDirectionEmul, 
-          (BitMask&~(GPIOIDMapping[i].OutputMask|GPIOIDMapping[i].InputMask)) , 
-          EAPI_STATUS_INVALID_BITMASK, 
+          EApiGPIOGetDirectionEmul,
+          (BitMask&~(GPIOIDMapping[i].OutputMask|GPIOIDMapping[i].InputMask)) ,
+          EAPI_STATUS_INVALID_BITMASK,
           "Bit-mask Selects Invalid Bits"
           );
         for(i2=0;GPIOIDMapping[i].MapTbl[i2].PortMask!=END_OF_LIST_MARK;i2++){
@@ -473,8 +476,8 @@ EApiGPIOGetDirectionEmul(
       }
   }
   EAPI_LIB_RETURN_ERROR(
-    EApiGPIOGetDirection, 
-    EAPI_STATUS_UNSUPPORTED  , 
+    EApiGPIOGetDirection,
+    EAPI_STATUS_UNSUPPORTED  ,
     "Unrecognised GPIO ID"
     );
 EAPI_LIB_ASSERT_EXIT
@@ -482,10 +485,10 @@ EAPI_LIB_ASSERT_EXIT
   return StatusCode;
 }
 
-EApiStatus_t 
-EApiGPIOSetDirectionEmul( 
-    __IN EApiId_t Id        , 
-    __IN uint32_t BitMask   , 
+EApiStatus_t
+EApiGPIOSetDirectionEmul(
+    __IN EApiId_t Id        ,
+    __IN uint32_t BitMask   ,
     __IN uint32_t Direction
     )
 {
@@ -497,21 +500,21 @@ EApiGPIOSetDirectionEmul(
       if(GPIOIDMapping[i].Id==Id)
       {
         EAPI_LIB_RETURN_ERROR_IF(
-          EApiGPIOSetDirectionEmul, 
-          (BitMask&~(GPIOIDMapping[i].OutputMask|GPIOIDMapping[i].InputMask)) , 
-          EAPI_STATUS_INVALID_BITMASK, 
+          EApiGPIOSetDirectionEmul,
+          (BitMask&~(GPIOIDMapping[i].OutputMask|GPIOIDMapping[i].InputMask)) ,
+          EAPI_STATUS_INVALID_BITMASK,
           "Bit-mask Selects Invalid Bits"
           );
         EAPI_LIB_RETURN_ERROR_IF(
-          EApiGPIOSetDirectionEmul, 
-          (BitMask&Direction&~GPIOIDMapping[i].InputMask) , 
-          EAPI_STATUS_INVALID_DIRECTION, 
+          EApiGPIOSetDirectionEmul,
+          (BitMask&Direction&~GPIOIDMapping[i].InputMask) ,
+          EAPI_STATUS_INVALID_DIRECTION,
           "Unsupported Input Bits"
           );
         EAPI_LIB_RETURN_ERROR_IF(
-          EApiGPIOSetDirectionEmul, 
-          ((BitMask&~Direction)&~GPIOIDMapping[i].OutputMask) , 
-          EAPI_STATUS_INVALID_DIRECTION, 
+          EApiGPIOSetDirectionEmul,
+          ((BitMask&~Direction)&~GPIOIDMapping[i].OutputMask) ,
+          EAPI_STATUS_INVALID_DIRECTION,
           "Unsupported Output Bits"
           );
         for(i2=0;GPIOIDMapping[i].MapTbl[i2].PortMask!=END_OF_LIST_MARK;i2++){
@@ -541,7 +544,7 @@ EApiGPIOSetDirectionEmul(
         for(i2=0;GPIOIDMapping[i].MapTbl[i2].PortMask!=END_OF_LIST_MARK;i2++){
           if(GPIOIDMapping[i].MapTbl[i2].Port->Dirty==1){
             GPIOIDMapping[i].MapTbl[i2].Port->Write(
-              GPIOIDMapping[i].MapTbl[i2].Port->DirectionArg1, 
+              GPIOIDMapping[i].MapTbl[i2].Port->DirectionArg1,
               GPIOIDMapping[i].MapTbl[i2].Port->Value
               );
             GPIOIDMapping[i].MapTbl[i2].Port->Dirty=0;
@@ -551,8 +554,8 @@ EApiGPIOSetDirectionEmul(
       }
   }
   EAPI_LIB_RETURN_ERROR(
-    EApiGPIOSetDirection, 
-    EAPI_STATUS_UNSUPPORTED, 
+    EApiGPIOSetDirection,
+    EAPI_STATUS_UNSUPPORTED,
     "Unrecognised GPIO ID"
     );
 EAPI_LIB_ASSERT_EXIT
@@ -560,10 +563,10 @@ EAPI_LIB_ASSERT_EXIT
   return StatusCode;
 }
 
-EApiStatus_t 
-EApiGPIOGetDirectionCapsEmul( 
-  __IN      EApiId_t  Id      , 
-  __OUTOPT  uint32_t *pInputs , 
+EApiStatus_t
+EApiGPIOGetDirectionCapsEmul(
+  __IN      EApiId_t  Id      ,
+  __OUTOPT  uint32_t *pInputs ,
   __OUTOPT  uint32_t *pOutputs
   )
 {
@@ -574,14 +577,14 @@ EApiGPIOGetDirectionCapsEmul(
   {
       if(GPIOIDMapping[i].Id==Id)
       {
-        *pInputs=GPIOIDMapping[i].InputMask; 
-        *pOutputs=GPIOIDMapping[i].OutputMask; 
+        *pInputs=GPIOIDMapping[i].InputMask;
+        *pOutputs=GPIOIDMapping[i].OutputMask;
         EAPI_LIB_RETURN_SUCCESS(EApiGPIOGetDirectionCaps, "");
       }
   }
   EAPI_LIB_RETURN_ERROR(
-    EApiGPIOGetDirectionCaps, 
-    EAPI_STATUS_UNSUPPORTED  , 
+    EApiGPIOGetDirectionCaps,
+    EAPI_STATUS_UNSUPPORTED  ,
     "Unrecognised GPIO ID"
     );
 EAPI_LIB_ASSERT_EXIT

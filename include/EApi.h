@@ -8,15 +8,15 @@
  *I   Copyright: Copyright (c) 2009-2010, PICMG
  *I      Author: John Kearney,                  John.Kearney@kontron.com
  *I
- *I     License: All rights reserved. This program and the accompanying 
- *I              materials are licensed and made available under the 
- *I              terms and conditions of the BSD License which 
- *I              accompanies this distribution. The full text of the 
- *I              license may be found at 
+ *I     License: All rights reserved. This program and the accompanying
+ *I              materials are licensed and made available under the
+ *I              terms and conditions of the BSD License which
+ *I              accompanies this distribution. The full text of the
+ *I              license may be found at
  *I              http://opensource.org/licenses/bsd-license.php
- *I              
+ *I
  *I              THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "
- *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF 
+ *I              AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS OF
  *I              ANY KIND, EITHER EXPRESS OR IMPLIED.
  *I
  *I Description: Auto Created for EApi.h
@@ -34,7 +34,7 @@
  *</KHeader>
  */
 
-#ifndef _EAPI_H_        
+#ifndef _EAPI_H_
 #define _EAPI_H_
 
 #ifdef __cplusplus
@@ -44,15 +44,15 @@ extern "C" {
 /***********************************************************************/
 
 #ifndef __IN
-#  define __IN 
+#  define __IN
 /* __IN
  * Arg Type        | Characteristics
  * ----------------+-----------------------------------------------------
- * Immediate value | Input value that must be specified and is essential 
+ * Immediate value | Input value that must be specified and is essential
  *                 | to function operation.
- *                 | 
+ *                 |
  * Pointer         | Valid pointer to initialized buffer/variable.
- *                 | 
+ *                 |
  */
 #endif
 #ifndef __INOPT
@@ -80,7 +80,7 @@ extern "C" {
  * Arg Type        | Characteristics
  * ----------------+-----------------------------------------------------
  * Pointer         | Valid pointer to destination buffer/variable, or
- *                 | NULL Pointer. 
+ *                 | NULL Pointer.
  *                 | Note: refer to function specification for specifics.
  */
 #endif
@@ -102,7 +102,7 @@ extern "C" {
 #  define EAPI_UINT32_C(x) ((uint32_t)(x))
 #endif
 /************************************************************************
- * All version numbers 
+ * All version numbers
  * +=========+===============================+
  * | Bits    | Descriptions                  |
  * +=========+===============================+
@@ -153,8 +153,8 @@ typedef uint32_t EApiId_t;
  *
  */
 /* Description
- *   The EAPI library is not yet or unsuccessfully initialized. 
- *   EApiLibInitialize needs to be called prior to the first access of any 
+ *   The EAPI library is not yet or unsuccessfully initialized.
+ *   EApiLibInitialize needs to be called prior to the first access of any
  *   other EAPI function.
  * Actions
  *   Call EApiLibInitialize..
@@ -175,16 +175,16 @@ typedef uint32_t EApiId_t;
  */
 #define EAPI_STATUS_ALLOC_ERROR       EAPI_UINT32_C(0xFFFFFFFD)
 
-/* Description 
- *   Time out in driver. This is Normally caused by hardware/software 
- *   semaphore timeout. 
+/* Description
+ *   Time out in driver. This is Normally caused by hardware/software
+ *   semaphore timeout.
  * Actions
  *   Retry.
  */
 #define EAPI_STATUS_DRIVER_TIMEOUT    EAPI_UINT32_C(0xFFFFFFFC)
 
-/* Description 
- *  One or more of the EAPI function call parameters are out of the 
+/* Description
+ *  One or more of the EAPI function call parameters are out of the
  *  defined range.
  *
  *  Possible Reasons include be
@@ -192,7 +192,7 @@ typedef uint32_t EApiId_t;
  *  Invalid Offset
  *  Invalid Length
  *  Undefined Value
- *  
+ *
  *   Storage Write
  *    Incorrectly Aligned Offset
  *    Invalid Write Length
@@ -204,7 +204,7 @@ typedef uint32_t EApiId_t;
 /* Description
  *   The Block Alignment is incorrect.
  * Actions
- *   Use pInputs and pOutputs to correctly select input and outputs. 
+ *   Use pInputs and pOutputs to correctly select input and outputs.
  */
 #define EAPI_STATUS_INVALID_BLOCK_ALIGNMENT EAPI_UINT32_C(0xFFFFFEFE)
 
@@ -216,10 +216,10 @@ typedef uint32_t EApiId_t;
 #define EAPI_STATUS_INVALID_BLOCK_LENGTH    EAPI_UINT32_C(0xFFFFFEFD)
 
 /* Description
- *   The current Direction Argument attempts to set GPIOs to a unsupported 
+ *   The current Direction Argument attempts to set GPIOs to a unsupported
  *   directions. I.E. Setting GPI to Output.
  * Actions
- *   Use pInputs and pOutputs to correctly select input and outputs. 
+ *   Use pInputs and pOutputs to correctly select input and outputs.
  */
 #define EAPI_STATUS_INVALID_DIRECTION       EAPI_UINT32_C(0xFFFFFEFC)
 
@@ -247,7 +247,7 @@ typedef uint32_t EApiId_t;
 /* Description
  *   I2C Device Error
  *   No Acknowledge For Device Address, 7Bit Address Only
- *   10Bit Address may cause Write error if 2 10Bit addressed devices 
+ *   10Bit Address may cause Write error if 2 10Bit addressed devices
  *   present on the bus.
  * Actions
  *   none.
@@ -256,7 +256,7 @@ typedef uint32_t EApiId_t;
 
 /* Description
  *   I2C Time-out
- *   Device Clock stretching time-out, Clock pulled low by device 
+ *   Device Clock stretching time-out, Clock pulled low by device
  *   for too long
  * Actions
  *   none.
@@ -264,7 +264,7 @@ typedef uint32_t EApiId_t;
 #define EAPI_STATUS_TIMEOUT           EAPI_UINT32_C(0xFFFFFBFE)
 
 /* Description
- *   EApi  I2C functions specific. The addressed I2C bus is busy or there 
+ *   EApi  I2C functions specific. The addressed I2C bus is busy or there
  *   is a bus collision.
  *   The I2C bus is in use. Either CLK or DAT are low.
  *   Arbitration loss or bus Collision, data remains low when writing a 1
@@ -285,9 +285,9 @@ typedef uint32_t EApiId_t;
 
 /* Description
  *   I2C Write Error
- *     No Acknowledge received after writing any Byte after the First Address 
+ *     No Acknowledge received after writing any Byte after the First Address
  *     Byte.
- *     Can be caused by 
+ *     Can be caused by
  *     unsupported Device Command/Index
  *     Ext Command/Index used on Standard Command/Index Device
  *     10Bit Address Device Not Present
@@ -301,7 +301,7 @@ typedef uint32_t EApiId_t;
 
 /* Description
  *   The amount of available data exceeds the buffer size.
- *   Storage buffer overflow was prevented. Read count was larger then 
+ *   Storage buffer overflow was prevented. Read count was larger then
  *   the defined buffer length.
  *   Read Count > Buffer Length
  * Actions
@@ -325,48 +325,48 @@ typedef uint32_t EApiId_t;
 #define EAPI_TEST_SUCCESS(x)        (!(x))
 
 /* Library */
-/* 
+/*
  * EApiLibInitialize
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Already initialized            | EAPI_STATUS_INITIALIZED
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
-EApiLibInitialize(void)   ; /* Should be called before 
-                             * calling any other API 
+EApiStatus_t
+EAPI_CALLTYPE
+EApiLibInitialize(void)   ; /* Should be called before
+                             * calling any other API
                              * function is called
                              */
-/* 
+/*
  * EApiLibUnInitialize
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
 EApiStatus_t
-EAPI_CALLTYPE 
-EApiLibUnInitialize(void) ; /* Should be called before 
-                             * program exit 
-                             */ 
+EAPI_CALLTYPE
+EApiLibUnInitialize(void) ; /* Should be called before
+                             * program exit
+                             */
 
 
-/* 
+/*
  *
  * Plug and Play Identifiers
  *
  *
  *
  */
-/* 
+/*
  * The following MACROS are for Creating OEM IDs
  * OEM ID macros should be named
- * EAPI_[PNPID]_ID_[TYPE]_[NAME] 
+ * EAPI_[PNPID]_ID_[TYPE]_[NAME]
  * E.G.
  * EAPI_PMG_ID_BOARD_CUSTOMERID
  */
@@ -384,39 +384,39 @@ EApiLibUnInitialize(void) ; /* Should be called before
       EAPI_UINT32_C((0xF<<28)|(EAPI_CREATE_PNPID(a, b, c)<<12)|(Id&0xFFF))
 
 #define EAPI_PNPID_PICMG EAPI_CREATE_PNPID('P', 'M', 'G')  /* PICMG Should
-                                                            * register this. 
+                                                            * register this.
                                                             */
 
 /*
  *
- *      B O A R D   I N F O M A T I O N   S T R I N G S 
+ *      B O A R D   I N F O M A T I O N   S T R I N G S
  *
  */
 /* IDS */
 #define EAPI_ID_BOARD_MANUFACTURER_STR     EAPI_UINT32_C(0) /* Board Manufacturer
-                                                             * Name String 
+                                                             * Name String
                                                              */
 #define EAPI_ID_BOARD_NAME_STR             EAPI_UINT32_C(1) /* Board Name String */
 #define EAPI_ID_BOARD_REVISION_STR         EAPI_UINT32_C(2) /* Board Name String */
-#define EAPI_ID_BOARD_SERIAL_STR           EAPI_UINT32_C(3) /* Board Serial 
-							     * Number String 
+#define EAPI_ID_BOARD_SERIAL_STR           EAPI_UINT32_C(3) /* Board Serial
+							     * Number String
 							     */
 #define EAPI_ID_BOARD_BIOS_REVISION_STR    EAPI_UINT32_C(4) /* Board Bios Revision
-							     * String 
+							     * String
 							     */
-#define EAPI_ID_BOARD_HW_REVISION_STR      EAPI_UINT32_C(5) /* Board Hardware 
-							     * Revision String 
+#define EAPI_ID_BOARD_HW_REVISION_STR      EAPI_UINT32_C(5) /* Board Hardware
+							     * Revision String
 							     */
-#define EAPI_ID_BOARD_PLATFORM_TYPE_STR    EAPI_UINT32_C(6) /* Platform ID 
-							     * (ETX, COM Express, 
-							     * etc...) 
+#define EAPI_ID_BOARD_PLATFORM_TYPE_STR    EAPI_UINT32_C(6) /* Platform ID
+							     * (ETX, COM Express,
+							     * etc...)
 							     */
 
 
-/* 
+/*
  * EApiBoardGetStringA
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * pBufLen==NULL                          | EAPI_STATUS_INVALID_PARAMETER
@@ -441,38 +441,38 @@ EApiBoardGetStringA(
  *
  */
 /* IDS */
-#define EAPI_ID_GET_EAPI_SPEC_VERSION         EAPI_UINT32_C(0) /* EAPI Specification 
-                                                                * Revision I.E. The 
-                                                                * EAPI Spec Version 
-                                                                * Bits 31-24, Revision 
+#define EAPI_ID_GET_EAPI_SPEC_VERSION         EAPI_UINT32_C(0) /* EAPI Specification
+                                                                * Revision I.E. The
+                                                                * EAPI Spec Version
+                                                                * Bits 31-24, Revision
                                                                 * 23-16, 15-0 always 0
-                                                                * Used to implement 
+                                                                * Used to implement
                                                                 * this interface
                                                                 */
 
 #define EAPI_ID_BOARD_BOOT_COUNTER_VAL        EAPI_UINT32_C(1) /* Units = Boots */
 #define EAPI_ID_BOARD_RUNNING_TIME_METER_VAL  EAPI_UINT32_C(2) /* Units = Minutes */
-#define EAPI_ID_BOARD_PNPID_VAL               EAPI_UINT32_C(3) /* Encoded PNP ID 
-                                                                * Format 
+#define EAPI_ID_BOARD_PNPID_VAL               EAPI_UINT32_C(3) /* Encoded PNP ID
+                                                                * Format
                                                                 * (Compressed ASCII)
                                                                 */
-#define EAPI_ID_BOARD_PLATFORM_REV_VAL        EAPI_UINT32_C(4) /* Platform Revision 
-                                                                * I.E. The PICMG Spec 
+#define EAPI_ID_BOARD_PLATFORM_REV_VAL        EAPI_UINT32_C(4) /* Platform Revision
+                                                                * I.E. The PICMG Spec
                                                                 * Version Bits 31-24,
-                                                                * Revision 23-16, 
+                                                                * Revision 23-16,
                                                                 * 15-0 always 0
                                                                 */
 
-#define EAPI_ID_BOARD_DRIVER_VERSION_VAL  EAPI_UINT32_C(0x10000) /* Vendor Specific 
-                                                                  * (Optional) 
+#define EAPI_ID_BOARD_DRIVER_VERSION_VAL  EAPI_UINT32_C(0x10000) /* Vendor Specific
+                                                                  * (Optional)
                                                                   */
 #define EAPI_ID_BOARD_LIB_VERSION_VAL     EAPI_UINT32_C(0x10001) /* Vendor Specific
-                                                                  * (Optional) 
+                                                                  * (Optional)
                                                                   */
 
-#define EAPI_ID_HWMON_CPU_TEMP            EAPI_UINT32_C(0x20000) /* 0.1 Kelvins */ 
-#define EAPI_ID_HWMON_CHIPSET_TEMP        EAPI_UINT32_C(0x20001) /* 0.1 Kelvins */ 
-#define EAPI_ID_HWMON_SYSTEM_TEMP         EAPI_UINT32_C(0x20002) /* 0.1 Kelvins */ 
+#define EAPI_ID_HWMON_CPU_TEMP            EAPI_UINT32_C(0x20000) /* 0.1 Kelvins */
+#define EAPI_ID_HWMON_CHIPSET_TEMP        EAPI_UINT32_C(0x20001) /* 0.1 Kelvins */
+#define EAPI_ID_HWMON_SYSTEM_TEMP         EAPI_UINT32_C(0x20002) /* 0.1 Kelvins */
 
 #define EAPI_KELVINS_OFFSET 2731
 #define EAPI_ENCODE_CELCIUS(Celsius) EAPI_UINT32_C((((Celsius)*10))+EAPI_KELVINS_OFFSET)
@@ -489,10 +489,10 @@ EApiBoardGetStringA(
 #define EAPI_ID_HWMON_FAN_CPU             EAPI_UINT32_C(0x22000) /* RPM */
 #define EAPI_ID_HWMON_FAN_SYSTEM          EAPI_UINT32_C(0x22001) /* RPM */
 
-/* 
+/*
  * EApiBoardGetValue
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * pValue==NULL                           | EAPI_STATUS_INVALID_PARAMETER
@@ -500,8 +500,8 @@ EApiBoardGetStringA(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiBoardGetValue(
     __IN  EApiId_t  Id      , /* Value Id */
     __OUT uint32_t *pValue    /* Return Value */
@@ -524,10 +524,10 @@ EApiBoardGetValue(
 #define EAPI_BACKLIGHT_SET_OFF        EAPI_UINT32_C(0xFFFFFFFF)
 #define EAPI_BACKLIGHT_SET_DIMEST     EAPI_UINT32_C(0)
 #define EAPI_BACKLIGHT_SET_BRIGHTEST  EAPI_UINT32_C(255)
-/* 
+/*
  * EApiVgaGetBacklightEnable
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * pEnable==NULL                          | EAPI_STATUS_INVALID_PARAMETER
@@ -537,14 +537,14 @@ EApiBoardGetValue(
  */
 EApiStatus_t
 EAPI_CALLTYPE
-EApiVgaGetBacklightEnable( 
+EApiVgaGetBacklightEnable(
     __IN  EApiId_t  Id      , /* Backlight Id */
     __OUT uint32_t *pEnable   /* Backlight Enable */
     );
-/* 
+/*
  * EApiVgaSetBacklightEnable
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * Enable!=EAPI_BACKLIGHT_SET_ON&&
@@ -559,10 +559,10 @@ EApiVgaSetBacklightEnable(
     __IN  EApiId_t  Id      , /* Backlight Id */
     __IN  uint32_t  Enable    /* Backlight Enable */
     );
-/* 
+/*
  * EApiVgaGetBacklightBrightness
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * pBright==NULL                          | EAPI_STATUS_INVALID_PARAMETER
@@ -572,14 +572,14 @@ EApiVgaSetBacklightEnable(
  */
 EApiStatus_t
 EAPI_CALLTYPE
-EApiVgaGetBacklightBrightness( 
+EApiVgaGetBacklightBrightness(
     __IN  EApiId_t  Id      , /* Backlight Id */
     __OUT uint32_t *pBright   /* Backlight Brightness */
     );
-/* 
+/*
  * EApiVgaSetBacklightBrightness
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * Bright>EAPI_BACKLIGHT_SET_BRIGHTEST    | EAPI_STATUS_INVALID_PARAMETER
@@ -587,7 +587,7 @@ EApiVgaGetBacklightBrightness(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
+EApiStatus_t
 EAPI_CALLTYPE
 EApiVgaSetBacklightBrightness(
     __IN  EApiId_t  Id      , /* Backlight Id */
@@ -603,11 +603,11 @@ EApiVgaSetBacklightBrightness(
 /* IDs */
 #define EAPI_ID_STORAGE_STD              EAPI_UINT32_C(0)
 /* Dummy Example */
-#define EAPI_PMG_ID_STORAGE_SAMPLE       EAPI_CREATE_CUST_ID('P', 'M', 'G', 0) 
-/* 
+#define EAPI_PMG_ID_STORAGE_SAMPLE       EAPI_CREATE_CUST_ID('P', 'M', 'G', 0)
+/*
  * EApiStorageCap
- * 
- * Condition                                    | Return Values 
+ *
+ * Condition                                    | Return Values
  * ---------------------------------------------+------------------------------
  * Library Uninitialized                        | EAPI_STATUS_NOT_INITIALIZED
  * ((pStorageSize==NULL)&&(pBlockLength==NULL)) | EAPI_STATUS_INVALID_PARAMETER
@@ -615,19 +615,19 @@ EApiVgaSetBacklightBrightness(
  * Common Error                                 | Common Error Code
  * Else                                         | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiStorageCap(
     __IN  EApiId_t  Id            , /* Storage Area Id */
     __OUT uint32_t  *pStorageSize , /* Total */
     __OUT uint32_t  *pBlockLength   /* Write Block Length
-                                     * & Alignment 
+                                     * & Alignment
                                      */
     );
-/* 
+/*
  * EApiStorageAreaRead
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * pBuffer==NULL                          | EAPI_STATUS_INVALID_PARAMETER
@@ -640,21 +640,21 @@ EApiStorageCap(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiStorageAreaRead(
     __IN  EApiId_t  Id      , /* Storage Area Id */
     __IN  uint32_t  Offset  , /* Byte Offset */
     __OUT     void *pBuffer , /* Pointer to Data pBuffer */
-    __IN  uint32_t  BufLen  , /* Data pBuffer Size in 
-                               * bytes 
+    __IN  uint32_t  BufLen  , /* Data pBuffer Size in
+                               * bytes
                                */
     __IN  uint32_t  ByteCnt   /* Number of bytes to read */
     );
-/* 
+/*
  * EApiStorageAreaWrite
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * pBuffer==NULL                          | EAPI_STATUS_INVALID_PARAMETER
@@ -667,8 +667,8 @@ EApiStorageAreaRead(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiStorageAreaWrite(
     __IN  EApiId_t  Id      , /* Storage Area Id */
     __IN  uint32_t  Offset  , /* Byte Offset */
@@ -684,22 +684,22 @@ EApiStorageAreaWrite(
  */
 /* IDs */
 #define EAPI_ID_I2C_EXTERNAL       EAPI_UINT32_C(0) /* Baseboard I2C Interface
-                                                     * required 
+                                                     * required
                                                      */
-#define EAPI_ID_I2C_LVDS_1         EAPI_UINT32_C(1) /* LVDS/EDP 1 Interface 
+#define EAPI_ID_I2C_LVDS_1         EAPI_UINT32_C(1) /* LVDS/EDP 1 Interface
                                                      * (optional)
                                                      */
-#define EAPI_ID_I2C_LVDS_2         EAPI_UINT32_C(2) /* LVDS/EDP 2 Interface 
+#define EAPI_ID_I2C_LVDS_2         EAPI_UINT32_C(2) /* LVDS/EDP 2 Interface
                                                      * (optional)
                                                      */
 
 /*
- * I2C Address Format 
+ * I2C Address Format
  *
- *  L = Set to 0   
- *  H = Set to 1   
+ *  L = Set to 0
+ *  H = Set to 1
  *  X = Don't Care(Direction Bit)
- *  0-F Address Bit 
+ *  0-F Address Bit
  *
  *  Bits 31-16 are Reserved and should be set to 0
  *
@@ -720,10 +720,10 @@ EApiStorageAreaWrite(
  */
 #define EAPI_I2C_ENC_7BIT_ADDR(x)  EAPI_UINT8_C(((x)&0x07F)<<1)
 #define EAPI_I2C_DEC_7BIT_ADDR(x)  EAPI_UINT8_C(((x)>>1)&0x07F)
-/* 
+/*
  * EApiI2CGetBusCap
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * pMaxBlkLen==NULL                       | EAPI_STATUS_INVALID_PARAMETER
@@ -731,20 +731,20 @@ EApiStorageAreaWrite(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
+EApiStatus_t
 EAPI_CALLTYPE
 EApiI2CGetBusCap(
     __IN  EApiId_t  Id         , /* I2C Bus Id */
-    __OUT uint32_t *pMaxBlkLen   /* Max Block Length 
+    __OUT uint32_t *pMaxBlkLen   /* Max Block Length
                                   * Supported on this
-                                  * interface 
+                                  * interface
                                   */
     );
 
-/* 
+/*
  * EApiI2CWriteRead
- * 
- * Condition                                | Return Values 
+ *
+ * Condition                                | Return Values
  * -----------------------------------------+------------------------------
  * Library Uninitialized                    | EAPI_STATUS_NOT_INITIALIZED
  * (WriteBCnt>1)&&(pWBuffer==NULL)          | EAPI_STATUS_INVALID_PARAMETER
@@ -766,20 +766,20 @@ EApiI2CGetBusCap(
  * Common Error                             | Common Error Code
  * Else                                     | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiI2CWriteReadRaw(
     __IN     EApiId_t  Id       , /* I2C Bus Id */
     __IN     uint8_t   Addr     , /* Encoded 7Bit I2C
-                                   * Device Address 
+                                   * Device Address
                                    */
     __INOPT  void     *pWBuffer , /* Write Data pBuffer */
-    __IN     uint32_t  WriteBCnt, /* Number of Bytes to 
+    __IN     uint32_t  WriteBCnt, /* Number of Bytes to
                                    * write plus 1
                                    */
     __OUTOPT void     *pRBuffer , /* Read Data pBuffer */
     __IN     uint32_t  RBufLen  , /* Data pBuffer Length */
-    __IN     uint32_t  ReadBCnt   /* Number of Bytes to 
+    __IN     uint32_t  ReadBCnt   /* Number of Bytes to
                                    * Read plus 1
                                    */
     );
@@ -799,77 +799,77 @@ EApiI2CWriteReadRaw(
  * I2C Transfer Types
  * Bits 31 & 30 Selects Command Type
  *
- * Transfer Type 1: 
+ * Transfer Type 1:
  * Address Format : 7Bit
  * Command Type   : None
  * Data Direction : Write
  * Start<Addr Byte><W>Ack<Data Byte 1>Ack Stop
  *
- * Transfer Type 2: 
+ * Transfer Type 2:
  * Address Format : 7Bit
  * Command Type   : None
- * Data Direction : Read 
+ * Data Direction : Read
  * Start<Addr Byte><R>Ack<Data Byte 1>Nak Stop
  *
- * Transfer Type 3: 
+ * Transfer Type 3:
  * Address Format : 7Bit
  * Command Type   : Standard
  * Data Direction : Write
  * Start<Addr Byte><W>Ack<CMD Byte>Ack<Data Byte 1>Ack Stop
  *
- * Transfer Type 4: 
+ * Transfer Type 4:
  * Address Format : 7Bit
  * Command Type   : Standard
  * Data Direction : Read
- * Start<Addr Byte><W>Ack<CMD Byte>Ack 
+ * Start<Addr Byte><W>Ack<CMD Byte>Ack
  * Start<Addr Byte><R>Ack<Data Byte 1>Nak Stop
  *
- * Transfer Type 5: 
+ * Transfer Type 5:
  * Address Format : 7Bit
  * Command Type   : Extended
  * Data Direction : Write
  * Start<Addr Byte><W>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack<Data Byte 1>Ack Stop
  *
- * Transfer Type 6: 
+ * Transfer Type 6:
  * Address Format : 7Bit
  * Command Type   : Extended
  * Data Direction : Read
- * Start<Addr Byte><W>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack 
+ * Start<Addr Byte><W>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack
  * Start<Addr Byte><R>Ack<Data Byte 1>Nak Stop
  *
- * Transfer Type 7: 
+ * Transfer Type 7:
  * Address Format : 10Bit
  * Command Type   : None
  * Data Direction : Write
  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<Data Byte 1>Ack Stop
  *
- * Transfer Type 8: 
+ * Transfer Type 8:
  * Address Format : 10Bit
  * Command Type   : None
  * Data Direction : Read
- * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack 
+ * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack
  * Start<Addr Byte MSB><R>Ack<Data Byte 1>Nak Stop
  *
- * Transfer Type 9: 
+ * Transfer Type 9:
  * Address Format : 10Bit
  * Command Type   : Standard
  * Data Direction : Write
  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte>Ack<Data Byte 1>Ack Stop
  *
- * Transfer Type 10: 
+ * Transfer Type 10:
  * Address Format : 10Bit
  * Command Type   : Standard
  * Data Direction : Read
- * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte>Ack 
+ * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte>Ack
  * Start<Addr Byte MSB><R>Ack<Data Byte 1>Nak Stop
  *
- * Transfer Type 11: 
+ * Transfer Type 11:
  * Address Format : 10Bit
  * Command Type   : Extended
  * Data Direction : Write
  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack<CMD Byte MSB>Ack<CMD Byte LSB>Ack<Data Byte 1>Ack Stop
  *
- * Transfer Type 12: 
+ * Transfer Type 12:
  * Address Format : 10Bit
  * Command Type   : Extended
  * Data Direction : Read
@@ -879,20 +879,20 @@ EApiI2CWriteReadRaw(
  */
 #define EAPI_I2C_STD_CMD          EAPI_UINT32_C(0<<30)
 #define EAPI_I2C_EXT_CMD          EAPI_UINT32_C(2<<30)
-#define EAPI_I2C_NO_CMD           EAPI_UINT32_C(1<<30)    
-#define EAPI_I2C_CMD_TYPE_MASK    EAPI_UINT32_C(3<<30)    
+#define EAPI_I2C_NO_CMD           EAPI_UINT32_C(1<<30)
+#define EAPI_I2C_CMD_TYPE_MASK    EAPI_UINT32_C(3<<30)
 
 #define EAPI_I2C_ENC_STD_CMD(x)  EAPI_UINT32_C(((x)&0xFF)|EAPI_I2C_STD_CMD)
 #define EAPI_I2C_ENC_EXT_CMD(x)  EAPI_UINT32_C(((x)&0xFFFF)|EAPI_I2C_EXT_CMD)
 #define EAPI_I2C_IS_EXT_CMD(x)   (EAPI_UINT32_C((x)&(EAPI_I2C_CMD_TYPE_MASK))==EAPI_I2C_EXT_CMD)
 #define EAPI_I2C_IS_STD_CMD(x)   (EAPI_UINT32_C((x)&(EAPI_I2C_CMD_TYPE_MASK))==EAPI_I2C_STD_CMD)
 #define EAPI_I2C_IS_NO_CMD(x)    (EAPI_UINT32_C((x)&(EAPI_I2C_CMD_TYPE_MASK))==EAPI_I2C_NO_CMD)
-/* 
+/*
  * EApiI2CReadTransfer
- * Addr Byte 1 Below Designates Addr MSB in a 10bit address transfer and 
+ * Addr Byte 1 Below Designates Addr MSB in a 10bit address transfer and
  * the complete address in an 7bit address transfer.
- * 
- * Condition                                | Return Values 
+ *
+ * Condition                                | Return Values
  * -----------------------------------------+------------------------------
  * Library Uninitialized                    | EAPI_STATUS_NOT_INITIALIZED
  * pBuffer==NULL                            | EAPI_STATUS_INVALID_PARAMETER
@@ -915,8 +915,8 @@ EApiI2CWriteReadRaw(
  * Common Error                             | Common Error Code
  * Else                                     | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiI2CReadTransfer(
     __IN  EApiId_t  Id      , /* I2C Bus Id */
     __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C
@@ -927,12 +927,12 @@ EApiI2CReadTransfer(
     __IN  uint32_t  BufLen  , /* Data pBuffer Length */
     __IN  uint32_t  ByteCnt   /* Byte Count to read */
     );
-/* 
+/*
  * EApiI2CWriteTransfer
- * Addr Byte 1 Below Designates Addr MSB in a 10bit address transfer and 
+ * Addr Byte 1 Below Designates Addr MSB in a 10bit address transfer and
  * the complete address in an 7bit address transfer.
- * 
- * Condition                                | Return Values 
+ *
+ * Condition                                | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                    | EAPI_STATUS_NOT_INITIALIZED
  * pBuffer==NULL                            | EAPI_STATUS_INVALID_PARAMETER
@@ -953,12 +953,12 @@ EApiI2CReadTransfer(
  * Common Error                             | Common Error Code
  * Else                                     | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
+EApiStatus_t
 EAPI_CALLTYPE
 EApiI2CWriteTransfer(
     __IN  EApiId_t  Id      , /* I2C Bus Id */
-    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C 
-                               * Device Address 
+    __IN  uint32_t  Addr    , /* Encoded 7/10Bit I2C
+                               * Device Address
                                */
     __IN  uint32_t  Cmd     , /* I2C Command/Offset */
     __IN      void *pBuffer , /* Transfer Data pBuffer */
@@ -968,20 +968,20 @@ EApiI2CWriteTransfer(
 /*
  * I2C Probe Types
  *
- * Probe Type 1: 
+ * Probe Type 1:
  * Address Format : 7Bit
  * Start<Addr Byte><W>Ack Stop
  *
- * Probe Type 2: 
+ * Probe Type 2:
  * Address Format : 10Bit
  * Start<Addr Byte MSB><W>Ack<Addr Byte LSB>Ack Stop
  *
  */
 
-/* 
+/*
  * EApiI2CProbeDevice
- * 
- * Condition                                    | Return Values 
+ *
+ * Condition                                    | Return Values
  * ---------------------------------------------+------------------------------
  * Library Uninitialized                        | EAPI_STATUS_NOT_INITIALIZED
  * Bus Busy  SDA/SDC low                        | EAPI_STATUS_BUSY_COLLISION
@@ -1000,12 +1000,12 @@ EApiI2CWriteTransfer(
  * Common Error                                 | Common Error Code
  * Else                                         | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
+EApiStatus_t
 EAPI_CALLTYPE
 EApiI2CProbeDevice(
     __IN  EApiId_t  Id   , /* I2C Bus Id */
-    __IN  uint32_t  Addr   /* Encoded 7/10Bit 
-                            * I2C Device Address 
+    __IN  uint32_t  Addr   /* Encoded 7/10Bit
+                            * I2C Device Address
                             */
     );
 
@@ -1053,10 +1053,10 @@ EApiI2CProbeDevice(
  *
  */
 
-/* 
+/*
  * EApiWDogGetCap
- * 
- * Condition                              | Return Values 
+ *
+ * Condition                              | Return Values
  * ---------------------------------------+------------------------------
  * Library Uninitialized                  | EAPI_STATUS_NOT_INITIALIZED
  * Unsupported                            | EAPI_STATUS_UNSUPPORTED
@@ -1066,26 +1066,26 @@ EApiI2CProbeDevice(
  * Common Error                           | Common Error Code
  * Else                                   | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
+EApiStatus_t
 EAPI_CALLTYPE
 EApiWDogGetCap(
-    __OUTOPT uint32_t *pMaxDelay       , /* Maximum Supported 
+    __OUTOPT uint32_t *pMaxDelay       , /* Maximum Supported
                                          * Delay in milliseconds
                                          */
-    __OUTOPT uint32_t *pMaxEventTimeout, /* Maximum Supported 
-                                         * Event Timeout in 
+    __OUTOPT uint32_t *pMaxEventTimeout, /* Maximum Supported
+                                         * Event Timeout in
                                          * milliseconds
                                          * 0 == Unsupported
                                          */
-    __OUTOPT uint32_t *pMaxResetTimeout  /* Maximum Supported 
-                                         * Reset Timeout in 
+    __OUTOPT uint32_t *pMaxResetTimeout  /* Maximum Supported
+                                         * Reset Timeout in
                                          * milliseconds
                                          */
     );
-/* 
+/*
  * EApiWDogStart
- * 
- * Condition                        | Return Values 
+ *
+ * Condition                        | Return Values
  * ---------------------------------+------------------------------
  * Library Uninitialized            | EAPI_STATUS_NOT_INITIALIZED
  * Unsupported                      | EAPI_STATUS_UNSUPPORTED
@@ -1096,22 +1096,22 @@ EApiWDogGetCap(
  * Common Error                     | Common Error Code
  * Else                             | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiWDogStart(
     __IN  uint32_t Delay       , /* Delay in milliseconds */
-    __IN  uint32_t EventTimeout, /* Event Timeout in 
-                                  * milliseconds 
+    __IN  uint32_t EventTimeout, /* Event Timeout in
+                                  * milliseconds
                                   */
-    __IN  uint32_t ResetTimeout  /* Reset Timeout in 
-                                  * milliseconds 
+    __IN  uint32_t ResetTimeout  /* Reset Timeout in
+                                  * milliseconds
                                   */
     );
 
-/* 
+/*
  * EApiWDogTrigger
- * 
- * Condition                        | Return Values 
+ *
+ * Condition                        | Return Values
  * ---------------------------------+------------------------------
  * Library Uninitialized            | EAPI_STATUS_NOT_INITIALIZED
  * Unsupported                      | EAPI_STATUS_UNSUPPORTED
@@ -1119,22 +1119,22 @@ EApiWDogStart(
  * Common Error                     | Common Error Code
  * Else                             | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiWDogTrigger(void);
 
-/* 
+/*
  * EApiWDogStop
- * 
- * Condition                        | Return Values 
+ *
+ * Condition                        | Return Values
  * ---------------------------------+------------------------------
  * Library Uninitialized            | EAPI_STATUS_NOT_INITIALIZED
  * Unsupported                      | EAPI_STATUS_UNSUPPORTED
  * Common Error                     | Common Error Code
  * Else                             | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiWDogStop(void);
 
 
@@ -1259,10 +1259,10 @@ EApiWDogStop(void);
 #define EAPI_GPIO_BANK_TEST_STATE(GPIO_NUM, TState, TValue) \
                         (((TValue>>((GPIO_NUM)&0x1F))&1)==(TState))
 
-#define EAPI_ID_GPIO_BANK00    EAPI_GPIO_BANK_ID( 0) /* GPIOs  0 - 31 
+#define EAPI_ID_GPIO_BANK00    EAPI_GPIO_BANK_ID( 0) /* GPIOs  0 - 31
                                                       * (optional)
                                                       */
-#define EAPI_ID_GPIO_BANK01    EAPI_GPIO_BANK_ID(32) /* GPIOs 32 - 63 
+#define EAPI_ID_GPIO_BANK01    EAPI_GPIO_BANK_ID(32) /* GPIOs 32 - 63
                                                       * (optional)
                                                       */
 #define EAPI_ID_GPIO_BANK02    EAPI_GPIO_BANK_ID(64) /* GPIOs 64 - 95
@@ -1282,10 +1282,10 @@ EApiWDogStop(void);
 #define EAPI_GPIO_INPUT   1
 #define EAPI_GPIO_OUTPUT  0
 
-/* 
+/*
  * EApiGPIOGetDirectionCaps
- * 
- * Condition                          | Return Values 
+ *
+ * Condition                          | Return Values
  * -----------------------------------+------------------------------
  * Library Uninitialized              | EAPI_STATUS_NOT_INITIALIZED
  * ((pOutputs==NULL)&&(pInputs==NULL))| EAPI_STATUS_INVALID_PARAMETER
@@ -1294,20 +1294,20 @@ EApiWDogStop(void);
  * Else                               | EAPI_STATUS_SUCCESS
  */
 EApiStatus_t
-EAPI_CALLTYPE 
+EAPI_CALLTYPE
 EApiGPIOGetDirectionCaps(
     __IN     EApiId_t Id        , /* GPIO Id */
     __OUTOPT uint32_t *pInputs  , /* Supported GPIO Input
-                                   * Bit Mask 
+                                   * Bit Mask
                                    */
     __OUTOPT uint32_t *pOutputs   /* Supported GPIO Output
-                                   * Bit Mask 
+                                   * Bit Mask
                                    */
     );
-/* 
+/*
  * EApiGPIOGetDirection
- * 
- * Condition                          | Return Values 
+ *
+ * Condition                          | Return Values
  * -----------------------------------+------------------------------
  * Library Uninitialized              | EAPI_STATUS_NOT_INITIALIZED
  * Bitmask==0                         | EAPI_STATUS_INVALID_PARAMETER
@@ -1316,19 +1316,19 @@ EApiGPIOGetDirectionCaps(
  * Common Error                       | Common Error Code
  * Else                               | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiGPIOGetDirection(
     __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected
-                                  * Bits 
+                                  * Bits
                                   */
     __OUT uint32_t *pDirection   /* Current Direction */
     );
-/* 
+/*
  * EApiGPIOSetDirection
- * 
- * Condition                          | Return Values 
+ *
+ * Condition                          | Return Values
  * -----------------------------------+------------------------------
  * Library Uninitialized              | EAPI_STATUS_NOT_INITIALIZED
  * Bitmask==0                         | EAPI_STATUS_INVALID_PARAMETER
@@ -1339,19 +1339,19 @@ EApiGPIOGetDirection(
  * Common Error                       | Common Error Code
  * Else                               | EAPI_STATUS_SUCCESS
  */
-EApiStatus_t 
-EAPI_CALLTYPE 
+EApiStatus_t
+EAPI_CALLTYPE
 EApiGPIOSetDirection(
     __IN  EApiId_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected 
-                                  * Bits 
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected
+                                  * Bits
                                   */
     __IN  uint32_t Direction     /* Direction */
     );
-/* 
+/*
  * EApiGPIOGetLevel
- * 
- * Condition                          | Return Values 
+ *
+ * Condition                          | Return Values
  * -----------------------------------+------------------------------
  * Library Uninitialized              | EAPI_STATUS_NOT_INITIALIZED
  * Bitmask==0                         | EAPI_STATUS_INVALID_PARAMETER
@@ -1361,18 +1361,18 @@ EApiGPIOSetDirection(
  * Else                               | EAPI_STATUS_SUCCESS
  */
 EApiStatus_t
-EAPI_CALLTYPE 
+EAPI_CALLTYPE
 EApiGPIOGetLevel(
     __IN  EApiId_t Id          , /* GPIO Id */
     __IN  uint32_t Bitmask     , /* Bit mask of Affected
-                                  * Bits 
+                                  * Bits
                                   */
     __OUT uint32_t *pLevel       /* Current Level */
     );
-/* 
+/*
  * EApiGPIOSetLevel
- * 
- * Condition                          | Return Values 
+ *
+ * Condition                          | Return Values
  * -----------------------------------+------------------------------
  * Library Uninitialized              | EAPI_STATUS_NOT_INITIALIZED
  * Bitmask==0                         | EAPI_STATUS_INVALID_PARAMETER
@@ -1381,13 +1381,13 @@ EApiGPIOGetLevel(
  * Else                               | EAPI_STATUS_SUCCESS
  */
 EApiStatus_t
-EAPI_CALLTYPE 
+EAPI_CALLTYPE
 EApiGPIOSetLevel(
     __IN  EApiId_t Id          , /* GPIO Id */
-    __IN  uint32_t Bitmask     , /* Bit mask of Affected 
-                                  * Bits 
+    __IN  uint32_t Bitmask     , /* Bit mask of Affected
+                                  * Bits
                                   */
-    __IN  uint32_t Level         /* Level */  
+    __IN  uint32_t Level         /* Level */
     );
 
 
